@@ -1,0 +1,7 @@
+{
+  "name": "ventastech",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}

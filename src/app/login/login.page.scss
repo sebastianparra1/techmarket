@@ -1,0 +1,65 @@
+.login-content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #f4f4f4;
+    padding: 16px; /* Por si el contenido es más grande en pantallas pequeñas */
+    box-sizing: border-box;
+  }
+  
+  .login-card {
+    width: 90%;
+    max-width: 400px;
+    padding: 20px;
+    border-radius: 18px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+    background: white;
+    text-align: center;
+  }
+  
+  .logo-img {
+    width: 120px;
+    height: auto;
+    margin: 0 auto 10px;
+  }
+  
+  .brand-title {
+    font-size: 1.8rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #ffffff;
+  }
+  ion-content.login-content {
+    --background: #111; // Fondo oscuro si quieres mantenerlo así
+  
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+  }
+  
+  .welcome-text {
+    font-size: 1.1rem;
+    margin-bottom: 8px;
+  }
+  
+  .description-text {
+    font-size: 0.95rem;
+    color: #ffffff;
+    margin-bottom: 20px;
+  }
+  
+  .input-margin {
+    margin-top: 15px;
+  }
+  
+  .login-btn {
+    margin-top: 20px;
+    border-radius: 12px;
+  }
+  

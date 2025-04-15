@@ -1,20 +1,97 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>
-      Blank
-    </ion-title>
+<ion-header>
+  <ion-toolbar class="header-toolbar">
+    <ion-buttons slot="start">
+      <ion-avatar>
+        <img src="https://i.pinimg.com/736x/b3/6b/7c/b36b7c9c4ad5e3d20e302d6216623091.jpg" alt="Logo" />
+      </ion-avatar>
+      <div class="logo-title">TechMarket</div>
+    </ion-buttons>
+
+    <ion-buttons slot="end">
+      <ion-button fill="clear" color="primary" [routerLink]="['/login']">Iniciar Sesión</ion-button>
+      <ion-button fill="clear" color="medium" [routerLink]="['/registro']">Registrarse</ion-button>
+      <ion-button fill="clear" [routerLink]="['/carrito-de-compras']">
+        <img src="https://cdn-icons-png.flaticon.com/512/5412/5412512.png" alt="Carrito" class="cart-img" />
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Blank</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content class="ion-padding">
 
-  <div id="container">
-    <strong>Ready to create an app?</strong>
-    <p>Start with Ionic <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
+  <!-- Banner principal -->
+  <div class="banner">
+    <p>TechMarket es una plataforma de e-commerce que ofrece productos electrónicos y periféricos, además de permitir que vendedores externos vendan en nuestro marketplace. Con un diseño accesible y seguro, brindamos una experiencia de compra fácil desde cualquier dispositivo.</p>
+    <ion-button expand="block" color="success" [routerLink]="['/productos']">
+      Click aquí para poder ver los productos
+    </ion-button>
   </div>
+
+  <!-- Sección de productos destacados -->
+  <h2 class="section-title">Productos Destacados</h2>
+  <div class="product-grid">
+    <ion-card *ngFor="let producto of destacados; let i = index" class="product-card">
+      <img [src]="imagenes[i]" alt="Producto" />
+      <ion-card-header>
+        <ion-card-title>{{ producto.nombre }}</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-button expand="block" color="primary">Comprar</ion-button>
+        <ion-button expand="block" color="primary">Agregar al carrito</ion-button>
+        <ion-button expand="block" color="primary">Proponer intercambio</ion-button>
+      </ion-card-content>
+    </ion-card>
+  </div>
+
+  <!-- Sección de categorías -->
+  <h2 class="section-title">Categorías</h2>
+  <div class="category-row">
+    <ion-chip *ngFor="let categoria of categorias" color="primary" outline>
+      {{ categoria }}
+    </ion-chip>
+  </div>
+ <!-- Botón Agregar Producto -->
+<div style="text-align: center; margin-top: 20px;">
+  <ion-button color="success" expand="block" [routerLink]="['/agregar-producto']">
+    + Agregar Producto
+  </ion-button>
+</div>
+
+<br>
+<br>
+<br>
+  <img src="https://i.ytimg.com/vi/akB1EO3lesE/maxresdefault.jpg" style="display: block; margin: 0 auto; width: 60%; height: 80%;">
+  
+
+  <!-- Sección de información adicional / footer -->
+  <div class="footer-section">
+    <h2 class="section-title">Para más información :)</h2>
+
+    <div class="footer-box">
+      <h3>Sobre Nosotros</h3>
+      <p>
+        Somos <strong>TechMarket</strong>, una empresa que comercializa periféricos para computadoras.
+        Tratamos siempre de tener los mejores precios del mercado con artículos novedosos y de gran calidad.
+        Si tienes alguna duda, escríbenos a <a href="mailto:Chile&#64;TechMarket.cl">Chile&#64;TechMarket.cl</a>.
+      </p>
+    </div>
+
+    <div class="footer-box">
+      <h3>Contacto</h3>
+      <p><a href="mailto:Chile&#64;TechMarket.cl">Chile&#64;TechMarket.cl</a></p>
+    </div>
+
+    <div class="footer-box redes">
+      <h3>Síguenos en nuestras redes sociales</h3>
+      <div class="social-icons">
+        <a href="https://facebook.com" target="_blank">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Facebook_Logo_%282019%29.png/1024px-Facebook_Logo_%282019%29.png" alt="Facebook" height="30" />
+        </a>
+        <a href="https://instagram.com" target="_blank">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Instagram_icon.png/2048px-Instagram_icon.png" alt="Instagram" height="30" />
+        </a>
+      </div>
+    </div>
+  </div>
+
 </ion-content>

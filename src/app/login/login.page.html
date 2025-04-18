@@ -1,7 +1,9 @@
 <ion-content class="login-content" style="display: flex; justify-content: center; align-items: center; height: 100vh;">
-
+  <br>
+  <br>
+  <br>
   <div class="login-container" style="text-align: center; padding: 20px;">
-    <ion-img src="https://cdn3d.iconscout.com/3d/premium/thumb/nino-jugando-juegos-en-linea-8156166-6594658.png?f=webp" class="logo-img" style="width: 100px; height: 100px; margin-bottom: 20px;"></ion-img>
+    <ion-img src="https://play-lh.googleusercontent.com/rCc1T9PFomPVLTeHgT-pIRBHco7a9UACNQOy-DQ8io-YjGXTveRm2PHqbzfhYWw6eoHI" class="logo-img" style="width: 100px; height: 100px; margin-bottom: 20px;"></ion-img>
     <h1 class="brand-title">TechMarket</h1>
 
     <div class="welcome-text"><strong>¡Bienvenid&#64;, amante de la tecnología y las computadoras! 💻✨</strong></div>
@@ -9,11 +11,32 @@
       Completa todos los campos para iniciar sesión y adéntrate en el universo de los periféricos gamer, donde cada detalle potencia tu experiencia.
     </p>
 
-    <ion-input label="Correo electrónico" type="email" placeholder="correo@ejemplo.com" fill="outline" style="margin-bottom: 15px;"></ion-input>
-    <ion-input label="Contraseña" type="password" placeholder="••••••••" fill="outline" style="margin-bottom: 15px;"></ion-input>
+    <ion-input
+      label="Correo electrónico"
+      type="email"
+      placeholder="correo@ejemplo.com"
+      fill="outline"
+      style="margin-bottom: 15px;">
+    </ion-input>
+
+    <!-- Campo de contraseña con ícono al lado -->
+    <ion-item style="--padding-start: 0;">
+      <ion-input
+        label="Contraseña"
+        [type]="verPassword ? 'text' : 'password'"
+        placeholder="••••••••"
+        fill="outline"
+        style="flex: 1;"
+      ></ion-input>
+      <img
+        src="https://cdn-icons-png.freepik.com/512/6047/6047356.png"
+        alt="Ver contraseña"
+        (click)="toggleVerPassword()"
+        style="width: 24px; height: 24px; margin-left: 8px; cursor: pointer;"
+      />
+    </ion-item>
 
     <ion-button expand="block" color="success" class="login-btn" [routerLink]="['/home']">Iniciar Sesión</ion-button>
     <ion-button expand="block" color="tertiary" class="login-btn" [routerLink]="['/registro']">Registrarse</ion-button>
   </div>
-  
 </ion-content>

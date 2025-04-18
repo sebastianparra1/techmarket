@@ -11,7 +11,8 @@ import {
   IonCard,
   IonCardContent,
   IonImg,
-  IonLabel
+  IonLabel,
+  IonItem
 } from '@ionic/angular/standalone';
 import { RouterModule } from '@angular/router';
 
@@ -33,7 +34,14 @@ import { RouterModule } from '@angular/router';
     IonCard,
     IonCardContent,
     IonImg,
-    IonLabel
+    IonLabel,
+    IonItem
   ]
 })
-export class LoginPage {}
+export class LoginPage {
+  verPassword: boolean = false;
+
+  toggleVerPassword() {
+    this.verPassword = !this.verPassword;
+  }
+}

@@ -1,13 +1,45 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>pagina_vendedor</ion-title>
+    <ion-title>TechMarket</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">pagina_vendedor</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content [fullscreen]="true" class="pagina-vendedor-content">
+  <div class="main-container">
+    <div class="content">
+      <div class="profile-section">
+        <ion-icon name="person-circle-outline" class="profile-icon"></ion-icon>
+      </div>
+
+      <h1>Bienvenido Alexander</h1>
+      <p>Aquí puede agregar y eliminar tus productos para la venta</p>
+
+      <div class="add-product">
+        <ion-button (click)="agregarProducto()" shape="round" color="dark">
+          <ion-icon slot="icon-only" name="add-outline"></ion-icon>
+        </ion-button>
+        <p>Agregar productos</p>
+      </div>
+    </div>
+
+    <footer class="footer">
+      <div class="about">
+        <p><strong>Sobre Nosotros:</strong><br>
+          Somos TechMarket, una empresa dedicada a la venta de productos tecnológicos.
+        </p>
+      </div>
+
+      <div class="contact">
+        <p><strong>Contacto:</strong><br>
+          Chile&#64;TechMarket.cl
+        </p>
+      </div>
+
+      <div class="social">
+        <p><strong>Síguenos:</strong></p>
+        <ion-icon name="logo-facebook"></ion-icon>
+        <ion-icon name="logo-instagram"></ion-icon>
+      </div>
+    </footer>
+  </div>
 </ion-content>

@@ -1,13 +1,38 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>carrito_de_compras</ion-title>
+    <ion-title>Carrito de Compras</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">carrito_de_compras</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content [fullscreen]="true" class="ion-padding">
+
+  <ion-list>
+    <ion-item *ngFor="let item of cartItems">
+      <ion-thumbnail slot="start">
+        <img [src]="item.image" />
+      </ion-thumbnail>
+      <ion-label>
+        <h2>{{ item.name }}</h2>
+        <p>Precio: ${{ item.price }}</p>
+        <div class="quantity-controls">
+          <ion-button size="small" fill="outline" (click)="decreaseQuantity(item)">-</ion-button>
+          <span class="quantity">{{ item.quantity }}</span>
+          <ion-button size="small" fill="outline" (click)="increaseQuantity(item)">+</ion-button>
+        </div>
+      </ion-label>
+      <ion-button fill="clear" color="danger" (click)="removeFromCart(item)">
+        <ion-icon slot="icon-only" name="trash"></ion-icon>
+      </ion-button>
+    </ion-item>
+  </ion-list>
+
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Total: ${{ getTotal() }}</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-button expand="block" color="success" (click)="checkout()">Finalizar Compra</ion-button>
+    </ion-card-content>
+  </ion-card>
+
 </ion-content>

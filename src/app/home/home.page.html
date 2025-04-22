@@ -10,9 +10,10 @@
     <ion-buttons slot="end">
       <ion-button fill="clear" color="success" [routerLink]="['/login']">Iniciar Sesión</ion-button>
       <ion-button fill="clear" color="medium" [routerLink]="['/registro']">Registrarse</ion-button>
-      <ion-button fill="clear" [routerLink]="['/carrito-de-compras']">
+      <ion-button fill="clear" [routerLink]="['/carrito-de-compras']" class="carrito-button">
         <img src="https://cdn-icons-png.flaticon.com/512/8762/8762418.png" alt="Carrito"
-        style="width: 7vw; max-width: 32px; min-width: 24px; height: auto;" />
+          style="width: 7vw; max-width: 32px; min-width: 24px; height: auto;" />
+        <ion-badge color="danger" *ngIf="carritoCount > 0" class="badge-count">{{ carritoCount }}</ion-badge>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
@@ -38,7 +39,9 @@
       </ion-card-header>
       <ion-card-content>
         <ion-button expand="block" color="success">Comprar</ion-button>
-        <ion-button expand="block" color="success">Agregar al carrito</ion-button>
+        <ion-button expand="block" color="success" (click)="agregarAlCarrito(producto, imagenes[i])">
+          Agregar al carrito
+        </ion-button>
         <ion-button expand="block" color="success">Proponer intercambio</ion-button>
       </ion-card-content>
     </ion-card>
@@ -51,17 +54,18 @@
       {{ categoria }}
     </ion-chip>
   </div>
- <!-- Botón Agregar Producto -->
-<div style="text-align: center; margin-top: 20px;">
-  <ion-button color="success" expand="block" [routerLink]="['/agregar-producto']">
-    + Agregar Producto
-  </ion-button>
-</div>
-<br>
 
-<!-- Sección de información adicional / footer -->
+  <!-- Botón Agregar Producto -->
+  <div style="text-align: center; margin-top: 20px;">
+    <ion-button color="success" expand="block" [routerLink]="['/agregar-producto']">
+      + Agregar Producto
+    </ion-button>
+  </div>
+  <br>
+
+  <!-- Sección de información adicional / footer -->
   <div class="footer-section">
-    <h2 class="section-title" >Para más información :)</h2>
+    <h2 class="section-title">Para más información :)</h2>
 
     <div class="footer-box">
       <h3>Sobre Nosotros</h3>

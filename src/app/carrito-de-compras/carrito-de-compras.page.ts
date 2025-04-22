@@ -1,14 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonList, IonItem, IonLabel, IonThumbnail, IonButton, IonIcon, IonCard, IonCardHeader, IonCardTitle, IonCardContent } from '@ionic/angular/standalone';
-
-interface CartItem {
-  name: string;
-  price: number;
-  quantity: number;
-  image: string;
-}
+import {
+  IonContent, IonHeader, IonTitle, IonToolbar,
+  IonList, IonItem, IonLabel, IonThumbnail, IonButton, IonIcon,
+  IonCard, IonCardHeader, IonCardTitle, IonCardContent
+} from '@ionic/angular/standalone';
+import { CarritoService, CartItem } from '../services/carrito.service';
 
 @Component({
   selector: 'app-carrito-de-compras',
@@ -24,31 +22,21 @@ interface CartItem {
 })
 export class CarritoDeComprasPage implements OnInit {
 
-  cartItems: CartItem[] = [
-    {
-      name: 'Celular Samsung',
-      price: 250,
-      quantity: 1,
-      image: 'https://via.placeholder.com/150'
-    },
-    {
-      name: 'Auriculares Bluetooth',
-      price: 50,
-      quantity: 2,
-      image: 'https://via.placeholder.com/150'
-    }
-  ];
+  cartItems: CartItem[] = [];
 
-  constructor() { }
+  constructor(private carritoService: CarritoService) {}
 
-  ngOnInit() { }
-
-  getTotal(): number {
-    return this.cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  ngOnInit() {
+    this.cartItems = this.carritoService.getItems();
   }
 
-  removeFromCart(itemToRemove: CartItem): void {
-    this.cartItems = this.cartItems.filter(item => item !== itemToRemove);
+  getTotal(): number {
+    return this.carritoService.getTotal();
+  }
+
+  removeFromCart(item: CartItem): void {
+    this.carritoService.removeItem(item);
+    this.cartItems = this.carritoService.getItems();
   }
 
   increaseQuantity(item: CartItem): void {
@@ -59,7 +47,6 @@ export class CarritoDeComprasPage implements OnInit {
     if (item.quantity > 1) {
       item.quantity--;
     } else {
-      // Opcional: preguntar si quiere eliminar el producto
       const confirmDelete = confirm('¿Quieres eliminar este producto del carrito?');
       if (confirmDelete) {
         this.removeFromCart(item);
@@ -69,7 +56,7 @@ export class CarritoDeComprasPage implements OnInit {
 
   checkout(): void {
     alert('¡Gracias por tu compra!');
-    this.cartItems = []; // Vacía el carrito
+    this.carritoService.clearCart();
+    this.cartItems = [];
   }
-
 }

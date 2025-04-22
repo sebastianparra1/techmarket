@@ -1,15 +1,20 @@
 import { Component } from '@angular/core';
-import { IonHeader, IonToolbar, IonTitle, IonContent, IonAvatar, IonButton, IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonChip, IonFab, IonFabButton, IonIcon, IonButtons } from '@ionic/angular/standalone';
+import {
+  IonHeader, IonToolbar, IonTitle, IonContent, IonAvatar, IonButton,
+  IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonChip,
+  IonFab, IonFabButton, IonIcon, IonButtons, IonBadge
+} from '@ionic/angular/standalone';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';  // Importar RouterModule aquí
-import { add, cartOutline } from 'ionicons/icons';
+import { RouterModule } from '@angular/router';
+import { add } from 'ionicons/icons';
+import { CarritoService, CartItem } from '../services/carrito.service';
 
 @Component({
   selector: 'app-home',
   standalone: true,
   imports: [
     CommonModule,
-    RouterModule,  // Asegúrate de incluir RouterModule aquí
+    RouterModule,
     IonHeader,
     IonToolbar,
     IonTitle,
@@ -24,13 +29,41 @@ import { add, cartOutline } from 'ionicons/icons';
     IonFab,
     IonFabButton,
     IonIcon,
-    IonButtons
+    IonButtons,
+    IonBadge
   ],
   templateUrl: './home.page.html',
   styleUrls: ['./home.page.scss'],
 })
 export class HomePage {
   add = add;
+  carritoCount = 0;
+
+  constructor(private carritoService: CarritoService) {}
+
+  ngOnInit() {
+    this.actualizarContador();
+  }
+
+  ionViewWillEnter() {
+    this.actualizarContador();
+  }
+
+  agregarAlCarrito(producto: any, imagen: string) {
+    const item: CartItem = {
+      name: producto.nombre,
+      price: producto.precio,
+      quantity: 1,
+      image: imagen
+    };
+    this.carritoService.addItem(item);
+    this.actualizarContador();
+  }
+
+  actualizarContador() {
+    const items = this.carritoService.getItems();
+    this.carritoCount = items.reduce((acc, item) => acc + item.quantity, 0);
+  }
 
   destacados = [
     { nombre: 'Audifono Logitech', precio: 14990 },

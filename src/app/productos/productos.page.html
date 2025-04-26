@@ -1,13 +1,115 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>productos</ion-title>
+<ion-header>
+  <ion-toolbar color="dark">
+    <ion-title>TechMarket</ion-title>
+    <ion-buttons slot="end">
+      <ion-button [routerLink]="['/registro']">Registrarse</ion-button>
+      <ion-button>Iniciar Sesión</ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">productos</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content class="ion-padding">
+  <!-- Banner Principal -->
+  <img src="assets/images/banner.png" class="banner-img" alt="Banner Principal" />
+
+  <!-- Productos destacados -->
+  <div class="productos-destacados">
+    <h2>Productos</h2>
+
+    <div class="producto fila-izquierda">
+      <img src="assets/images/Monitor HP 23.8.jpg" class="producto-img" alt="Monitor HP" />
+      <div class="info">
+        <h3>Monitor HP</h3>
+        <p>Monitor de 23.8 pulgadas con resolución Full HD, ideal para trabajar y jugar.</p>
+        <p><strong>$156.000</strong></p>
+        <!--<ion-button>Ver producto</ion-button><br>-->
+        <ion-button expand="block" color="success">Agregar al carrito</ion-button>
+        <ion-button expand="block" color="primary" routerLink="/carrito-de-compras">Comprar</ion-button>
+      </div>
+    </div>
+
+    <div class="producto fila-derecha">
+      <img src="assets/images/Monitor Xiaomi G27i.png" class="producto-img" alt="Monitor Xiaomi" />
+      <div class="info">
+        <h3>Monitor Xiaomi</h3>
+        <p>Monitor gaming Xiaomi con 165 Hz y excelente relación calidad-precio.</p>
+        <p><strong>$79.990</strong></p>
+        <ion-button>Ver producto</ion-button>
+        <ion-button expand="block" color="success">Agregar al carrito</ion-button>
+        <ion-button expand="block" color="primary" routerLink="/carrito-de-compras">Comprar</ion-button>
+      </div>
+    </div>
+
+    <div class="producto fila-izquierda">
+      <img src="assets/images/Teclado Logitech.png" class="producto-img" alt="Teclado Logitech" />
+      <div class="info">
+        <h3>Teclado Logitech</h3>
+        <p>Teclado mecánico con retroiluminación RGB y switches silenciosos.</p>
+        <p><strong>$51.000</strong></p>
+        <ion-button>Ver producto</ion-button>
+        <ion-button expand="block" color="success">Agregar al carrito</ion-button>
+        <ion-button expand="block" color="primary" routerLink="/carrito-de-compras">Comprar</ion-button>
+      </div>
+    </div>
+  </div>
+
+  <!-- También te pueden interesar -->
+  <div class="sugerencias">
+    <h2>También te pueden interesar</h2>
+    <div class="scroll-horizontal">
+      <ion-card class="item-sugerencia">
+        <img src="assets/images/Microfono HyperX QuadCast.png"  style="width: 250px; height: 250px;" alt="Microfono HyperX" />
+        <ion-card-content>
+          <p>Micrófono HyperX</p>
+          <p>$90.000</p>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card class="item-sugerencia">
+        <img src="assets/images/Mouse Logitech.png" style="width: 250px; height: 250px;" alt="Mouse Logitech" />
+        <ion-card-content>
+          <p>Mouse Logitech Hero</p>
+          <p>$70.000</p>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card class="item-sugerencia">
+        <img src="assets/images/Audifonos Logitech G733.png" style="width: 250px; height: 250px;" alt="Mouse Logitech" />
+        <ion-card-content>
+          <p>Micrófono de estudio</p>
+          <p>$72.990</p>
+        </ion-card-content>
+      </ion-card>
+    </div>
+
+    <div class="footer-section">
+    <h2 class="section-title" >Para más información :)</h2>
+
+    <div class="footer-box">
+      <h3>Sobre Nosotros</h3>
+      <p>
+        Somos <strong>TechMarket</strong>, una empresa que comercializa periféricos para computadoras.
+        Tratamos siempre de tener los mejores precios del mercado con artículos novedosos y de gran calidad.
+        Si tienes alguna duda, escríbenos a <a href="mailto:Chile&#64;TechMarket.cl">Chile&#64;TechMarket.cl</a>.
+      </p>
+    </div>
+
+    <div class="footer-box">
+      <h3>Contacto</h3>
+      <p><a href="mailto:Chile&#64;TechMarket.cl">Chile&#64;TechMarket.cl</a></p>
+    </div>
+
+    <div class="footer-box redes">
+      <h3>Síguenos en nuestras redes sociales</h3>
+      <div class="social-icons">
+        <a href="https://facebook.com" target="_blank">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Facebook_Logo_%282019%29.png/1024px-Facebook_Logo_%282019%29.png" alt="Facebook" height="30" />
+        </a>
+        <a href="https://instagram.com" target="_blank">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Instagram_icon.png/2048px-Instagram_icon.png" alt="Instagram" height="30" />
+        </a>
+      </div>
+    </div>
+  </div>
+  </div>
 </ion-content>

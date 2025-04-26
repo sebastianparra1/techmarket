@@ -1,20 +1,23 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
+import { IonicModule } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/standalone';
+import { FormsModule } from '@angular/forms'; // 👈 IMPORTANTE
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-registro',
+  standalone: true,
+  imports: [IonicModule, CommonModule, FormsModule, RouterModule], // 👈 AGREGA FormsModule AQUÍ
   templateUrl: './registro.page.html',
   styleUrls: ['./registro.page.scss'],
-  standalone: true,
-  imports: [IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule]
 })
-export class RegistroPage implements OnInit {
+export class RegistroPage {
+  nombre: string = '';
+  correo: string = '';
+  contrasena: string = '';
 
-  constructor() { }
-
-  ngOnInit() {
+  registrarUsuario() {
+    console.log('Usuario registrado:', this.nombre, this.correo, this.contrasena);
+    alert('Registro exitoso');
   }
-
 }

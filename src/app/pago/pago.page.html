@@ -1,0 +1,83 @@
+<ion-content class="ion-padding">
+  <form (submit)="pagar()">
+    <div class="card-preview-container">
+      <div class="credit-card" [class.flipped]="mostrarTrasera">
+        <div class="front">
+          <div class="shine"></div>
+          <div class="card-number">{{ numeroFormateado || '•••• •••• •••• ••••' }}</div>
+          <div class="card-name">{{ nombreTitular || 'NOMBRE DEL TITULAR' }}</div>
+          <div class="card-expiry">{{ vencimiento || 'MM/AA' }}</div>
+        </div>
+        <div class="back">
+          <div class="cvv-label">CVV</div>
+          <div class="cvv-value">{{ cvv || '•••' }}</div>
+        </div>
+      </div>
+    </div>
+
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Datos de la Tarjeta</ion-card-title>
+      </ion-card-header>
+
+      <ion-card-content>
+        <ion-item>
+          <ion-label position="stacked">Número de tarjeta</ion-label>
+          <ion-input
+            type="text"
+            [value]="numeroFormateado"
+            (ionInput)="actualizarNumero($event)"
+            maxlength="19"
+            inputmode="numeric"
+            placeholder="Número de tarjeta">
+          </ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Nombre del titular</ion-label>
+          <ion-input
+            type="text"
+            [(ngModel)]="nombreTitular"
+            name="titular"
+            placeholder="Nombre Apellido">
+          </ion-input>
+        </ion-item>
+
+        <ion-grid>
+          <ion-row>
+            <ion-col size="8">
+              <ion-item>
+                <ion-label position="stacked">Vencimiento (MM/AA)</ion-label>
+                <ion-input
+                  type="text"
+                  [value]="vencimiento"
+                  (ionInput)="actualizarVencimiento($event)"
+                  maxlength="5"
+                  placeholder="MM/AA">
+                </ion-input>
+              </ion-item>
+            </ion-col>
+            <ion-col size="4">
+              <ion-item>
+                <ion-label position="stacked">CVV</ion-label>
+                <ion-input
+                  type="text"
+                  [value]="cvv"
+                  (ionInput)="actualizarCVV($event)"
+                  (focus)="mostrarTrasera = true"
+                  (blur)="mostrarTrasera = false"
+                  maxlength="3"
+                  placeholder="123">
+                </ion-input>
+              </ion-item>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+
+        <ion-button expand="block" type="submit" color="primary" class="ion-margin-top">
+          Pagar
+        </ion-button>
+      </ion-card-content>
+    </ion-card>
+  </form>
+</ion-content>

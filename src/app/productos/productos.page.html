@@ -4,6 +4,10 @@
     <ion-buttons slot="end">
       <ion-button [routerLink]="['/registro']">Registrarse</ion-button>
       <ion-button>Iniciar Sesión</ion-button>
+      <ion-button fill="clear" [routerLink]="['/carrito-de-compras']" class="carrito-button">
+        <img src="https://cdn-icons-png.flaticon.com/512/8762/8762418.png" alt="Carrito"
+          style="width: 7vw; max-width: 32px; min-width: 24px; height: auto;" />
+      </ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
@@ -70,6 +74,31 @@
         <ion-card-content>
           <p>Mouse Logitech Hero</p>
           <p>$70.000</p>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card class="item-sugerencia">
+        <img src="assets/images/Corsair CX750M.png" style="width: 250px; height: 250px;" alt="Mouse Logitech" />
+        <ion-card-content>
+          <p>Fuente de poder Corsair 750W
+          </p>
+          <p>$110.990</p>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card class="item-sugerencia">
+        <img src="assets/images/Corsair HS80.png" style="width: 250px; height: 250px;" alt="Mouse Logitech" />
+        <ion-card-content>
+          <p>Audifonos Corsair HS80</p>
+          <p>$140.000</p>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card class="item-sugerencia">
+        <img src="assets/images/SSD Kingston NV2 1TB M.2 2280.jpg" style="width: 250px; height: 250px;" alt="Mouse Logitech" />
+        <ion-card-content>
+          <p>Unidad SSD Kingston NV2 1TB M.2 2280</p>
+          <p>$51.990</p>
         </ion-card-content>
       </ion-card>
 

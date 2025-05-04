@@ -7,6 +7,7 @@ import {
   IonCard, IonCardHeader, IonCardTitle, IonCardContent
 } from '@ionic/angular/standalone';
 import { CarritoService, CartItem } from '../services/carrito.service';
+import { RouterModule } from '@angular/router'; 
 
 @Component({
   selector: 'app-carrito-de-compras',
@@ -17,7 +18,8 @@ import { CarritoService, CartItem } from '../services/carrito.service';
     IonContent, IonHeader, IonTitle, IonToolbar,
     IonList, IonItem, IonLabel, IonThumbnail, IonButton, IonIcon,
     IonCard, IonCardHeader, IonCardTitle, IonCardContent,
-    CommonModule, FormsModule
+    CommonModule, FormsModule,
+    RouterModule
   ]
 })
 export class CarritoDeComprasPage implements OnInit {

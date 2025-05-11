@@ -7,10 +7,9 @@
 <ion-content class="ion-padding">
   <form (ngSubmit)="registrarUsuario()">
     <ion-item>
-      <ion-label position="floating">Nombre</ion-label>
+      <ion-label position="floating">Usuario</ion-label>
       <ion-input [(ngModel)]="nombre" name="nombre" required></ion-input>
     </ion-item>
-
 
     <ion-item>
       <ion-label position="floating">Correo</ion-label>
@@ -22,10 +21,18 @@
       <ion-input [(ngModel)]="contrasena" name="contrasena" type="password" required></ion-input>
     </ion-item>
 
-    <!--<ion-button expand="block" type="submit" color="primary">Registrarse</ion-button>-->
-    <ion-button expand="block" color="primary" [routerLink]="['/productos']">
+    <ion-item>
+      <ion-label position="floating">RUT</ion-label>
+      <ion-input [(ngModel)]="rut" name="rut" required></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">Teléfono</ion-label>
+      <ion-input [(ngModel)]="telefono" name="telefono" type="tel" required></ion-input>
+    </ion-item>
+
+    <ion-button expand="block" color="primary" type="submit">
       Registrarse
     </ion-button>
-    
   </form>
 </ion-content>

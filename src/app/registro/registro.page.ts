@@ -1,13 +1,14 @@
 import { Component } from '@angular/core';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule, ToastController } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms'; // 👈 IMPORTANTE
-import { RouterModule } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+import { FirebaseService } from '../services/firebase.service';
 
 @Component({
   selector: 'app-registro',
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule, RouterModule], // 👈 AGREGA FormsModule AQUÍ
+  imports: [IonicModule, CommonModule, FormsModule],
   templateUrl: './registro.page.html',
   styleUrls: ['./registro.page.scss'],
 })
@@ -15,9 +16,38 @@ export class RegistroPage {
   nombre: string = '';
   correo: string = '';
   contrasena: string = '';
+  rut: string = '';
+  telefono: string = '';
 
-  registrarUsuario() {
-    console.log('Usuario registrado:', this.nombre, this.correo, this.contrasena);
-    alert('Registro exitoso');
+  constructor(
+    private firebaseService: FirebaseService,
+    private router: Router,
+    private toastCtrl: ToastController
+  ) {}
+
+  async registrarUsuario() {
+    try {
+      await this.firebaseService.registrarUsuario(
+        this.nombre,
+        this.correo,
+        this.contrasena,
+        this.rut,
+        this.telefono
+      );
+      const toast = await this.toastCtrl.create({
+        message: '¡Registro exitoso!',
+        duration: 2000,
+        color: 'success'
+      });
+      await toast.present();
+      this.router.navigate(['/login']);
+    } catch (error) {
+      const toast = await this.toastCtrl.create({
+        message: 'Error al registrar. Intenta nuevamente.',
+        duration: 2000,
+        color: 'danger'
+      });
+      await toast.present();
+    }
   }
 }

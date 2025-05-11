@@ -12,9 +12,12 @@ import {
   IonCardContent,
   IonImg,
   IonLabel,
-  IonItem
+  IonItem,
+  IonText // 👈 AÑADIDO AQUÍ
 } from '@ionic/angular/standalone';
 import { RouterModule } from '@angular/router';
+import { Router } from '@angular/router';
+import { FirebaseService } from '../services/firebase.service';
 
 @Component({
   selector: 'app-login',
@@ -35,13 +38,29 @@ import { RouterModule } from '@angular/router';
     IonCardContent,
     IonImg,
     IonLabel,
-    IonItem
+    IonItem,
+    IonText // 👈 AÑADIDO AQUÍ TAMBIÉN
   ]
 })
 export class LoginPage {
-  verPassword: boolean = false;
+  nombreUsuario = '';
+  clave = '';
+  error = '';
+  verPassword = false;
+
+  constructor(private firebaseService: FirebaseService, private router: Router) {}
 
   toggleVerPassword() {
     this.verPassword = !this.verPassword;
+  }
+
+  async login() {
+    const usuario = await this.firebaseService.validarLogin(this.nombreUsuario, this.clave);
+    if (usuario) {
+      localStorage.setItem('nombreUsuario', usuario.nombreUsuario);
+      this.router.navigate(['/home']);
+    } else {
+      this.error = 'Usuario o clave incorrectos';
+    }
   }
 }

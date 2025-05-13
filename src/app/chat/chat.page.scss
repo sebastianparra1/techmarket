@@ -1,0 +1,19 @@
+.messages-container {
+  padding: 1rem;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.message {
+  padding: 8px;
+  margin: 5px 0;
+  border-radius: 8px;
+  background-color: #f0f0f0;
+  max-width: 80%;
+  word-wrap: break-word;
+}
+
+.message.own {
+  background-color: #d3e5ff;
+  align-self: flex-end;
+}

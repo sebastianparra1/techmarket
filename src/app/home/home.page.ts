@@ -10,15 +10,11 @@ import { add } from 'ionicons/icons';
 import { CarritoService, CartItem } from '../services/carrito.service';
 import { ProductoService } from '../services/productos.service';
 
-
-
 interface Producto {
   nombre: string;
   precio: number;
   imagen: string;
 }
-
-
 
 @Component({
   selector: 'app-home',
@@ -50,33 +46,35 @@ interface Producto {
 export class HomePage {
   add = add;
   carritoCount = 0;
-  
-  categorias: string[] = ['Periféricos', 'Electrónica']; // Declarado dentro de la clase
-  imagenes: string[] = [  // Declarado dentro de la clase
+  nombreUsuario: string = '';
+
+  categorias: string[] = ['Periféricos', 'Electrónica'];
+  imagenes: string[] = [
     'https://www.basurto.cl/cdn/shop/files/product_202109281025402071626389-2ef54fbb-5c34-4bab-92ad-f8968ad937e0.png?v=1719253494',
     'https://resource.logitech.com/content/dam/gaming/en/products/pro-keyboard/pro-keyboard-gallery/pan-pro-gaming-keyboard-gallery-topdown.png',
     'https://www.profesionalreview.com/wp-content/uploads/2019/09/Acer-XV3-Monitor-gaming.png'
   ];
 
-
   productos: Producto[] = [
-    { nombre: 'Audifono Logitech', precio: 14990, imagen: 'url_imagen_1' },
-    { nombre: 'Teclado Logitech', precio: 39990, imagen: 'url_imagen_2' },
-    { nombre: 'Monitor', precio: 29990, imagen: 'url_imagen_3' },
+    { nombre: 'Audifono Logitech', precio: 14.000, imagen: 'url_imagen_1' },
+    { nombre: 'Teclado Logitech', precio: 39.990, imagen: 'url_imagen_2' },
+    { nombre: 'Monitor', precio: 29.990, imagen: 'url_imagen_3' },
   ];
 
   destacados = [
-    { nombre: 'Audifono Logitech', precio: 14990, imagen: this.imagenes[0] },
-    { nombre: 'Teclado Logitech', precio: 39990, imagen: this.imagenes[1] },
-    { nombre: 'Monitor', precio: 29990, imagen: this.imagenes[2] }
+    { nombre: 'Audifono Logitech', precio: 14.990, imagen: this.imagenes[0] },
+    { nombre: 'Teclado Logitech', precio: 39.990, imagen: this.imagenes[1] },
+    { nombre: 'Monitor', precio: 29.990, imagen: this.imagenes[2] }
   ];
 
   constructor(
     private productosService: ProductoService,
-    private carritoService: CarritoService) {}
+    private carritoService: CarritoService
+  ) {}
 
   ngOnInit() {
     this.actualizarContador();
+    this.nombreUsuario = localStorage.getItem('nombreUsuario') || 'Usuario';
   }
 
   ionViewWillEnter() {
@@ -93,7 +91,6 @@ export class HomePage {
     this.carritoService.addItem(item);
     this.actualizarContador();
   }
-  
 
   actualizarContador() {
     const items = this.carritoService.getItems();

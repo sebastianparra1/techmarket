@@ -7,7 +7,7 @@ export const routes: Routes = [
   },
   {
     path: '',
-    redirectTo: 'home',
+    redirectTo: 'login',
     pathMatch: 'full',
   },
   {
@@ -33,7 +33,11 @@ export const routes: Routes = [
   {
     path: 'pago',
     loadComponent: () => import('./pago/pago.page').then(m => m.PagoComponent)
+  },  {
+    path: 'chat',
+    loadComponent: () => import('./chat/chat.page').then( m => m.ChatPage)
   },
+
   
 
 ];

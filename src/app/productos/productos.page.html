@@ -1,125 +1,78 @@
 <ion-header>
-  <ion-toolbar color="dark">
-    <ion-title>TechMarket</ion-title>
+  <ion-toolbar class="header-toolbar" color="light">
+    <ion-buttons slot="start">
+      <ion-avatar slot="start">
+        <img
+          src="https://play-lh.googleusercontent.com/rCc1T9PFomPVLTeHgT-pIRBHco7a9UACNQOy-DQ8io-YjGXTveRm2PHqbzfhYWw6eoHI"
+          alt="Logo" />
+      </ion-avatar>
+      <div class="logo-title">TechMarket</div>
+    </ion-buttons>
+
     <ion-buttons slot="end">
-      <ion-button [routerLink]="['/registro']">Registrarse</ion-button>
-      <ion-button>Iniciar Sesión</ion-button>
-      <ion-button fill="clear" [routerLink]="['/carrito-de-compras']" class="carrito-button">
-        <img src="https://cdn-icons-png.flaticon.com/512/8762/8762418.png" alt="Carrito"
+      <ion-button fill="clear" color="success" routerLink="/pagina-vendedor">Vende tus Productos</ion-button>
+      <ion-button fill="clear" color="success" routerLink="/login">Cerrar Sesión</ion-button>
+      <ion-button fill="clear" routerLink="/carrito-de-compras" class="carrito-button">
+        <img
+          src="https://cdn-icons-png.flaticon.com/512/8762/8762418.png"
+          alt="Carrito"
           style="width: 7vw; max-width: 32px; min-width: 24px; height: auto;" />
+        <ion-badge color="danger" *ngIf="carritoCount > 0">{{ carritoCount }}</ion-badge>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="ion-padding">
-  <!-- Banner Principal -->
-  <img src="assets/images/banner.png" class="banner-img" alt="Banner Principal" />
+  <ion-grid>
+    <ion-row>
+      <ion-col
+        size="12"
+        size-md="6"
+        size-lg="4"
+        *ngFor="let producto of productos">
+        <ion-card class="producto-card">
+          <img [src]="producto.imagen" [alt]="producto.nombre" />
 
-  <!-- Productos destacados -->
-  <div class="productos-destacados">
-    <h2>Productos</h2>
+          <ion-card-header>
+            <ion-card-title>{{ producto.nombre }}</ion-card-title>
+            <ion-card-subtitle *ngIf="producto.categoria">{{ producto.categoria }}</ion-card-subtitle>
+          </ion-card-header>
 
-    <div class="producto fila-izquierda">
-      <img src="assets/images/Monitor HP 23.8.jpg" class="producto-img" alt="Monitor HP" />
-      <div class="info">
-        <h3>Monitor HP</h3>
-        <p>Monitor de 23.8 pulgadas con resolución Full HD, ideal para trabajar y jugar.</p>
-        <p><strong>$156.000</strong></p>
-        <!--<ion-button>Ver producto</ion-button><br>-->
-        <ion-button expand="block" color="success">Agregar al carrito</ion-button>
-        <ion-button expand="block" color="primary" routerLink="/carrito-de-compras">Comprar</ion-button>
-      </div>
-    </div>
+          <ion-card-content>
+            <p><strong>Precio:</strong> ${{ producto.precio | number: '1.0-0' }}</p>
 
-    <div class="producto fila-derecha">
-      <img src="assets/images/Monitor Xiaomi G27i.png" class="producto-img" alt="Monitor Xiaomi" />
-      <div class="info">
-        <h3>Monitor Xiaomi</h3>
-        <p>Monitor gaming Xiaomi con 165 Hz y excelente relación calidad-precio.</p>
-        <p><strong>$79.990</strong></p>
-        <ion-button>Ver producto</ion-button>
-        <ion-button expand="block" color="success">Agregar al carrito</ion-button>
-        <ion-button expand="block" color="primary" routerLink="/carrito-de-compras">Comprar</ion-button>
-      </div>
-    </div>
+            <ion-button expand="block" color="success">
+              <ion-icon name="eye" slot="start"></ion-icon>
+              Observar
+            </ion-button>
 
-    <div class="producto fila-izquierda">
-      <img src="assets/images/Teclado Logitech.png" class="producto-img" alt="Teclado Logitech" />
-      <div class="info">
-        <h3>Teclado Logitech</h3>
-        <p>Teclado mecánico con retroiluminación RGB y switches silenciosos.</p>
-        <p><strong>$51.000</strong></p>
-        <ion-button>Ver producto</ion-button>
-        <ion-button expand="block" color="success">Agregar al carrito</ion-button>
-        <ion-button expand="block" color="primary" routerLink="/carrito-de-compras">Comprar</ion-button>
-      </div>
-    </div>
-  </div>
+            <ion-button expand="block" color="success" (click)="agregarAlCarrito(producto)">
+              <ion-icon name="cart" slot="start"></ion-icon>
+              Agregar al carrito
+            </ion-button>
 
-  <!-- También te pueden interesar -->
-  <div class="sugerencias">
-    <h2>También te pueden interesar</h2>
-    <div class="scroll-horizontal">
-      <ion-card class="item-sugerencia">
-        <img src="assets/images/Microfono HyperX QuadCast.png"  style="width: 250px; height: 250px;" alt="Microfono HyperX" />
-        <ion-card-content>
-          <p>Micrófono HyperX</p>
-          <p>$90.000</p>
-        </ion-card-content>
-      </ion-card>
+            <ion-button expand="block" color="success" routerLink="/chat">
+              <ion-icon name="swap-horizontal" slot="start"></ion-icon>
+              Proponer Intercambio
+            </ion-button>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
 
-      <ion-card class="item-sugerencia">
-        <img src="assets/images/Mouse Logitech.png" style="width: 250px; height: 250px;" alt="Mouse Logitech" />
-        <ion-card-content>
-          <p>Mouse Logitech Hero</p>
-          <p>$70.000</p>
-        </ion-card-content>
-      </ion-card>
-
-      <ion-card class="item-sugerencia">
-        <img src="assets/images/Corsair CX750M.png" style="width: 250px; height: 250px;" alt="Mouse Logitech" />
-        <ion-card-content>
-          <p>Fuente de poder Corsair 750W
-          </p>
-          <p>$110.990</p>
-        </ion-card-content>
-      </ion-card>
-
-      <ion-card class="item-sugerencia">
-        <img src="assets/images/Corsair HS80.png" style="width: 250px; height: 250px;" alt="Mouse Logitech" />
-        <ion-card-content>
-          <p>Audifonos Corsair HS80</p>
-          <p>$140.000</p>
-        </ion-card-content>
-      </ion-card>
-
-      <ion-card class="item-sugerencia">
-        <img src="assets/images/SSD Kingston NV2 1TB M.2 2280.jpg" style="width: 250px; height: 250px;" alt="Mouse Logitech" />
-        <ion-card-content>
-          <p>Unidad SSD Kingston NV2 1TB M.2 2280</p>
-          <p>$51.990</p>
-        </ion-card-content>
-      </ion-card>
-
-      <ion-card class="item-sugerencia">
-        <img src="assets/images/Audifonos Logitech G733.png" style="width: 250px; height: 250px;" alt="Mouse Logitech" />
-        <ion-card-content>
-          <p>Micrófono de estudio</p>
-          <p>$72.990</p>
-        </ion-card-content>
-      </ion-card>
-    </div>
-
-    <div class="footer-section">
-    <h2 class="section-title" >Para más información :)</h2>
+  <!-- Footer fuera del bucle *ngFor -->
+  <div class="footer-section">
+    <h2 class="section-title">Para más información :</h2>
 
     <div class="footer-box">
       <h3>Sobre Nosotros</h3>
       <p>
         Somos <strong>TechMarket</strong>, una empresa que comercializa periféricos para computadoras.
         Tratamos siempre de tener los mejores precios del mercado con artículos novedosos y de gran calidad.
-        Si tienes alguna duda, escríbenos a <a href="mailto:Chile&#64;TechMarket.cl">Chile&#64;TechMarket.cl</a>.
+        Si tienes alguna duda, escríbenos a
+        <a href="mailto:Chile&#64;TechMarket.cl">Chile&#64;TechMarket.cl</a>.
       </p>
     </div>
 
@@ -139,6 +92,5 @@
         </a>
       </div>
     </div>
-  </div>
   </div>
 </ion-content>

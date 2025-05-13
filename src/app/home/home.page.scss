@@ -203,3 +203,16 @@ ion-fab-button {
     margin: 10px 0;
   }
 }
+
+.bienvenida-card {
+  margin-top: 20px;
+  background: linear-gradient(135deg, #a2d79e 0%, #29C454 100%);
+  color: #020803;
+  text-align: center;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+
+  ion-card-title {
+    color: #020803 !important;
+  }
+}

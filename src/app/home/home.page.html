@@ -8,8 +8,8 @@
     </ion-buttons>
 
     <ion-buttons slot="end">
-      <ion-button fill="clear" color="success" [routerLink]="['/login']">Iniciar Sesión</ion-button>
-      <ion-button fill="clear" color="medium" [routerLink]="['/registro']">Registrarse</ion-button>
+       <ion-button fill="clear" color="success" [routerLink]="['/pagina-vendedor']">Vende tus Productos</ion-button>
+       <ion-button fill="clear" color="success" [routerLink]="['/login']">Cerrar Sesión</ion-button>
       <ion-button fill="clear" [routerLink]="['/carrito-de-compras']" class="carrito-button">
         <img src="https://cdn-icons-png.flaticon.com/512/8762/8762418.png" alt="Carrito"
           style="width: 7vw; max-width: 32px; min-width: 24px; height: auto;" />
@@ -20,6 +20,19 @@
 </ion-header>
 
 <ion-content class="ion-padding">
+
+  <!-- 👋 Bienvenida personalizada -->
+  <!-- 👋 Bienvenida personalizada mejorada -->
+<ion-card class="bienvenida-card">
+  <ion-card-header>
+    <ion-card-title>
+      👋 ¡Bienvenido, {{ nombreUsuario }}!
+    </ion-card-title>
+  </ion-card-header>
+  <ion-card-content>
+    Nos alegra tenerte aquí en TechMarket. Explora nuestros productos destacados y aprovecha lo mejor en tecnología.
+  </ion-card-content>
+</ion-card>
 
   <!-- Banner principal -->
   <div class="banner">
@@ -38,11 +51,11 @@
         <ion-card-title>{{ producto.nombre }}</ion-card-title>
       </ion-card-header>
       <ion-card-content>
-        <ion-button expand="block" color="success">Comprar</ion-button>
+        <ion-button expand="block" color="success">Observar</ion-button>
         <ion-button expand="block" color="success" (click)="agregarAlCarrito(producto, imagenes[i])">
           Agregar al carrito
         </ion-button>
-        <ion-button expand="block" color="success">Proponer intercambio</ion-button>
+        <ion-button expand="block" color="success" [routerLink]="['/chat']">Proponer intercambio</ion-button>
       </ion-card-content>
     </ion-card>
   </div>

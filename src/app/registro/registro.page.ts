@@ -18,6 +18,9 @@ export class RegistroPage {
   contrasena: string = '';
   rut: string = '';
   telefono: string = '';
+  direccion: string = '';
+  comuna: string = '';
+  region: string = '';
 
   constructor(
     private firebaseService: FirebaseService,
@@ -32,7 +35,10 @@ export class RegistroPage {
         this.correo,
         this.contrasena,
         this.rut,
-        this.telefono
+        this.telefono,
+        this.direccion,
+        this.comuna,
+        this.region
       );
       const toast = await this.toastCtrl.create({
         message: '¡Registro exitoso!',

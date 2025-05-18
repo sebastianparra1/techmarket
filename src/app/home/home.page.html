@@ -1,15 +1,22 @@
 <ion-header>
   <ion-toolbar class="header-toolbar">
-    <ion-buttons slot="start">
+    <ion-buttons slot="start" style="display: flex; align-items: center;">
       <ion-avatar>
-        <img src="https://play-lh.googleusercontent.com/rCc1T9PFomPVLTeHgT-pIRBHco7a9UACNQOy-DQ8io-YjGXTveRm2PHqbzfhYWw6eoHI" alt="Logo" />
+        <img src="https://play-lh.googleusercontent.com/rCc1T9PFomPVLTeHgT-pIRBHco7a9UACNQOy-DQ8io-YjGXTveRm2PHqbzfhYWw6eoHI" />
       </ion-avatar>
-      <div class="logo-title">TechMarket</div>
+      <div class="logo-title" style="margin-left: 10px;">
+        TechMarket
+        <div style="font-size: 0.8em; color: gray; margin-top: 4px;">
+          📍 {{ direccionUsuario }}
+        </div>
+      </div>
     </ion-buttons>
 
     <ion-buttons slot="end">
-       <ion-button fill="clear" color="success" [routerLink]="['/pagina-vendedor']">Vende tus Productos</ion-button>
-       <ion-button fill="clear" color="success" [routerLink]="['/login']">Cerrar Sesión</ion-button>
+      <ion-button fill="clear" id="perfil-popover" class="perfil-button">
+        <img src="https://cdn-icons-png.flaticon.com/512/6073/6073873.png" alt="Perfil"
+          style="width: 7vw; max-width: 32px; min-width: 24px; height: auto;" />
+      </ion-button>
       <ion-button fill="clear" [routerLink]="['/carrito-de-compras']" class="carrito-button">
         <img src="https://cdn-icons-png.flaticon.com/512/8762/8762418.png" alt="Carrito"
           style="width: 7vw; max-width: 32px; min-width: 24px; height: auto;" />
@@ -19,30 +26,33 @@
   </ion-toolbar>
 </ion-header>
 
+<ion-popover trigger="perfil-popover" triggerAction="click" showBackdrop="false">
+  <ng-template>
+    <ion-list>
+      <ion-item [routerLink]="['/editar-usuario', idUsuario]">Editar</ion-item>
+      <ion-item button [routerLink]="['/pagina-vendedor']">Vende tus productos</ion-item>
+      <ion-item button (click)="cerrarSesion()">Cerrar sesión</ion-item>
+    </ion-list>
+  </ng-template>
+</ion-popover>
+
 <ion-content class="ion-padding">
+  <ion-card class="bienvenida-card">
+    <ion-card-header>
+      <ion-card-title>👋 ¡Bienvenido, {{ nombreUsuario }}!</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      Nos alegra tenerte aquí en TechMarket. Explora nuestros productos destacados y aprovecha lo mejor en tecnología.
+    </ion-card-content>
+  </ion-card>
 
-  <!-- 👋 Bienvenida personalizada -->
-  <!-- 👋 Bienvenida personalizada mejorada -->
-<ion-card class="bienvenida-card">
-  <ion-card-header>
-    <ion-card-title>
-      👋 ¡Bienvenido, {{ nombreUsuario }}!
-    </ion-card-title>
-  </ion-card-header>
-  <ion-card-content>
-    Nos alegra tenerte aquí en TechMarket. Explora nuestros productos destacados y aprovecha lo mejor en tecnología.
-  </ion-card-content>
-</ion-card>
-
-  <!-- Banner principal -->
   <div class="banner">
-    <p>TechMarket es una plataforma de e-commerce que ofrece productos electrónicos y periféricos, además de permitir que vendedores externos vendan en nuestro marketplace. Con un diseño accesible y seguro, brindamos una experiencia de compra fácil desde cualquier dispositivo.</p>
+    <p>TechMarket es una plataforma de e-commerce que ofrece productos electrónicos y periféricos...</p>
     <ion-button expand="block" color="success" [routerLink]="['/productos']">
       Click aquí para poder ver los productos
     </ion-button>
   </div>
 
-  <!-- Sección de productos destacados -->
   <h2 class="section-title">Productos Destacados</h2>
   <div class="product-grid">
     <ion-card *ngFor="let producto of destacados; let i = index" class="product-card">
@@ -60,32 +70,27 @@
     </ion-card>
   </div>
 
-  <!-- Sección de categorías -->
   <h2 class="section-title">Categorías</h2>
   <div class="category-row">
-    <ion-chip *ngFor="let categoria of categorias" color="success" outline>
-      {{ categoria }}
-    </ion-chip>
+    <ion-chip *ngFor="let categoria of categorias" color="success" outline>{{ categoria }}</ion-chip>
   </div>
 
-  <!-- Botón Agregar Producto -->
   <div style="text-align: center; margin-top: 20px;">
     <ion-button color="success" expand="block" [routerLink]="['/agregar-producto']">
       + Agregar Producto
     </ion-button>
   </div>
+
   <br>
 
-  <!-- Sección de información adicional / footer -->
   <div class="footer-section">
     <h2 class="section-title">Para más información :)</h2>
 
     <div class="footer-box">
       <h3>Sobre Nosotros</h3>
       <p>
-        Somos <strong>TechMarket</strong>, una empresa que comercializa periféricos para computadoras.
-        Tratamos siempre de tener los mejores precios del mercado con artículos novedosos y de gran calidad.
-        Si tienes alguna duda, escríbenos a <a href="mailto:Chile&#64;TechMarket.cl">Chile&#64;TechMarket.cl</a>.
+        Somos <strong>TechMarket</strong>, una empresa que comercializa periféricos...
+        Escríbenos a <a href="mailto:Chile&#64;TechMarket.cl">Chile&#64;TechMarket.cl</a>.
       </p>
     </div>
 
@@ -106,5 +111,4 @@
       </div>
     </div>
   </div>
-
 </ion-content>

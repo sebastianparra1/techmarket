@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { getDatabase, ref, set, push, get, child } from 'firebase/database';
+import { getDatabase, ref, set, push, get, child, update } from 'firebase/database';
 
 @Injectable({
   providedIn: 'root'
@@ -9,7 +9,7 @@ export class FirebaseService {
 
   constructor() {}
 
-  async registrarUsuario(nombre: string, correo: string, clave: string, rut: string, telefono: string): Promise<void> {
+  async registrarUsuario(nombre: string, correo: string, clave: string, rut: string, telefono: string, direccion: string, comuna:string, region: string): Promise<void> {
     const usuariosRef = ref(this.db, 'usuarios');
     const nuevoUsuarioRef = push(usuariosRef);
     await set(nuevoUsuarioRef, {
@@ -17,7 +17,10 @@ export class FirebaseService {
       correo: correo,
       clave: clave,
       rut: rut,
-      telefono: telefono
+      telefono: telefono,
+      direccion: direccion,
+      comuna: comuna,
+      region: region
     });
   }
 
@@ -32,6 +35,19 @@ export class FirebaseService {
     }
   }
 
+async actualizarUsuario(id: string, datos: any): Promise<void> {
+  const userRef = ref(this.db, `usuarios/${id}`);
+  await update(userRef, datos);
+}
+async getUsuarioPorId(id: string): Promise<any> {
+  const userRef = ref(this.db, `usuarios/${id}`);
+  const snapshot = await get(userRef);
+  if (snapshot.exists()) {
+    return snapshot.val();
+  } else {
+    return null;
+  }
+}
   async validarLogin(nombreUsuario: string, clave: string): Promise<any | null> {
     const usuarios = await this.getUsuarios();
     return usuarios.find(user => user.nombreUsuario === nombreUsuario && user.clave === clave) || null;

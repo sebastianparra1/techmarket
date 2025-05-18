@@ -1,0 +1,46 @@
+<ion-header>
+  <ion-toolbar color="success">
+    <ion-title>Editar Perfil</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <form (ngSubmit)="guardarCambios()">
+    <ion-item>
+      <ion-label position="floating">Nombre</ion-label>
+      <ion-input [(ngModel)]="usuario.nombreUsuario" name="nombreUsuario" required></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">Contraseña</ion-label>
+      <ion-input [(ngModel)]="usuario.clave" name="clave" type="password" required></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">RUT</ion-label>
+      <ion-input [(ngModel)]="usuario.rut" name="rut" required></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">Teléfono</ion-label>
+      <ion-input [(ngModel)]="usuario.telefono" name="telefono" type="tel" required></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">Dirección</ion-label>
+      <ion-input [(ngModel)]="usuario.direccion" name="direccion" required></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">Comuna</ion-label>
+      <ion-input [(ngModel)]="usuario.comuna" name="comuna" required></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">Región</ion-label>
+      <ion-input [(ngModel)]="usuario.region" name="region" required></ion-input>
+    </ion-item>
+
+    <ion-button expand="block" color="success" type="submit">Guardar Cambios</ion-button>
+  </form>
+</ion-content>

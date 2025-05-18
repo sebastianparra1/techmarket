@@ -2,19 +2,14 @@ import { Component } from '@angular/core';
 import {
   IonHeader, IonToolbar, IonTitle, IonContent, IonAvatar, IonButton,
   IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonChip,
-  IonFab, IonFabButton, IonIcon, IonButtons, IonBadge
+  IonFab, IonFabButton, IonIcon, IonButtons, IonBadge, IonPopover, IonList, IonItem 
 } from '@ionic/angular/standalone';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { add } from 'ionicons/icons';
 import { CarritoService, CartItem } from '../services/carrito.service';
 import { ProductoService } from '../services/productos.service';
-
-interface Producto {
-  nombre: string;
-  precio: number;
-  imagen: string;
-}
+import { getDatabase, ref, get, child } from 'firebase/database';
 
 @Component({
   selector: 'app-home',
@@ -37,16 +32,20 @@ interface Producto {
     IonFabButton,
     IonIcon,
     IonButtons,
-    IonBadge
+    IonBadge,
+    IonPopover,
+    IonList,
+    IonItem
   ],
   templateUrl: './home.page.html',
   styleUrls: ['./home.page.scss'],
 })
-
 export class HomePage {
   add = add;
   carritoCount = 0;
   nombreUsuario: string = '';
+  idUsuario: string = '';
+  direccionUsuario: string = '';
 
   categorias: string[] = ['Periféricos', 'Electrónica'];
   imagenes: string[] = [
@@ -55,30 +54,48 @@ export class HomePage {
     'https://www.profesionalreview.com/wp-content/uploads/2019/09/Acer-XV3-Monitor-gaming.png'
   ];
 
-  productos: Producto[] = [
-    { nombre: 'Audifono Logitech', precio: 14.000, imagen: 'url_imagen_1' },
-    { nombre: 'Teclado Logitech', precio: 39.990, imagen: 'url_imagen_2' },
-    { nombre: 'Monitor', precio: 29.990, imagen: 'url_imagen_3' },
-  ];
-
   destacados = [
-    { nombre: 'Audifono Logitech', precio: 14.990, imagen: this.imagenes[0] },
-    { nombre: 'Teclado Logitech', precio: 39.990, imagen: this.imagenes[1] },
-    { nombre: 'Monitor', precio: 29.990, imagen: this.imagenes[2] }
+    { nombre: 'Audifono Logitech', precio: 14990, imagen: this.imagenes[0] },
+    { nombre: 'Teclado Logitech', precio: 39990, imagen: this.imagenes[1] },
+    { nombre: 'Monitor', precio: 29990, imagen: this.imagenes[2] }
   ];
 
   constructor(
     private productosService: ProductoService,
-    private carritoService: CarritoService
+    private carritoService: CarritoService,
+    private router: Router
   ) {}
 
   ngOnInit() {
     this.actualizarContador();
     this.nombreUsuario = localStorage.getItem('nombreUsuario') || 'Usuario';
+    this.idUsuario = localStorage.getItem('id') || '';
+
+    if (this.idUsuario) {
+      this.obtenerDireccion();
+    }
   }
 
   ionViewWillEnter() {
     this.actualizarContador();
+  }
+
+  async obtenerDireccion() {
+    const db = getDatabase();
+    const userRef = ref(db, `usuarios/${this.idUsuario}`);
+
+    try {
+      const snapshot = await get(userRef);
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+        this.direccionUsuario = data.direccion || 'Sin dirección';
+      } else {
+        this.direccionUsuario = 'Sin dirección';
+      }
+    } catch (error) {
+      console.error('Error al obtener la dirección:', error);
+      this.direccionUsuario = 'Sin dirección';
+    }
   }
 
   agregarAlCarrito(producto: any, imagen: string) {
@@ -95,5 +112,10 @@ export class HomePage {
   actualizarContador() {
     const items = this.carritoService.getItems();
     this.carritoCount = items.reduce((acc, item) => acc + item.quantity, 0);
+  }
+
+  cerrarSesion() {
+    localStorage.clear();
+    this.router.navigate(['/login']);
   }
 }

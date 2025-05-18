@@ -33,9 +33,14 @@ export const routes: Routes = [
   {
     path: 'pago',
     loadComponent: () => import('./pago/pago.page').then(m => m.PagoComponent)
-  },  {
+  },
+  {
     path: 'chat',
     loadComponent: () => import('./chat/chat.page').then( m => m.ChatPage)
+  },
+  {
+      path: 'editar-usuario/:id',
+  loadComponent: () => import('./editar-usuario/editar-usuario.page').then(m => m.EditarUsuarioPage)
   },
 
   

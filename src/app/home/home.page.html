@@ -11,7 +11,6 @@
         </div>
       </div>
     </ion-buttons>
-    
 
     <ion-buttons slot="end">
       <ion-button fill="clear" id="perfil-popover" class="perfil-button">
@@ -30,7 +29,7 @@
 <ion-popover trigger="perfil-popover" triggerAction="click" showBackdrop="false">
   <ng-template>
     <ion-list>
-      <ion-item [routerLink]="['/editar-usuario', idUsuario]">Editar</ion-item>
+      <ion-item button (click)="irAEditarPerfil()">Editar</ion-item>
       <ion-item button [routerLink]="['/pagina-vendedor']">Vende tus productos</ion-item>
       <ion-item button (click)="cerrarSesion()">Cerrar sesión</ion-item>
     </ion-list>

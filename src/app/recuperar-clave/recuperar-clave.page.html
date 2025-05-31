@@ -1,0 +1,26 @@
+<ion-header>
+  <ion-toolbar color="success">
+    <ion-title>Recuperar Contraseña</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <form (ngSubmit)="enviarCorreo()">
+    <ion-item>
+      <ion-label position="floating">Correo electrónico</ion-label>
+      <ion-input [(ngModel)]="correo" name="correo" type="email" required></ion-input>
+    </ion-item>
+
+    <ion-button expand="block" type="submit" color="success">
+      Enviar enlace de recuperación
+    </ion-button>
+
+    <ion-text color="success" *ngIf="mensaje">
+      <p style="margin-top: 10px;">{{ mensaje }}</p>
+    </ion-text>
+
+    <ion-text color="danger" *ngIf="error">
+      <p style="margin-top: 10px;">{{ error }}</p>
+    </ion-text>
+  </form>
+</ion-content>

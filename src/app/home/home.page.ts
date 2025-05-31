@@ -120,6 +120,12 @@ export class HomePage implements OnInit {
     this.carritoCount = items.reduce((acc, item) => acc + item.quantity, 0);
   }
 
+  irAEditarPerfil() {
+    if (this.idUsuario) {
+      this.router.navigate(['/editar-usuario', this.idUsuario]);
+    }
+  }
+
   cerrarSesion() {
     localStorage.clear();
     this.router.navigate(['/login']);

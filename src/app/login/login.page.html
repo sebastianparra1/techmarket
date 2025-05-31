@@ -45,11 +45,15 @@
       Iniciar Sesión
     </ion-button>
 
+    
     <!-- Botón para registro -->
     <ion-button expand="block" color="tertiary" class="login-btn" [routerLink]="['/registro']">
       Registrarse
     </ion-button>
 
+    <ion-button expand="block" fill="clear" color="success" [routerLink]="['/recuperar-clave']">
+  ¿Olvidaste tu contraseña?
+</ion-button>
     <!-- Mensaje de error -->
     <ion-text color="danger" *ngIf="error" style="display: block; margin-top: 10px;">
       {{ error }}

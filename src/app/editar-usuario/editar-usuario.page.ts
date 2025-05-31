@@ -1,9 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { IonicModule, ToastController } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { FirebaseService } from '../services/firebase.service';
+
+declare const google: any;
 
 @Component({
   selector: 'app-editar-usuario',
@@ -12,40 +14,56 @@ import { FirebaseService } from '../services/firebase.service';
   templateUrl: './editar-usuario.page.html',
   styleUrls: ['./editar-usuario.page.scss'],
 })
-export class EditarUsuarioPage implements OnInit {
+export class EditarUsuarioPage implements OnInit, AfterViewInit {
   usuario: any = {
     nombreUsuario: '',
-    clave: '',
     rut: '',
     telefono: '',
-    direccion: '',
-    comuna: '',
-    region: ''
+    direccion: ''
   };
 
   id: string = '';
 
   constructor(
-    private route: ActivatedRoute,
     private firebaseService: FirebaseService,
     private toastCtrl: ToastController,
     private router: Router
   ) {}
 
   async ngOnInit() {
-    this.id = this.route.snapshot.paramMap.get('id') || '';
-    console.log('ID recibido:', this.id);
+    this.id = localStorage.getItem('id') || '';
+    if (!this.id) return;
 
     try {
       const user = await this.firebaseService.getUsuarioPorId(this.id);
       if (user) {
         this.usuario = user;
-      } else {
-        console.warn('Usuario no encontrado');
+        // Espera a que se monte el input y lo rellena
+        setTimeout(() => {
+          const input = document.getElementById('autocomplete') as HTMLInputElement;
+          if (input) input.value = this.usuario.direccion || '';
+        }, 500);
       }
     } catch (error) {
       console.error('Error al cargar usuario:', error);
     }
+  }
+
+  ngAfterViewInit() {
+    const input = document.getElementById('autocomplete') as HTMLInputElement;
+    if (!input) return;
+
+    const autocomplete = new google.maps.places.Autocomplete(input, {
+      componentRestrictions: { country: 'cl' },
+      types: ['geocode']
+    });
+
+    autocomplete.addListener('place_changed', () => {
+      const place = autocomplete.getPlace();
+      if (place && place.formatted_address) {
+        this.usuario.direccion = place.formatted_address;
+      }
+    });
   }
 
   async guardarCambios() {
@@ -57,7 +75,7 @@ export class EditarUsuarioPage implements OnInit {
         color: 'success'
       });
       await toast.present();
-      this.router.navigate(['/']); // Cambia esta ruta si necesitas redirigir a otro lugar
+      this.router.navigate(['/home']);
     } catch (error) {
       const toast = await this.toastCtrl.create({
         message: 'Error al guardar los cambios.',

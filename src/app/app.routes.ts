@@ -41,7 +41,11 @@ export const routes: Routes = [
   {
       path: 'editar-usuario/:id',
   loadComponent: () => import('./editar-usuario/editar-usuario.page').then(m => m.EditarUsuarioPage)
+  },  {
+    path: 'recuperar-clave',
+    loadComponent: () => import('./recuperar-clave/recuperar-clave.page').then( m => m.RecuperarClavePage)
   },
+
 
   
 

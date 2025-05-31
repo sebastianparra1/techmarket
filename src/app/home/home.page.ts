@@ -1,15 +1,15 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import {
   IonHeader, IonToolbar, IonTitle, IonContent, IonAvatar, IonButton,
   IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonChip,
   IonFab, IonFabButton, IonIcon, IonButtons, IonBadge, IonPopover, IonList, IonItem 
 } from '@ionic/angular/standalone';
 import { CommonModule } from '@angular/common';
-import { RouterModule, Router } from '@angular/router';
+import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { add } from 'ionicons/icons';
 import { CarritoService, CartItem } from '../services/carrito.service';
 import { ProductoService } from '../services/productos.service';
-import { getDatabase, ref, get, child } from 'firebase/database';
+import { FirebaseService } from '../services/firebase.service';
 
 @Component({
   selector: 'app-home',
@@ -40,12 +40,13 @@ import { getDatabase, ref, get, child } from 'firebase/database';
   templateUrl: './home.page.html',
   styleUrls: ['./home.page.scss'],
 })
-export class HomePage {
+export class HomePage implements OnInit {
   add = add;
   carritoCount = 0;
   nombreUsuario: string = '';
   idUsuario: string = '';
-  direccionUsuario: string = '';
+  direccion: string = 'Cargando dirección...';
+  usuarios: any[] = [];
 
   categorias: string[] = ['Periféricos', 'Electrónica'];
   imagenes: string[] = [
@@ -63,17 +64,19 @@ export class HomePage {
   constructor(
     private productosService: ProductoService,
     private carritoService: CarritoService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute,
+    private firebaseService: FirebaseService
   ) {}
 
   ngOnInit() {
     this.actualizarContador();
     this.nombreUsuario = localStorage.getItem('nombreUsuario') || 'Usuario';
-    this.idUsuario = localStorage.getItem('id') || '';
-
+    this.idUsuario = localStorage.getItem('id') || this.route.snapshot.paramMap.get('id') || '';
     if (this.idUsuario) {
       this.obtenerDireccion();
     }
+    this.obtenerTodosLosUsuarios();
   }
 
   ionViewWillEnter() {
@@ -81,20 +84,23 @@ export class HomePage {
   }
 
   async obtenerDireccion() {
-    const db = getDatabase();
-    const userRef = ref(db, `usuarios/${this.idUsuario}`);
-
     try {
-      const snapshot = await get(userRef);
-      if (snapshot.exists()) {
-        const data = snapshot.val();
-        this.direccionUsuario = data.direccion || 'Sin dirección';
+      const usuario = await this.firebaseService.getUsuarioPorId(this.idUsuario);
+      if (usuario) {
+        this.direccion = usuario.direccion || '⚠️ Dirección no registrada';
       } else {
-        this.direccionUsuario = 'Sin dirección';
+        this.direccion = '⚠️ Usuario no encontrado';
       }
     } catch (error) {
-      console.error('Error al obtener la dirección:', error);
-      this.direccionUsuario = 'Sin dirección';
+      this.direccion = '⚠️ Error al obtener dirección';
+    }
+  }
+
+  async obtenerTodosLosUsuarios() {
+    try {
+      this.usuarios = await this.firebaseService.getUsuarios();
+    } catch (error) {
+      console.error('Error al cargar usuarios:', error);
     }
   }
 

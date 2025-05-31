@@ -13,11 +13,12 @@ import {
   IonImg,
   IonLabel,
   IonItem,
-  IonText // 👈 AÑADIDO AQUÍ
+  IonText
 } from '@ionic/angular/standalone';
 import { RouterModule } from '@angular/router';
 import { Router } from '@angular/router';
-import { FirebaseService } from '../services/firebase.service';
+import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
+import { getDatabase, ref, get } from 'firebase/database';
 
 @Component({
   selector: 'app-login',
@@ -39,28 +40,56 @@ import { FirebaseService } from '../services/firebase.service';
     IonImg,
     IonLabel,
     IonItem,
-    IonText // 👈 AÑADIDO AQUÍ TAMBIÉN
+    IonText
   ]
 })
 export class LoginPage {
-  nombreUsuario = '';
+  correo = '';
   clave = '';
   error = '';
   verPassword = false;
 
-  constructor(private firebaseService: FirebaseService, private router: Router) {}
+  constructor(private router: Router) {}
 
   toggleVerPassword() {
     this.verPassword = !this.verPassword;
   }
 
   async login() {
-    const usuario = await this.firebaseService.validarLogin(this.nombreUsuario, this.clave);
-    if (usuario) {
-      localStorage.setItem('nombreUsuario', usuario.nombreUsuario);
+    this.error = '';
+    const auth = getAuth();
+
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, this.correo, this.clave);
+      const uid = userCredential.user.uid;
+
+      // Guardar ID en localStorage
+      localStorage.setItem('id', uid);
+      localStorage.setItem('correo', this.correo);
+
+      // Leer nombre del usuario desde la base de datos
+      const db = getDatabase();
+      const snapshot = await get(ref(db, `usuarios/${uid}`));
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+        localStorage.setItem('nombreUsuario', data.nombreUsuario || '');
+      }
+
       this.router.navigate(['/home']);
-    } else {
-      this.error = 'Usuario o clave incorrectos';
+    } catch (err: any) {
+      switch (err.code) {
+        case 'auth/user-not-found':
+          this.error = 'El usuario no existe.';
+          break;
+        case 'auth/wrong-password':
+          this.error = 'Contraseña incorrecta.';
+          break;
+        case 'auth/invalid-email':
+          this.error = 'Correo inválido.';
+          break;
+        default:
+          this.error = 'Error al iniciar sesión.';
+      }
     }
   }
 }

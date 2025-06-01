@@ -73,6 +73,43 @@
             </ion-col>
           </ion-row>
         </ion-grid>
+<!-- Campos adicionales del comprador -->
+<ion-item>
+  <ion-label position="stacked">Nombre</ion-label>
+  <ion-input [(ngModel)]="nombre" name="nombre" required></ion-input>
+</ion-item>
+
+<ion-item>
+  <ion-label position="stacked">Apellido</ion-label>
+  <ion-input [(ngModel)]="apellido" name="apellido" required></ion-input>
+</ion-item>
+
+<ion-item>
+  <ion-label position="stacked">Código Postal</ion-label>
+  <ion-input [(ngModel)]="codigoPostal" name="codigoPostal" required></ion-input>
+</ion-item>
+
+<ion-item>
+  <ion-label position="stacked">RUT</ion-label>
+  <ion-input
+    [(ngModel)]="rut"
+    name="rut"
+    (ionInput)="filtrarRut($event)"
+    placeholder="Ej: 12345678k"
+    required>
+  </ion-input>
+</ion-item>
+
+
+<ion-item>
+  <ion-label position="stacked">Dirección</ion-label>
+  <ion-input [(ngModel)]="direccion" name="direccion" required></ion-input>
+</ion-item>
+
+<ion-item>
+  <ion-label position="stacked">Región</ion-label>
+  <ion-input [(ngModel)]="region" name="region" required></ion-input>
+</ion-item>
 
         <ion-button expand="block" type="submit" color="primary" class="ion-margin-top">
           Pagar

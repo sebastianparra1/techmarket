@@ -32,34 +32,19 @@
     </ion-item>
 
     <ion-item>
-  <ion-label position="floating">Dirección</ion-label>
-  <ion-input [(ngModel)]="direccion" name="direccion" required></ion-input>
-</ion-item>
+      <ion-label position="floating">Dirección</ion-label>
+      <ion-input [(ngModel)]="direccion" name="direccion" required></ion-input>
+    </ion-item>
 
-<ion-item>
-  <ion-label position="floating">Comuna</ion-label>
-  <ion-input [(ngModel)]="comuna" name="comuna" required></ion-input>
-</ion-item>
+    <ion-item>
+      <ion-label position="floating">Comuna</ion-label>
+      <ion-input [(ngModel)]="comuna" name="comuna" required></ion-input>
+    </ion-item>
 
-<ion-item>
-  <ion-label position="floating">Región</ion-label>
-  <ion-input [(ngModel)]="region" name="region" required></ion-input>
-</ion-item>
-
-<ion-item>
-  <ion-label>Tipo de usuario</ion-label>
-</ion-item>
-
-<ion-radio-group [(ngModel)]="rolSeleccionado" name="rolSeleccionado">
-  <ion-item>
-    <ion-label>Socio / Comprador</ion-label>
-    <ion-radio slot="start" value="comprador"></ion-radio>
-  </ion-item>
-  <ion-item>
-    <ion-label>Vendedor</ion-label>
-    <ion-radio slot="start" value="vendedor"></ion-radio>
-  </ion-item>
-</ion-radio-group>
+    <ion-item>
+      <ion-label position="floating">Región</ion-label>
+      <ion-input [(ngModel)]="region" name="region" required></ion-input>
+    </ion-item>
 
     <ion-button expand="block" color="success" type="submit">
       Registrarse

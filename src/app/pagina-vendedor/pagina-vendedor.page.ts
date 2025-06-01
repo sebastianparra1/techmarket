@@ -35,7 +35,7 @@ export class PaginaVendedorPage implements OnInit {
     nombre?: string;
     precio?: number;
     descripcion?: string;
-    categoria?: string; // ✅ nueva propiedad
+    categoria?: string;
   } = {};
 
   constructor(private router: Router) {}
@@ -70,13 +70,9 @@ export class PaginaVendedorPage implements OnInit {
       this.nombreUsuario = nombre;
       localStorage.setItem('nombreUsuario', nombre);
 
-      if (data.rol === 'vendedor') {
-        this.permitidoVender = true;
-        this.cargarProductosDelVendedor(uid);
-      } else {
-        alert('Tu cuenta no está autorizada para vender productos.');
-        this.router.navigate(['/productos']);
-      }
+      // Se permite vender a todos los usuarios autenticados
+      this.permitidoVender = true;
+      this.cargarProductosDelVendedor(uid);
     } else {
       alert('No se encontró información del usuario.');
       this.router.navigate(['/productos']);
@@ -170,7 +166,7 @@ export class PaginaVendedorPage implements OnInit {
         nombre: this.nuevoProducto.nombre,
         precio: this.nuevoProducto.precio,
         descripcion: this.nuevoProducto.descripcion || '',
-        categoria: this.nuevoProducto.categoria || 'General', // ✅ incluido aquí
+        categoria: this.nuevoProducto.categoria || 'General',
         imagen: imageUrl,
         creadoPor: uid,
         creadoEn: new Date().toISOString()

@@ -11,6 +11,11 @@
 
     <ion-buttons slot="end">
       <ion-button fill="clear" color="success" routerLink="/pagina-vendedor">Vende tus Productos</ion-button>
+      <ion-button fill="clear" color="success" (click)="verTusChats()">
+        <ion-icon name="chatbox-ellipses-outline" slot="start"></ion-icon>
+        Ver tus chats
+        <ion-badge color="danger" *ngIf="mensajeCount > 0" style="margin-left: 6px;">{{ mensajeCount }}</ion-badge>
+      </ion-button>
       <ion-button fill="clear" color="success" routerLink="/login">Cerrar Sesión</ion-button>
       <ion-button fill="clear" routerLink="/carrito-de-compras" class="carrito-button">
         <img
@@ -34,20 +39,12 @@
         <ion-card class="producto-card">
           <img [src]="producto.imagen" [alt]="producto.nombre" />
 
-
-          <!--
           <ion-card-header>
             <ion-card-title>{{ producto.nombre }}</ion-card-title>
-            <ion-card-subtitle *ngIf="producto.categoria">{{ producto.categoria }}</ion-card-subtitle>
+            <ion-card-subtitle *ngIf="producto.categoria && producto.categoria !== 'General'">
+              {{ producto.categoria }}
+            </ion-card-subtitle>
           </ion-card-header>
-
-          -->
-          <ion-card-header>
-          <ion-card-title>{{ producto.nombre }}</ion-card-title>
-          <ion-card-subtitle *ngIf="producto.categoria && producto.categoria !== 'General'">
-  {{ producto.categoria }}
-</ion-card-subtitle>
-</ion-card-header>
 
           <ion-card-content>
             <p><strong>Precio:</strong> ${{ producto.precio | number: '1.0-0' }}</p>
@@ -63,7 +60,10 @@
               Agregar al carrito
             </ion-button>
 
-            <ion-button expand="block" color="success" routerLink="/chat">
+            <ion-button
+              expand="block"
+              color="success"
+              [routerLink]="['/chat', producto.creadoPor]">
               <ion-icon name="swap-horizontal" slot="start"></ion-icon>
               Proponer Intercambio
             </ion-button>

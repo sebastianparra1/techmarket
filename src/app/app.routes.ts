@@ -39,14 +39,19 @@ export const routes: Routes = [
     loadComponent: () => import('./chat/chat.page').then( m => m.ChatPage)
   },
   {
-      path: 'editar-usuario/:id',
-  loadComponent: () => import('./editar-usuario/editar-usuario.page').then(m => m.EditarUsuarioPage)
-  },  {
+    path: 'chat/:vendedorId',
+    loadComponent: () => import('./chat/chat.page').then( m => m.ChatPage)
+  },
+  {
+    path: 'editar-usuario/:id',
+    loadComponent: () => import('./editar-usuario/editar-usuario.page').then(m => m.EditarUsuarioPage)
+  },
+  {
     path: 'recuperar-clave',
     loadComponent: () => import('./recuperar-clave/recuperar-clave.page').then( m => m.RecuperarClavePage)
   },
-
-
-  
-
+  {
+    path: 'ver-chats',
+    loadComponent: () => import('./ver-chats/ver-chats.page').then( m => m.VerChatsPage)
+  }
 ];

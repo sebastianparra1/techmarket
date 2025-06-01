@@ -1,0 +1,21 @@
+<ion-header>
+  <ion-toolbar color="success">
+    <ion-title>Chats</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-list *ngIf="chats.length > 0; else noChats">
+    <ion-item *ngFor="let chat of chats" button (click)="abrirChat(chat.id)">
+      <ion-label>
+        {{ chat.nombre }}
+      </ion-label>
+    </ion-item>
+  </ion-list>
+
+  <ng-template #noChats>
+    <ion-text color="medium">
+      <p>No tienes conversaciones aún.</p>
+    </ion-text>
+  </ng-template>
+</ion-content>

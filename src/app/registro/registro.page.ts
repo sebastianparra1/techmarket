@@ -21,6 +21,7 @@ export class RegistroPage {
   direccion: string = '';
   comuna: string = '';
   region: string = '';
+  rolSeleccionado: string = 'comprador';
 
   constructor(
     private firebaseService: FirebaseService,
@@ -38,7 +39,9 @@ export class RegistroPage {
         this.telefono,
         this.direccion,
         this.comuna,
-        this.region
+        this.region,
+        this.rolSeleccionado || 'comprador'
+
       );
       const toast = await this.toastCtrl.create({
         message: '¡Registro exitoso!',

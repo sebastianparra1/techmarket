@@ -34,13 +34,24 @@
         <ion-card class="producto-card">
           <img [src]="producto.imagen" [alt]="producto.nombre" />
 
+
+          <!--
           <ion-card-header>
             <ion-card-title>{{ producto.nombre }}</ion-card-title>
             <ion-card-subtitle *ngIf="producto.categoria">{{ producto.categoria }}</ion-card-subtitle>
           </ion-card-header>
 
+          -->
+          <ion-card-header>
+          <ion-card-title>{{ producto.nombre }}</ion-card-title>
+          <ion-card-subtitle *ngIf="producto.categoria && producto.categoria !== 'General'">
+  {{ producto.categoria }}
+</ion-card-subtitle>
+</ion-card-header>
+
           <ion-card-content>
             <p><strong>Precio:</strong> ${{ producto.precio | number: '1.0-0' }}</p>
+            <p *ngIf="producto.descripcion"><strong>Descripción:</strong> {{ producto.descripcion }}</p>
 
             <ion-button expand="block" color="success">
               <ion-icon name="eye" slot="start"></ion-icon>
@@ -62,7 +73,6 @@
     </ion-row>
   </ion-grid>
 
-  <!-- Footer fuera del bucle *ngFor -->
   <div class="footer-section">
     <h2 class="section-title">Para más información :</h2>
 

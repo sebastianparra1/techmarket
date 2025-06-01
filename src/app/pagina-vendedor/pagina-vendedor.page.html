@@ -1,27 +1,124 @@
 <ion-header [translucent]="true">
   <ion-toolbar color="success">
-    <ion-title>TechMarket</ion-title>
+    <ion-title>
+      <ion-button fill="clear" color="light" routerLink="/productos">
+        TechMarket
+      </ion-button>
+    </ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true" class="pagina-vendedor-content">
+<ion-content [fullscreen]="true" class="pagina-vendedor">
   <div class="main-container">
     <div class="content">
       <div class="profile-section">
         <ion-icon name="person-circle-outline" class="profile-icon"></ion-icon>
       </div>
 
-      <h1>Bienvenido Alexander</h1>
-      <p>Aquí puede agregar y eliminar tus productos para la venta</p>
+      <h1>👋 Bienvenido, {{ nombreUsuario }}!</h1>
+
+<!-- <ion-button expand="block" color="success" [routerLink]="['/productos']">
+      Click aquí para poder ver los productos
+    </ion-button>-->
+
+      <p>Aquí puede agregar, editar o eliminar tus productos para la venta</p>
 
       <div class="add-product">
-        <ion-button (click)="agregarProducto()" shape="round" color="dark">
-          <ion-icon slot="icon-only" name="add-outline"></ion-icon>
-        </ion-button>
+        <ion-button (click)="agregarProducto()" shape="round" color="success">
+  +
+</ion-button>
         <p>Agregar productos</p>
       </div>
+
+      <!-- 📦 Zona para agregar un nuevo producto -->
+      <div *ngIf="mostrarZonaCarga">
+        <div class="upload-dropzone"
+            (drop)="onDrop($event)"
+            (dragover)="onDragOver($event)"
+            (dragleave)="onDragLeave($event)">
+          <p>Arrastra tus fotos aquí o haz clic para seleccionarlas</p>
+          <input type="file" #fileInput hidden accept="image/*" (change)="onFileSelected($event)" />
+          <ion-button size="small" color="medium" (click)="fileInput.click()">Seleccionar archivos</ion-button>
+        </div>
+
+        <div class="preview-container" *ngIf="previewUrls.length > 0">
+          <div class="preview-image" *ngFor="let url of previewUrls">
+            <img [src]="url" />
+          </div>
+        </div>
+
+        <ion-list>
+          <ion-item>
+            <ion-label position="floating">Nombre del producto</ion-label>
+            <ion-input [(ngModel)]="nuevoProducto.nombre" required></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label position="floating">Precio</ion-label>
+            <ion-input type="number" [(ngModel)]="nuevoProducto.precio" required></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label position="floating">Descripción</ion-label>
+            <ion-textarea [(ngModel)]="nuevoProducto.descripcion"></ion-textarea>
+          </ion-item>
+        </ion-list>
+
+
+        <!--
+        <ion-item>
+          <ion-label position="floating">Categoría</ion-label>
+          <ion-input [(ngModel)]="nuevoProducto.categoria"></ion-input>
+        </ion-item>
+
+        <ion-item>        
+          <ion-label position="floating">Categoría</ion-label>
+          <ion-input [(ngModel)]="productoEditando.categoria"></ion-input>
+        </ion-item>
+
+        -->
+
+
+
+        <ion-button expand="block" color="success" (click)="guardarProducto()">
+          Guardar producto
+        </ion-button>
+      </div>
+
+      <!-- 🧾 Lista de productos del vendedor -->
+      <ion-list *ngIf="productosVendedor.length > 0">
+        <ion-item *ngFor="let producto of productosVendedor">
+          <ion-thumbnail slot="start">
+            <img [src]="producto.imagen" />
+          </ion-thumbnail>
+          <ion-label>
+            <h2>{{ producto.nombre }}</h2>
+            <p>${{ producto.precio }}</p>
+            <p>{{ producto.descripcion }}</p>
+          </ion-label>
+          <ion-button fill="clear" color="warning" (click)="editarProducto(producto)">Editar</ion-button>
+          <ion-button fill="clear" color="danger" (click)="eliminarProducto(producto.id)">Eliminar</ion-button>
+        </ion-item>
+      </ion-list>
+
+      <!-- 📝 Formulario para editar producto -->
+      <ion-list *ngIf="productoEditando">
+        <ion-item>
+          <ion-label position="floating">Nombre</ion-label>
+          <ion-input [(ngModel)]="productoEditando.nombre"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="floating">Precio</ion-label>
+          <ion-input type="number" [(ngModel)]="productoEditando.precio"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="floating">Descripción</ion-label>
+          <ion-textarea [(ngModel)]="productoEditando.descripcion"></ion-textarea>
+        </ion-item>
+        <ion-button expand="block" color="success" (click)="guardarEdicion()">Guardar cambios</ion-button>
+        <ion-button expand="block" color="medium" (click)="cancelarEdicion()">Cancelar</ion-button>
+      </ion-list>
     </div>
 
+    <!-- 📌 Footer -->
     <footer class="footer">
       <div class="about">
         <p><strong>Sobre Nosotros:</strong><br>

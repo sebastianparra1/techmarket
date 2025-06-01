@@ -19,7 +19,8 @@ export class FirebaseService {
     telefono: string,
     direccion: string,
     comuna: string,
-    region: string
+    region: string,
+    rol: string // nuevo cambio añadir Rol al vendedor
   ): Promise<void> {
     const auth = getAuth();
     const userCredential = await createUserWithEmailAndPassword(auth, correo, clave);
@@ -33,7 +34,8 @@ export class FirebaseService {
       telefono: telefono,
       direccion: direccion,
       comuna: comuna,
-      region: region
+      region: region,
+      rol: rol
     });
   }
 

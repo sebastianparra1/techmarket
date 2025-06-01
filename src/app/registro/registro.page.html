@@ -46,6 +46,21 @@
   <ion-input [(ngModel)]="region" name="region" required></ion-input>
 </ion-item>
 
+<ion-item>
+  <ion-label>Tipo de usuario</ion-label>
+</ion-item>
+
+<ion-radio-group [(ngModel)]="rolSeleccionado" name="rolSeleccionado">
+  <ion-item>
+    <ion-label>Socio / Comprador</ion-label>
+    <ion-radio slot="start" value="comprador"></ion-radio>
+  </ion-item>
+  <ion-item>
+    <ion-label>Vendedor</ion-label>
+    <ion-radio slot="start" value="vendedor"></ion-radio>
+  </ion-item>
+</ion-radio-group>
+
     <ion-button expand="block" color="success" type="submit">
       Registrarse
     </ion-button>

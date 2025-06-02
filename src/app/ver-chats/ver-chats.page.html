@@ -6,11 +6,12 @@
 
 <ion-content class="ion-padding">
   <ion-list *ngIf="chats.length > 0; else noChats">
-    <ion-item *ngFor="let chat of chats" button (click)="abrirChat(chat.id)">
-      <ion-label>
-        {{ chat.nombre }}
-      </ion-label>
-    </ion-item>
+   <ion-item *ngFor="let chat of chats" button (click)="abrirChat(chat.id)">
+  <ion-label>
+    <h2>{{ chat.nombre }}</h2>
+    <p>{{ chat.ultimoMensaje }}</p>
+  </ion-label>
+</ion-item>
   </ion-list>
 
   <ng-template #noChats>

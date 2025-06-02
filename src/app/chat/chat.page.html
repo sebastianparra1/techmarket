@@ -6,14 +6,22 @@
 
 <ion-content [fullscreen]="true">
   <div class="messages-container">
-    <div *ngFor="let msg of mensajes" class="message" [class.own]="msg.sender === nombreUsuario">
-      <strong>{{ msg.sender }}:</strong> {{ msg.text }}
+    <div
+      *ngFor="let msg of mensajes"
+      class="message"
+      [class.own]="msg.sender === nombreUsuario">
+      {{ msg.text }}
     </div>
   </div>
 
   <ion-footer>
     <ion-item>
-      <ion-input [(ngModel)]="nuevoMensaje" placeholder="Escribe un mensaje..."></ion-input>
+      <ion-input
+        [(ngModel)]="nuevoMensaje"
+        placeholder="Escribe un mensaje..."
+        autocapitalize="sentences"
+        spellcheck="true">
+      </ion-input>
       <ion-button slot="end" (click)="enviarMensaje()" color="success">Enviar</ion-button>
     </ion-item>
   </ion-footer>

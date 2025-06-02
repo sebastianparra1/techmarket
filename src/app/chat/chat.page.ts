@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { getAuth } from 'firebase/auth';
 import { getDatabase, ref, onValue, push, set, get } from 'firebase/database';
@@ -12,7 +12,7 @@ import { FormsModule } from '@angular/forms';
   standalone: true,
   imports: [IonicModule, FormsModule]
 })
-export class ChatPage implements OnInit {
+export class ChatPage {
   nombreUsuario = localStorage.getItem('nombreUsuario') || 'Invitado';
   vendedorId: string = '';
   nombreVendedor: string = '';
@@ -23,7 +23,7 @@ export class ChatPage implements OnInit {
 
   constructor(private route: ActivatedRoute, private router: Router) {}
 
-  async ngOnInit() {
+  async ionViewWillEnter() {
     const auth = getAuth();
     const user = auth.currentUser;
     if (!user) return;
@@ -31,47 +31,54 @@ export class ChatPage implements OnInit {
     this.currentUserId = user.uid;
     this.vendedorId = this.route.snapshot.paramMap.get('vendedorId') || '';
 
-    const db = getDatabase();
-
     if (!this.vendedorId) {
-      const chatsRef = ref(db, 'chats');
-      onValue(chatsRef, (snapshot) => {
-        const chats = snapshot.val();
-        if (chats) {
-          for (const chatId in chats) {
-            if (chatId.includes(this.currentUserId)) {
-              const otroUsuario = chatId.replace(this.currentUserId, '').replace('_', '');
-              this.router.navigate(['/chat', otroUsuario]);
-              break;
-            }
-          }
-        }
-      }, { onlyOnce: true });
+      this.subscribeToFirstAvailableChat();
       return;
     }
 
+    this.chatId = [this.currentUserId, this.vendedorId].sort().join('_');
+
+    const db = getDatabase();
     const vendedorRef = ref(db, `usuarios/${this.vendedorId}`);
     const snap = await get(vendedorRef);
     this.nombreVendedor = snap.exists() ? snap.val().nombreUsuario || 'Vendedor' : 'Vendedor';
 
-    this.chatId = this.currentUserId < this.vendedorId
-      ? `${this.currentUserId}_${this.vendedorId}`
-      : `${this.vendedorId}_${this.currentUserId}`;
+    this.subscribeToChat();
+  }
 
+  subscribeToFirstAvailableChat() {
+    const db = getDatabase();
+    const chatsRef = ref(db, 'chats');
+    onValue(chatsRef, (snapshot) => {
+      const chats = snapshot.val();
+      if (chats) {
+        for (const chatId in chats) {
+          const [uid1, uid2] = chatId.split('_');
+          if (uid1 === this.currentUserId || uid2 === this.currentUserId) {
+            const otroUsuario = uid1 === this.currentUserId ? uid2 : uid1;
+            this.router.navigate(['/chat', otroUsuario]);
+            return;
+          }
+        }
+      }
+    }, { onlyOnce: true });
+  }
+
+  subscribeToChat() {
+    const db = getDatabase();
     const chatRef = ref(db, `chats/${this.chatId}`);
     onValue(chatRef, (snapshot) => {
       const data = snapshot.val();
-      const mensajesArray = [];
+      if (!data) return;
 
-      for (const key in data) {
-        if (data[key].text) {
-          mensajesArray.push({ id: key, ...data[key] });
-        }
-      }
+      const mensajesArray = Object.entries(data)
+        .map(([id, mensaje]: any) => ({ id, ...mensaje }))
+        .filter(m => m.text)
+        .sort((a, b) =>
+          new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
+        );
 
-      this.mensajes = mensajesArray.sort((a, b) =>
-        new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
-      );
+      this.mensajes = mensajesArray;
 
       setTimeout(() => {
         const el = document.querySelector('.messages-container');

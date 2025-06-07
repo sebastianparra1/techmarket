@@ -2,10 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import {
   IonHeader, IonToolbar, IonTitle, IonContent, IonAvatar, IonButton,
   IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonChip,
-  IonFab, IonFabButton, IonIcon, IonButtons, IonBadge, IonPopover, IonList, IonItem 
+  IonFab, IonFabButton, IonIcon, IonButtons, IonBadge, IonPopover, IonList, IonItem
 } from '@ionic/angular/standalone';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router, ActivatedRoute } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { add } from 'ionicons/icons';
 import { CarritoService, CartItem } from '../services/carrito.service';
 import { ProductoService } from '../services/productos.service';
@@ -35,7 +36,8 @@ import { FirebaseService } from '../services/firebase.service';
     IonBadge,
     IonPopover,
     IonList,
-    IonItem
+    IonItem,
+    FormsModule
   ],
   templateUrl: './home.page.html',
   styleUrls: ['./home.page.scss'],
@@ -48,17 +50,26 @@ export class HomePage implements OnInit {
   direccion: string = 'Cargando dirección...';
   usuarios: any[] = [];
 
-  categorias: string[] = ['Periféricos', 'Electrónica'];
-  imagenes: string[] = [
-    'https://www.basurto.cl/cdn/shop/files/product_202109281025402071626389-2ef54fbb-5c34-4bab-92ad-f8968ad937e0.png?v=1719253494',
-    'https://resource.logitech.com/content/dam/gaming/en/products/pro-keyboard/pro-keyboard-gallery/pan-pro-gaming-keyboard-gallery-topdown.png',
-    'https://www.profesionalreview.com/wp-content/uploads/2019/09/Acer-XV3-Monitor-gaming.png'
-  ];
-
+  categorias: string[] = ['Periféricos', 'Electrónica', 'Monitores', 'Audio'];
   destacados = [
-    { nombre: 'Audifono Logitech', precio: 14990, imagen: this.imagenes[0] },
-    { nombre: 'Teclado Logitech', precio: 39990, imagen: this.imagenes[1] },
-    { nombre: 'Monitor', precio: 29990, imagen: this.imagenes[2] }
+    {
+      nombre: 'Monitor LG UltraGear 27"',
+      precio: 129990,
+      imagen: 'https://www.profesionalreview.com/wp-content/uploads/2019/09/Acer-XV3-Monitor-gaming.png',
+      descripcion: 'Monitor de 27" con 165Hz y 1ms'
+    },
+    {
+      nombre: 'Audífonos Logitech G733',
+      precio: 99990,
+      imagen: 'https://www.basurto.cl/cdn/shop/files/product_202109281025402071626389-2ef54fbb-5c34-4bab-92ad-f8968ad937e0.png?v=1719253494',
+      descripcion: 'Audífonos Logitech G733 Wireless Black'
+    },
+    {
+      nombre: 'Teclado Logitech',
+      precio: 39990,
+      imagen: 'https://resource.logitech.com/content/dam/gaming/en/products/pro-keyboard/pro-keyboard-gallery/pan-pro-gaming-keyboard-gallery-topdown.png',
+      descripcion: 'Teclado Logitech mecánico RGB'
+    }
   ];
 
   constructor(
@@ -104,12 +115,12 @@ export class HomePage implements OnInit {
     }
   }
 
-  agregarAlCarrito(producto: any, imagen: string) {
+  agregarAlCarrito(producto: any) {
     const item: CartItem = {
       name: producto.nombre,
       price: producto.precio,
       quantity: 1,
-      image: imagen
+      image: producto.imagen
     };
     this.carritoService.addItem(item);
     this.actualizarContador();

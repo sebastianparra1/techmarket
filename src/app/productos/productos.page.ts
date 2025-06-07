@@ -2,14 +2,17 @@ import { Component } from '@angular/core';
 import {
   IonHeader, IonToolbar, IonTitle, IonContent, IonAvatar, IonButton,
   IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonChip,
-  IonFab, IonFabButton, IonIcon, IonButtons, IonBadge, IonicModule
+  IonFab, IonFabButton, IonIcon, IonButtons, IonBadge, IonicModule,
+  IonSearchbar
 } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { add, cartOutline, chatboxEllipsesOutline } from 'ionicons/icons';
 import { CarritoService, CartItem } from '../services/carrito.service';
 import { getDatabase, ref, get, child, onValue } from 'firebase/database';
 import { getAuth } from 'firebase/auth';
+import { PopoverController } from '@ionic/angular';
 
 interface Producto {
   id: string;
@@ -27,22 +30,26 @@ interface Producto {
   imports: [
     CommonModule,
     RouterModule,
-    IonicModule
+    IonicModule,
+    FormsModule
   ],
   templateUrl: './productos.page.html',
   styleUrls: ['./productos.page.scss'],
 })
 export class ProductosPage {
-  add = add;
   carritoCount = 0;
   mensajeCount = 0;
   nombreUsuario: string = '';
   productos: Producto[] = [];
+  productosOriginales: Producto[] = [];
+  productosFiltrados: Producto[] = [];
   currentUserId: string = '';
+  terminoBusqueda: string = '';
 
   constructor(
     private carritoService: CarritoService,
     private router: Router
+    // private popoverController: PopoverController proxima actualización
   ) {}
 
   async ngOnInit() {
@@ -59,7 +66,7 @@ export class ProductosPage {
 
     if (snapshot.exists()) {
       const data = snapshot.val();
-      this.productos = Object.keys(data).map(id => ({
+      this.productosOriginales = Object.keys(data).map(id => ({
         id,
         nombre: data[id].nombre,
         precio: data[id].precio,
@@ -68,6 +75,8 @@ export class ProductosPage {
         categoria: data[id].categoria || 'General',
         creadoPor: data[id].creadoPor
       }));
+
+      this.productosFiltrados = [...this.productosOriginales];
     } else {
       console.log('No se encontraron productos.');
     }
@@ -119,4 +128,15 @@ export class ProductosPage {
   verTusChats() {
     this.router.navigate(['/ver-chats']);
   }
+
+  filtrarProductos() {
+    const termino = this.terminoBusqueda.toLowerCase();
+
+    this.productosFiltrados = this.productosOriginales.filter(p =>
+      p.nombre.toLowerCase().includes(termino) ||
+      (p.descripcion || '').toLowerCase().includes(termino) ||
+      (p.categoria || '').toLowerCase().includes(termino)
+    );
+  }
+
 }

@@ -78,7 +78,7 @@ ion-button {
   text-align: center;
 }
 
-/* Grid de productos */
+/* Grid de productos destacados */
 .product-grid {
   display: flex;
   flex-wrap: wrap;
@@ -90,13 +90,23 @@ ion-button {
 .product-card {
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  background: #1f1f1f; /* fondo oscuro para match con la página de productos */
+  width: 320px;
+}
+
+.product-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
 }
 
 .product-card img {
-  width: 400px;
-  height: 320px;
-  object-fit: cover;
+  width: 100%;
+  height: 240px;
+  object-fit: contain;
+  background-color: #fff;
+  padding: 10px;
 }
 
 /* Precio */
@@ -122,7 +132,13 @@ ion-button {
 
 /* Botón dentro de card */
 ion-card-content ion-button {
-  margin-bottom: 8px;
+  --background: #1DB954;
+  --background-hover: #1ed760;
+  --background-activated: #1ed760;
+  --color: #fff;
+  margin-bottom: 6px;
+  border-radius: 8px;
+  font-weight: 500;
 }
 
 /* FAB carrito */
@@ -193,17 +209,7 @@ ion-fab-button {
   }
 }
 
-/* Responsivo */
-@media (max-width: 768px) {
-  .banner h1 {
-    font-size: 1.6rem;
-  }
-
-  .product-card {
-    margin: 10px 0;
-  }
-}
-
+/* Banner de bienvenida (si lo usas en Home) */
 .bienvenida-card {
   margin-top: 20px;
   background: linear-gradient(135deg, #a2d79e 0%, #29C454 100%);
@@ -219,6 +225,31 @@ ion-fab-button {
 
 .direccion-texto {
   font-size: 0.8em;
-  color: #3c91e6; // puedes cambiar este color por otro si quieres
+  color: #3c91e6;
   margin-top: 4px;
 }
+
+/* Responsivo */
+@media (max-width: 768px) {
+  .banner h1 {
+    font-size: 1.6rem;
+  }
+
+  .product-card {
+    width: 90%; /* que las cards se vean bien en móvil */
+    margin: 10px 0;
+  }
+
+  .product-card img {
+    height: 200px;
+
+
+
+  }
+  .menu-button {
+    display: block; /* muestro el menú en móvil */
+  }
+
+}
+
+

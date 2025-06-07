@@ -6,9 +6,7 @@
       </ion-avatar>
       <div class="logo-title" style="margin-left: 10px;">
         <div style="font-weight: bold;">TechMarket</div>
-        <div style="font-size: 0.75em; color: #007bff;">
-          📍 {{ direccion }}
-        </div>
+        <div class="direccion-texto">📍 {{ direccion }}</div>
       </div>
     </ion-buttons>
 
@@ -49,20 +47,23 @@
   <div class="banner">
     <p>TechMarket es una plataforma de e-commerce que ofrece productos electrónicos y periféricos...</p>
     <ion-button expand="block" color="success" [routerLink]="['/productos']">
-      Click aquí para poder ver los productos
+      CLICK AQUÍ PARA PODER VER LOS PRODUCTOS
     </ion-button>
   </div>
 
   <h2 class="section-title">Productos Destacados</h2>
   <div class="product-grid">
-    <ion-card *ngFor="let producto of destacados; let i = index" class="product-card">
-      <img [src]="imagenes[i]" alt="Producto" />
+    <ion-card *ngFor="let producto of destacados" class="product-card">
+      <img [src]="producto.imagen" alt="Producto" />
       <ion-card-header>
         <ion-card-title>{{ producto.nombre }}</ion-card-title>
       </ion-card-header>
       <ion-card-content>
+        <p><strong>Precio:</strong> ${{ producto.precio | number: '1.0-0' }}</p>
+        <p *ngIf="producto.descripcion"><strong>Descripción:</strong> {{ producto.descripcion }}</p>
+
         <ion-button expand="block" color="success">Observar</ion-button>
-        <ion-button expand="block" color="success" (click)="agregarAlCarrito(producto, imagenes[i])">
+        <ion-button expand="block" color="success" (click)="agregarAlCarrito(producto)">
           Agregar al carrito
         </ion-button>
         <ion-button expand="block" color="success" [routerLink]="['/chat']">Proponer intercambio</ion-button>
@@ -74,14 +75,6 @@
   <div class="category-row">
     <ion-chip *ngFor="let categoria of categorias" color="success" outline>{{ categoria }}</ion-chip>
   </div>
-
-  <div style="text-align: center; margin-top: 20px;">
-    <ion-button color="success" expand="block" [routerLink]="['/agregar-producto']">
-      + Agregar Producto
-    </ion-button>
-  </div>
-
-  <br>
 
   <div class="footer-section">
     <h2 class="section-title">Para más información :)</h2>

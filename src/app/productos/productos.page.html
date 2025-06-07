@@ -2,9 +2,7 @@
   <ion-toolbar class="header-toolbar" color="light">
     <ion-buttons slot="start">
       <ion-avatar slot="start">
-        <img
-          src="https://play-lh.googleusercontent.com/rCc1T9PFomPVLTeHgT-pIRBHco7a9UACNQOy-DQ8io-YjGXTveRm2PHqbzfhYWw6eoHI"
-          alt="Logo" />
+        <img src="https://play-lh.googleusercontent.com/rCc1T9PFomPVLTeHgT-pIRBHco7a9UACNQOy-DQ8io-YjGXTveRm2PHqbzfhYWw6eoHI" routerLink="/home" />
       </ion-avatar>
       <div class="logo-title">TechMarket</div>
     </ion-buttons>
@@ -18,52 +16,46 @@
       </ion-button>
       <ion-button fill="clear" color="success" routerLink="/login">Cerrar Sesión</ion-button>
       <ion-button fill="clear" routerLink="/carrito-de-compras" class="carrito-button">
-        <img
-          src="https://cdn-icons-png.flaticon.com/512/8762/8762418.png"
-          alt="Carrito"
-          style="width: 7vw; max-width: 32px; min-width: 24px; height: auto;" />
+        <img src="https://cdn-icons-png.flaticon.com/512/8762/8762418.png" alt="Carrito" style="width: 7vw; max-width: 32px; min-width: 24px; height: auto;" />
         <ion-badge color="danger" *ngIf="carritoCount > 0">{{ carritoCount }}</ion-badge>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
+<!-- Buscador arriba -->
+<ion-searchbar
+  [(ngModel)]="terminoBusqueda"
+  placeholder="Buscar productos..."
+  debounce="300"
+  (ionInput)="filtrarProductos()"
+></ion-searchbar>
+
+<!-- Productos -->
 <ion-content class="ion-padding">
   <ion-grid>
     <ion-row>
-      <ion-col
-        size="12"
-        size-md="6"
-        size-lg="4"
-        *ngFor="let producto of productos">
+      <ion-col size="12" size-md="6" size-lg="4" *ngFor="let producto of productosFiltrados">
         <ion-card class="producto-card">
-          <img [src]="producto.imagen" [alt]="producto.nombre" />
-
+          <img [src]="producto.imagen" alt="{{ producto.nombre }}" />
           <ion-card-header>
             <ion-card-title>{{ producto.nombre }}</ion-card-title>
             <ion-card-subtitle *ngIf="producto.categoria && producto.categoria !== 'General'">
               {{ producto.categoria }}
             </ion-card-subtitle>
           </ion-card-header>
-
           <ion-card-content>
             <p><strong>Precio:</strong> ${{ producto.precio | number: '1.0-0' }}</p>
             <p *ngIf="producto.descripcion"><strong>Descripción:</strong> {{ producto.descripcion }}</p>
-
             <ion-button expand="block" color="success">
               <ion-icon name="eye" slot="start"></ion-icon>
               Observar
             </ion-button>
-
             <ion-button expand="block" color="success" (click)="agregarAlCarrito(producto)">
               <ion-icon name="cart" slot="start"></ion-icon>
               Agregar al carrito
             </ion-button>
-
-            <ion-button
-              expand="block"
-              color="success"
-              [routerLink]="['/chat', producto.creadoPor]">
+            <ion-button expand="block" color="success" [routerLink]="['/chat', producto.creadoPor]">
               <ion-icon name="swap-horizontal" slot="start"></ion-icon>
               Proponer Intercambio
             </ion-button>
@@ -72,35 +64,4 @@
       </ion-col>
     </ion-row>
   </ion-grid>
-
-  <div class="footer-section">
-    <h2 class="section-title">Para más información :</h2>
-
-    <div class="footer-box">
-      <h3>Sobre Nosotros</h3>
-      <p>
-        Somos <strong>TechMarket</strong>, una empresa que comercializa periféricos para computadoras.
-        Tratamos siempre de tener los mejores precios del mercado con artículos novedosos y de gran calidad.
-        Si tienes alguna duda, escríbenos a
-        <a href="mailto:Chile&#64;TechMarket.cl">Chile&#64;TechMarket.cl</a>.
-      </p>
-    </div>
-
-    <div class="footer-box">
-      <h3>Contacto</h3>
-      <p><a href="mailto:Chile&#64;TechMarket.cl">Chile&#64;TechMarket.cl</a></p>
-    </div>
-
-    <div class="footer-box redes">
-      <h3>Síguenos en nuestras redes sociales</h3>
-      <div class="social-icons">
-        <a href="https://facebook.com" target="_blank">
-          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Facebook_Logo_%282019%29.png/1024px-Facebook_Logo_%282019%29.png" alt="Facebook" height="30" />
-        </a>
-        <a href="https://instagram.com" target="_blank">
-          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Instagram_icon.png/2048px-Instagram_icon.png" alt="Instagram" height="30" />
-        </a>
-      </div>
-    </div>
-  </div>
 </ion-content>

@@ -47,19 +47,12 @@
           <ion-card-content>
             <p><strong>Precio:</strong> ${{ producto.precio | number: '1.0-0' }}</p>
             <p *ngIf="producto.descripcion"><strong>Descripción:</strong> {{ producto.descripcion }}</p>
-<<<<<<< HEAD
-            <ion-button expand="block" color="success">
-              <ion-icon name="eye" slot="start"></ion-icon>
-              Observar
-            </ion-button>
-            <ion-button expand="block" color="success" (click)="agregarAlCarrito(producto)">
-=======
 
             <!-- Si unidades == 0, mostrar Producto agotado en rojo -->
-            <p *ngIf="producto.unidades !== undefined && producto.unidades === 0" style="color: red; font-weight: bold;">Producto agotado</p>
+            <p *ngIf="producto.unidades === undefined || +producto.unidades === 0" style="color: red; font-weight: bold;">Producto agotado</p>
 
             <!-- Si unidades > 0, mostrar Unidades disponibles -->
-            <p *ngIf="producto.unidades !== undefined && producto.unidades > 0"><strong>Unidades disponibles:</strong> {{ producto.unidades }}</p>
+            <p *ngIf="producto.unidades !== undefined && +producto.unidades > 0"><strong>Unidades disponibles:</strong> {{ producto.unidades }}</p>
 
             <ion-button expand="block" color="success" [routerLink]="['/producto-detalle', producto.id]">
               <ion-icon name="eye" slot="start"></ion-icon>
@@ -70,12 +63,15 @@
               expand="block"
               color="success"
               (click)="agregarAlCarrito(producto)"
-              [disabled]="producto.unidades !== undefined && producto.unidades === 0">
->>>>>>> a4f78e2 (escoger unidades para el producto y email con foto de producto)
+              [disabled]="producto.unidades === undefined || +producto.unidades === 0">
               <ion-icon name="cart" slot="start"></ion-icon>
               Agregar al carrito
             </ion-button>
-            <ion-button expand="block" color="success" [routerLink]="['/chat', producto.creadoPor]">
+
+            <ion-button
+              expand="block"
+              color="success"
+              [routerLink]="['/chat', producto.creadoPor]">
               <ion-icon name="swap-horizontal" slot="start"></ion-icon>
               Proponer Intercambio
             </ion-button>
@@ -84,4 +80,35 @@
       </ion-col>
     </ion-row>
   </ion-grid>
+
+  <div class="footer-section">
+    <h2 class="section-title">Para más información :</h2>
+
+    <div class="footer-box">
+      <h3>Sobre Nosotros</h3>
+      <p>
+        Somos <strong>TechMarket</strong>, una empresa que comercializa periféricos para computadoras.
+        Tratamos siempre de tener los mejores precios del mercado con artículos novedosos y de gran calidad.
+        Si tienes alguna duda, escríbenos a
+        <a href="mailto:Chile&#64;TechMarket.cl">Chile&#64;TechMarket.cl</a>.
+      </p>
+    </div>
+
+    <div class="footer-box">
+      <h3>Contacto</h3>
+      <p><a href="mailto:Chile&#64;TechMarket.cl">Chile&#64;TechMarket.cl</a></p>
+    </div>
+
+    <div class="footer-box redes">
+      <h3>Síguenos en nuestras redes sociales</h3>
+      <div class="social-icons">
+        <a href="https://facebook.com" target="_blank">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Facebook_Logo_%282019%29.png/1024px-Facebook_Logo_%282019%29.png" alt="Facebook" height="30" />
+        </a>
+        <a href="https://instagram.com" target="_blank">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Instagram_icon.png/2048px-Instagram_icon.png" alt="Instagram" height="30" />
+        </a>
+      </div>
+    </div>
+  </div>
 </ion-content>

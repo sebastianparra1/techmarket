@@ -47,11 +47,31 @@
           <ion-card-content>
             <p><strong>Precio:</strong> ${{ producto.precio | number: '1.0-0' }}</p>
             <p *ngIf="producto.descripcion"><strong>Descripción:</strong> {{ producto.descripcion }}</p>
+<<<<<<< HEAD
             <ion-button expand="block" color="success">
               <ion-icon name="eye" slot="start"></ion-icon>
               Observar
             </ion-button>
             <ion-button expand="block" color="success" (click)="agregarAlCarrito(producto)">
+=======
+
+            <!-- Si unidades == 0, mostrar Producto agotado en rojo -->
+            <p *ngIf="producto.unidades !== undefined && producto.unidades === 0" style="color: red; font-weight: bold;">Producto agotado</p>
+
+            <!-- Si unidades > 0, mostrar Unidades disponibles -->
+            <p *ngIf="producto.unidades !== undefined && producto.unidades > 0"><strong>Unidades disponibles:</strong> {{ producto.unidades }}</p>
+
+            <ion-button expand="block" color="success" [routerLink]="['/producto-detalle', producto.id]">
+              <ion-icon name="eye" slot="start"></ion-icon>
+              Observar
+            </ion-button>
+
+            <ion-button
+              expand="block"
+              color="success"
+              (click)="agregarAlCarrito(producto)"
+              [disabled]="producto.unidades !== undefined && producto.unidades === 0">
+>>>>>>> a4f78e2 (escoger unidades para el producto y email con foto de producto)
               <ion-icon name="cart" slot="start"></ion-icon>
               Agregar al carrito
             </ion-button>

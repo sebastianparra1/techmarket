@@ -17,16 +17,12 @@
 
       <h1>👋 Bienvenido, {{ nombreUsuario }}!</h1>
 
-<!-- <ion-button expand="block" color="success" [routerLink]="['/productos']">
-      Click aquí para poder ver los productos
-    </ion-button>-->
-
       <p>Aquí puede agregar, editar o eliminar tus productos para la venta</p>
 
       <div class="add-product">
         <ion-button (click)="agregarProducto()" shape="round" color="success">
-  +
-</ion-button>
+          +
+        </ion-button>
         <p>Agregar productos</p>
       </div>
 
@@ -52,31 +48,23 @@
             <ion-label position="floating">Nombre del producto</ion-label>
             <ion-input [(ngModel)]="nuevoProducto.nombre" required></ion-input>
           </ion-item>
+
           <ion-item>
             <ion-label position="floating">Precio</ion-label>
             <ion-input type="number" [(ngModel)]="nuevoProducto.precio" required></ion-input>
           </ion-item>
+
           <ion-item>
             <ion-label position="floating">Descripción</ion-label>
             <ion-textarea [(ngModel)]="nuevoProducto.descripcion"></ion-textarea>
           </ion-item>
+
+          <!-- Campo nuevo: Unidades disponibles -->
+          <ion-item>
+            <ion-label position="floating">Unidades disponibles</ion-label>
+            <ion-input type="number" [(ngModel)]="nuevoProducto.unidades" required></ion-input>
+          </ion-item>
         </ion-list>
-
-
-        <!--
-        <ion-item>
-          <ion-label position="floating">Categoría</ion-label>
-          <ion-input [(ngModel)]="nuevoProducto.categoria"></ion-input>
-        </ion-item>
-
-        <ion-item>        
-          <ion-label position="floating">Categoría</ion-label>
-          <ion-input [(ngModel)]="productoEditando.categoria"></ion-input>
-        </ion-item>
-
-        -->
-
-
 
         <ion-button expand="block" color="success" (click)="guardarProducto()">
           Guardar producto
@@ -93,6 +81,8 @@
             <h2>{{ producto.nombre }}</h2>
             <p>${{ producto.precio }}</p>
             <p>{{ producto.descripcion }}</p>
+            <!-- Mostrar unidades -->
+            <p>Unidades disponibles: {{ producto.unidades }}</p>
           </ion-label>
           <ion-button fill="clear" color="warning" (click)="editarProducto(producto)">Editar</ion-button>
           <ion-button fill="clear" color="danger" (click)="eliminarProducto(producto.id)">Eliminar</ion-button>
@@ -113,6 +103,12 @@
           <ion-label position="floating">Descripción</ion-label>
           <ion-textarea [(ngModel)]="productoEditando.descripcion"></ion-textarea>
         </ion-item>
+        <!-- Campo nuevo para editar unidades -->
+        <ion-item>
+          <ion-label position="floating">Unidades disponibles</ion-label>
+          <ion-input type="number" [(ngModel)]="productoEditando.unidades"></ion-input>
+        </ion-item>
+
         <ion-button expand="block" color="success" (click)="guardarEdicion()">Guardar cambios</ion-button>
         <ion-button expand="block" color="medium" (click)="cancelarEdicion()">Cancelar</ion-button>
       </ion-list>

@@ -2,6 +2,9 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
+import emailjs, { EmailJSResponseStatus } from 'emailjs-com';
+import { getDatabase, ref, get, update } from 'firebase/database';
 
 @Component({
   selector: 'app-pago',
@@ -20,33 +23,42 @@ export class PagoComponent {
   animarShine = false;
 
   // Campos adicionales del comprador
-nombre: string = '';
-apellido: string = '';
-codigoPostal: string = '';
-rut: string = '';
-direccion: string = '';
-region: string = '';
+  nombre: string = '';
+  apellido: string = '';
+  emailComprador: string = '';
+  codigoPostal: string = '';
+  rut: string = '';
+  direccion: string = '';
+  region: string = '';
 
-filtrarRut(event: any) {
-  let valor = (event.detail.value || '').toLowerCase();
+  // Variables del producto
+  productoId: string = ''; // ← NUEVO: el ID del producto
+  productoNombre: string = '';
+  productoPrecio: number = 0;
+  productoImagen: string = '';
 
-  // Solo permite números y 'k'
-  valor = valor.replace(/[^0-9k]/g, '');
+  constructor(private route: ActivatedRoute) {}
 
-  // Limita a 9 caracteres (máximo 8 números + 1 'k' al final)
-  valor = valor.slice(0, 9);
-
-  // Si hay una 'k', que esté solo al final
-  const kIndex = valor.indexOf('k');
-  if (kIndex !== -1 && kIndex !== valor.length - 1) {
-    // Si 'k' no está al final, se elimina
-    valor = valor.replace(/k/g, '');
+  ngOnInit() {
+    this.route.queryParams.subscribe(params => {
+      this.productoId = params['id'] || ''; // ← recibimos el id
+      this.productoNombre = params['nombre'] || '';
+      this.productoPrecio = params['precio'] || 0;
+      this.productoImagen = params['imagen'] || '';
+    });
   }
 
-  this.rut = valor;
-  event.target.value = this.rut;
-}
-
+  filtrarRut(event: any) {
+    let valor = (event.detail.value || '').toLowerCase();
+    valor = valor.replace(/[^0-9k]/g, '');
+    valor = valor.slice(0, 9);
+    const kIndex = valor.indexOf('k');
+    if (kIndex !== -1 && kIndex !== valor.length - 1) {
+      valor = valor.replace(/k/g, '');
+    }
+    this.rut = valor;
+    event.target.value = this.rut;
+  }
 
   get numeroFormateado(): string {
     return this.numero.replace(/(\d{4})(?=\d)/g, '$1 ').trim();
@@ -60,7 +72,6 @@ filtrarRut(event: any) {
     this.numero = soloNumeros;
     event.target.value = formateado;
 
-    // Animación si se completan los 16 dígitos
     if (soloNumeros.length === 16) {
       this.animarShine = true;
       setTimeout(() => (this.animarShine = false), 1000);
@@ -81,75 +92,97 @@ filtrarRut(event: any) {
     this.cvv = valor;
     event.target.value = valor;
   }
-esRutValido(rut: string): boolean {
-  rut = rut.toLowerCase().replace(/[^0-9k]/g, '');
 
-  if (rut.length < 2 || rut.length > 9) return false;
+  esRutValido(rut: string): boolean {
+    rut = rut.toLowerCase().replace(/[^0-9k]/g, '');
+    if (rut.length < 2 || rut.length > 9) return false;
+    const cuerpo = rut.slice(0, -1);
+    const dvIngresado = rut.slice(-1);
 
-  const cuerpo = rut.slice(0, -1);
-  const dvIngresado = rut.slice(-1);
+    let suma = 0;
+    let multiplo = 2;
 
-  let suma = 0;
-  let multiplo = 2;
+    for (let i = cuerpo.length - 1; i >= 0; i--) {
+      suma += parseInt(cuerpo.charAt(i)) * multiplo;
+      multiplo = multiplo < 7 ? multiplo + 1 : 2;
+    }
 
-  for (let i = cuerpo.length - 1; i >= 0; i--) {
-    suma += parseInt(cuerpo.charAt(i)) * multiplo;
-    multiplo = multiplo < 7 ? multiplo + 1 : 2;
+    const dvCalculado = 11 - (suma % 11);
+    let dvFinal = '';
+
+    if (dvCalculado === 11) dvFinal = '0';
+    else if (dvCalculado === 10) dvFinal = 'k';
+    else dvFinal = dvCalculado.toString();
+
+    return dvIngresado === dvFinal;
   }
 
-  const dvCalculado = 11 - (suma % 11);
-  let dvFinal = '';
+  pagar() {
+    const camposObligatorios = [
+      this.numero,
+      this.nombreTitular,
+      this.vencimiento,
+      this.cvv,
+      this.nombre,
+      this.apellido,
+      this.emailComprador,
+      this.codigoPostal,
+      this.rut,
+      this.direccion,
+      this.region
+    ];
 
-  if (dvCalculado === 11) dvFinal = '0';
-  else if (dvCalculado === 10) dvFinal = 'k';
-  else dvFinal = dvCalculado.toString();
+    const hayCampoVacio = camposObligatorios.some(campo => !campo || campo.trim() === '');
 
-  return dvIngresado === dvFinal;
-}
+    if (hayCampoVacio) {
+      alert('Por favor, completa todos los campos antes de continuar.');
+      return;
+    }
 
-pagar() {
-  // Verifica que todos los campos estén llenos
-  const camposObligatorios = [
-    this.numero,
-    this.nombreTitular,
-    this.vencimiento,
-    this.cvv,
-    this.nombre,
-    this.apellido,
-    this.codigoPostal,
-    this.rut,
-    this.direccion,
-    this.region
-  ];
+    if (!this.esRutValido(this.rut)) {
+      alert('RUT inválido. Por favor revisa el rut ingresado.');
+      return;
+    }
 
-  const hayCampoVacio = camposObligatorios.some(campo => !campo || campo.trim() === '');
+    const templateParams = {
+      to_name: this.nombre + ' ' + this.apellido,
+      user_email: this.emailComprador,
+      producto_nombre: this.productoNombre,
+      producto_precio: `$${this.productoPrecio}`,
+      producto_imagen: this.productoImagen,
+      mensaje: 'Su paquete viene en camino'
+    };
 
-  if (hayCampoVacio) {
-    alert('Por favor, completa todos los campos antes de continuar.');
-    return;
+    emailjs.send('service_17lzgkc', 'template_ecwohrd', templateParams, '089yXtpwCl6dhowXI')
+      .then((response: EmailJSResponseStatus) => {
+        console.log('SUCCESS!', response.status, response.text);
+        alert('¡Se ha enviado un correo con su recibo!');
+
+        // RESTAR UNA UNIDAD
+        if (this.productoId) {
+          const db = getDatabase();
+          const productoRef = ref(db, `productos/${this.productoId}`);
+
+          get(productoRef).then((snapshot) => {
+            if (snapshot.exists()) {
+              const data = snapshot.val();
+              const unidadesActuales = +data.unidades || 0;
+              const nuevasUnidades = unidadesActuales > 0 ? unidadesActuales - 1 : 0;
+
+              update(productoRef, { unidades: nuevasUnidades })
+                .then(() => {
+                  console.log('Unidades actualizadas:', nuevasUnidades);
+                })
+                .catch(error => {
+                  console.error('Error al actualizar unidades:', error);
+                });
+            }
+          });
+        }
+
+      }, (err) => {
+        console.log('FAILED...', err);
+        alert('Error al enviar el correo. Intente nuevamente.');
+      });
   }
-
-  // Verifica RUT válido
-  if (!this.esRutValido(this.rut)) {
-    alert('RUT inválido. Por favor revisa el rut ingresado.');
-    return;
-  }
-
-  const datos = {
-    numero: this.numero,
-    nombreTitular: this.nombreTitular,
-    vencimiento: this.vencimiento,
-    cvv: this.cvv,
-    nombre: this.nombre,
-    apellido: this.apellido,
-    codigoPostal: this.codigoPostal,
-    rut: this.rut,
-    direccion: this.direccion,
-    region: this.region
-  };
-
-  console.log('Datos ingresados:', datos);
-  alert('¡Se ha enviado un correo con su resivo!');
-}
-  
 }

@@ -53,5 +53,14 @@ export const routes: Routes = [
   {
     path: 'ver-chats',
     loadComponent: () => import('./ver-chats/ver-chats.page').then( m => m.VerChatsPage)
+  },
+  {
+    path: 'producto-detalle',
+    loadComponent: () => import('./producto-detalle/producto-detalle.page').then( m => m.ProductoDetallePage)
+  },
+  {
+  path: 'producto-detalle/:id',
+  loadComponent: () => import('./producto-detalle/producto-detalle.page').then(m => m.ProductoDetallePage)
   }
+
 ];

@@ -36,6 +36,7 @@ export class PaginaVendedorPage implements OnInit {
     precio?: number;
     descripcion?: string;
     categoria?: string;
+    unidades?: number; // AGREGAR ESTA LINEA
   } = {};
 
   constructor(private router: Router) {}
@@ -167,6 +168,7 @@ export class PaginaVendedorPage implements OnInit {
         precio: this.nuevoProducto.precio,
         descripcion: this.nuevoProducto.descripcion || '',
         categoria: this.nuevoProducto.categoria || 'General',
+        unidades: this.nuevoProducto.unidades || 0, // <--- nuevo campo
         imagen: imageUrl,
         creadoPor: uid,
         creadoEn: new Date().toISOString()

@@ -22,6 +22,7 @@ interface Producto {
   categoria?: string;
   descripcion?: string;
   creadoPor: string;
+  unidades?: number; // ← añadido
 }
 
 @Component({
@@ -73,7 +74,8 @@ export class ProductosPage {
         imagen: data[id].imagen,
         descripcion: data[id].descripcion || '',
         categoria: data[id].categoria || 'General',
-        creadoPor: data[id].creadoPor
+        creadoPor: data[id].creadoPor,
+        unidades: data[id].unidades || 0 // ← añadido
       }));
 
       this.productosFiltrados = [...this.productosOriginales];

@@ -1,0 +1,78 @@
+.detalle-card {
+  max-width: 700px;
+  margin: auto;
+  border-radius: 12px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  background-color: #fff;
+  transition: transform 0.3s ease;
+}
+
+.detalle-card:hover {
+  transform: translateY(-3px);
+}
+
+.detalle-img {
+  width: 100%;
+  height: 500px;
+  object-fit: contain;
+  background-color: #f9f9f9;
+  padding: 0;
+  display: block;
+  margin: 0 auto;
+  border-bottom: 1px solid #eee;
+}
+
+.detalle-titulo {
+  font-size: 2em;
+  font-weight: bold;
+  text-align: center;
+  margin-top: 10px;
+  color: #333;
+}
+
+.detalle-precio {
+  color: #4caf50;
+  font-size: 2.2em;
+  font-weight: bold;
+  text-align: center;
+  margin: 20px 0;
+}
+
+.detalle-descripcion {
+  font-size: 1.1em;
+  line-height: 1.6;
+  margin-bottom: 25px;
+  color: #555;
+  text-align: justify;
+}
+
+ion-card-content ion-button {
+  margin-top: 12px;
+}
+
+ion-card-content p {
+  margin: 8px 0;
+}
+
+/* Modal Zoom personalizado */
+ion-modal::part(content) {
+  --background: rgba(0, 0, 0, 0.9); /* fondo oscuro para efecto galería */
+}
+
+ion-modal img {
+  max-width: 90vw;
+  max-height: 90vh;
+  object-fit: contain;
+  display: block;
+  margin: auto;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  border-radius: 8px;
+  transition: transform 0.3s ease;
+}
+
+ion-modal ion-button {
+  margin-top: 20px;
+  --background: #4caf50;
+  --color: #fff;
+}

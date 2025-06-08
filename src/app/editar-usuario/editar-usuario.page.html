@@ -36,6 +36,17 @@
       <ion-input [(ngModel)]="usuario.region" name="region" required></ion-input>
     </ion-item>
 
+    <ion-item>
+  <ion-label position="stacked">Foto de perfil</ion-label>
+  <input type="file" (change)="onFileSelected($event)" />
+</ion-item>
+
+  <ion-item lines="none">
+    <ion-avatar>
+      <img [src]="fotoPerfilURL || 'https://via.placeholder.com/150'" />
+    </ion-avatar>
+  </ion-item>
+
     <ion-button expand="block" color="success" type="submit">Guardar Cambios</ion-button>
   </form>
 </ion-content>

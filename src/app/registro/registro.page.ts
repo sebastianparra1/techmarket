@@ -23,6 +23,9 @@ export class RegistroPage {
   region: string = '';
   rolSeleccionado: string = 'comprador';
 
+  selectedFile: File | null = null;
+  fotoPerfilURL: string = '';
+
   constructor(
     private firebaseService: FirebaseService,
     private router: Router,
@@ -55,6 +58,26 @@ export class RegistroPage {
     return dvIngresado === dvFinal;
   }
 
+  onFileSelected(event: any) {
+    this.selectedFile = event.target.files[0];
+  }
+
+  async uploadImage(): Promise<string> {
+    if (!this.selectedFile) return '';
+
+    const formData = new FormData();
+    formData.append('file', this.selectedFile);
+    formData.append('upload_preset', 'ecommerce_upload'); // tu preset
+
+    const response = await fetch('https://api.cloudinary.com/v1_1/doa5jzxjx/image/upload', {
+      method: 'POST',
+      body: formData
+    });
+
+    const data = await response.json();
+    return data.secure_url;
+  }
+
   async registrarUsuario() {
     // Validación de campos vacíos
     if (
@@ -81,7 +104,7 @@ export class RegistroPage {
       return;
     }
 
-    // Validación de teléfono (mínimo 9 dígitos, solo números)
+    // Validación de teléfono
     const telefonoValido = /^[0-9]{9,}$/.test(this.telefono);
     if (!telefonoValido) {
       const toast = await this.toastCtrl.create({
@@ -93,8 +116,9 @@ export class RegistroPage {
       return;
     }
 
-    // Registro si todo es válido
     try {
+      const fotoPerfilURL = this.selectedFile ? await this.uploadImage() : '';
+
       await this.firebaseService.registrarUsuario(
         this.nombre,
         this.correo,
@@ -104,8 +128,10 @@ export class RegistroPage {
         this.direccion,
         this.comuna,
         this.region,
-        this.rolSeleccionado || 'comprador'
+        this.rolSeleccionado || 'comprador',
+        fotoPerfilURL // enviamos fotoPerfil
       );
+
       const toast = await this.toastCtrl.create({
         message: '¡Registro exitoso!',
         duration: 2000,

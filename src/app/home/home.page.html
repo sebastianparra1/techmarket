@@ -11,10 +11,12 @@
     </ion-buttons>
 
     <ion-buttons slot="end">
+      <!-- Botón de perfil → fotoPerfil o icono default -->
       <ion-button fill="clear" id="perfil-popover" class="perfil-button">
-        <img src="https://cdn-icons-png.flaticon.com/512/6073/6073873.png" alt="Perfil"
-          style="width: 7vw; max-width: 32px; min-width: 24px; height: auto;" />
+        <img [src]="fotoPerfil || 'https://cdn-icons-png.flaticon.com/512/6073/6073873.png'" alt="Perfil"
+          style="width: 7vw; max-width: 32px; min-width: 24px; height: auto; border-radius: 50%;" />
       </ion-button>
+
       <ion-button fill="clear" [routerLink]="['/carrito-de-compras']" class="carrito-button">
         <img src="https://cdn-icons-png.flaticon.com/512/8762/8762418.png" alt="Carrito"
           style="width: 7vw; max-width: 32px; min-width: 24px; height: auto;" />
@@ -27,6 +29,14 @@
 <ion-popover trigger="perfil-popover" triggerAction="click" showBackdrop="false">
   <ng-template>
     <ion-list>
+      <!-- Mostrar fotoPerfil y nombreUsuario en el popover -->
+      <ion-item lines="none" class="perfil-popover-header" style="flex-direction: column; align-items: center;">
+        <ion-avatar style="margin-bottom: 10px;">
+          <img [src]="fotoPerfil || 'https://via.placeholder.com/150'" />
+        </ion-avatar>
+        <div style="font-weight: bold;">{{ nombreUsuario }}</div>
+      </ion-item>
+
       <ion-item button (click)="irAEditarPerfil()">Editar</ion-item>
       <ion-item button [routerLink]="['/pagina-vendedor']">Vende tus productos</ion-item>
       <ion-item button (click)="cerrarSesion()">Cerrar sesión</ion-item>

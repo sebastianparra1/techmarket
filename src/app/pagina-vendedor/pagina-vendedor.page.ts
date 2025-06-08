@@ -7,6 +7,7 @@ import {
   IonButton, IonIcon, IonInput, IonTextarea,
   IonLabel, IonItem, IonList, IonThumbnail,
 } from '@ionic/angular/standalone';
+import { RouterModule } from '@angular/router';  // <<< AGREGADO ✅
 
 import { getAuth } from 'firebase/auth';
 import { getDatabase, ref, get, set, push, update, remove, onValue } from 'firebase/database';
@@ -19,7 +20,8 @@ import { getDatabase, ref, get, set, push, update, remove, onValue } from 'fireb
   imports: [
     IonContent, IonHeader, IonTitle, IonToolbar,
     IonButton, IonIcon, IonInput, IonTextarea, IonThumbnail,
-    IonLabel, IonItem, IonList, CommonModule, FormsModule
+    IonLabel, IonItem, IonList, CommonModule, FormsModule,
+    RouterModule  // <<< AGREGADO ✅
   ]
 })
 export class PaginaVendedorPage implements OnInit {
@@ -36,7 +38,7 @@ export class PaginaVendedorPage implements OnInit {
     precio?: number;
     descripcion?: string;
     categoria?: string;
-    unidades?: number; // AGREGAR ESTA LINEA
+    unidades?: number;
   } = {};
 
   constructor(private router: Router) {}
@@ -71,7 +73,6 @@ export class PaginaVendedorPage implements OnInit {
       this.nombreUsuario = nombre;
       localStorage.setItem('nombreUsuario', nombre);
 
-      // Se permite vender a todos los usuarios autenticados
       this.permitidoVender = true;
       this.cargarProductosDelVendedor(uid);
     } else {
@@ -168,7 +169,7 @@ export class PaginaVendedorPage implements OnInit {
         precio: this.nuevoProducto.precio,
         descripcion: this.nuevoProducto.descripcion || '',
         categoria: this.nuevoProducto.categoria || 'General',
-        unidades: this.nuevoProducto.unidades || 0, // <--- nuevo campo
+        unidades: this.nuevoProducto.unidades || 0,
         imagen: imageUrl,
         creadoPor: uid,
         creadoEn: new Date().toISOString()

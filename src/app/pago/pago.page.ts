@@ -4,7 +4,7 @@ import { IonicModule } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import emailjs, { EmailJSResponseStatus } from 'emailjs-com';
-import { getDatabase, ref, get, update } from 'firebase/database';
+import { getDatabase, ref, get, update, push, set } from 'firebase/database';
 
 @Component({
   selector: 'app-pago',
@@ -32,19 +32,21 @@ export class PagoComponent {
   region: string = '';
 
   // Variables del producto
-  productoId: string = ''; // ← NUEVO: el ID del producto
+  productoId: string = '';
   productoNombre: string = '';
   productoPrecio: number = 0;
   productoImagen: string = '';
+  vendedorId: string = '';  // vendedorId recibido
 
   constructor(private route: ActivatedRoute) {}
 
   ngOnInit() {
     this.route.queryParams.subscribe(params => {
-      this.productoId = params['id'] || ''; // ← recibimos el id
+      this.productoId = params['id'] || '';
       this.productoNombre = params['nombre'] || '';
       this.productoPrecio = params['precio'] || 0;
       this.productoImagen = params['imagen'] || '';
+      this.vendedorId = params['vendedorId'] || '';
     });
   }
 
@@ -150,7 +152,7 @@ export class PagoComponent {
       producto_nombre: this.productoNombre,
       producto_precio: `$${this.productoPrecio}`,
       producto_imagen: this.productoImagen,
-      mensaje: 'Su paquete viene en camino'
+      mensaje: 'Su paquete va camino al centro de distribución'
     };
 
     emailjs.send('service_17lzgkc', 'template_ecwohrd', templateParams, '089yXtpwCl6dhowXI')
@@ -158,7 +160,6 @@ export class PagoComponent {
         console.log('SUCCESS!', response.status, response.text);
         alert('¡Se ha enviado un correo con su recibo!');
 
-        // RESTAR UNA UNIDAD
         if (this.productoId) {
           const db = getDatabase();
           const productoRef = ref(db, `productos/${this.productoId}`);
@@ -172,6 +173,48 @@ export class PagoComponent {
               update(productoRef, { unidades: nuevasUnidades })
                 .then(() => {
                   console.log('Unidades actualizadas:', nuevasUnidades);
+
+                  // GUARDAR VENTA EN 'ventas'
+                  const ventasRef = ref(db, 'ventas');
+                  const nuevaVentaRef = push(ventasRef);
+
+                  set(nuevaVentaRef, {
+                    vendedorId: this.vendedorId,
+                    compradorId: '',
+                    compradorNombre: this.nombre + ' ' + this.apellido,
+                    compradorEmail: this.emailComprador,
+                    productoId: this.productoId,
+                    productoNombre: this.productoNombre,
+                    productoImagen: this.productoImagen,  // importante para las notificaciones
+                    estado: 'Pendiente'
+                  })
+                    .then(() => {
+                      console.log('Venta registrada con éxito.');
+
+                      // GUARDAR NOTIFICACION PARA EL VENDEDOR
+                      if (this.vendedorId) {
+                        const notiVendedorRef = ref(db, `notificacionesVendedor/${this.vendedorId}`);
+                        const nuevaNotiRef = push(notiVendedorRef);
+
+                        set(nuevaNotiRef, {
+                          mensaje: `El usuario ${this.nombre} ${this.apellido} ha comprado tu producto ${this.productoNombre}.`,
+                          productoNombre: this.productoNombre,
+                          compradorNombre: this.nombre + ' ' + this.apellido,
+                          productoImagen: this.productoImagen,
+                          leida: false,
+                          timestamp: Date.now()
+                        })
+                          .then(() => {
+                            console.log('Notificación enviada al vendedor.');
+                          })
+                          .catch(error => {
+                            console.error('Error al guardar notificación:', error);
+                          });
+                      }
+                    })
+                    .catch(error => {
+                      console.error('Error al registrar la venta:', error);
+                    });
                 })
                 .catch(error => {
                   console.error('Error al actualizar unidades:', error);

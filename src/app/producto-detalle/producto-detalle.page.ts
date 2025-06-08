@@ -90,7 +90,8 @@ export class ProductoDetallePage implements OnInit {
         id: this.producto.id, // ← PASAMOS EL ID para restar unidades
         nombre: this.producto.nombre,
         precio: this.producto.precio,
-        imagen: this.producto.imagen
+        imagen: this.producto.imagen,
+        vendedorId: this.producto.creadoPor  // <<< AGREGADO
       }
     });
   }

@@ -1,0 +1,58 @@
+<ion-header>
+  <ion-toolbar color="success">
+    <ion-title>Mis Compras</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-text color="medium">
+    <p style="text-align:center; margin-bottom: 20px;">
+      Recuerda siempre seguir el estado de tus pedidos aquí en TechMarket 🚚
+    </p>
+  </ion-text>
+
+  <!-- MENSAJE SI NO HAY COMPRAS -->
+  <ion-text color="medium" *ngIf="compras.length === 0">
+    <p style="text-align:center; margin-top: 40px;">
+      🛍️ Si no hay nada aquí es porque aún no has comprado nada.<br>
+      ¿Qué esperas para hacer tu primera compra en <strong>TechMarket</strong>? 🚀
+    </p>
+  </ion-text>
+
+  <!-- Botón fuera de ion-text para que funcione bien el routerLink -->
+  <div *ngIf="compras.length === 0" style="text-align: center; margin-top: 20px;">
+    <ion-button color="success" routerLink="/productos">
+      Hace tu primera compra aqui :)
+    </ion-button>
+  </div>
+
+  <!-- GRID DE COMPRAS -->
+  <ion-grid *ngIf="compras.length > 0">
+    <ion-row>
+      <ion-col size="12" *ngFor="let compra of compras">
+        <ion-card [color]="compra.productoId === productoIdSeleccionado ? 'light' : ''">
+          <ion-card-header>
+            <ion-card-title>{{ compra.productoNombre }}</ion-card-title>
+            <ion-card-subtitle>Estado actual: {{ compra.estado }}</ion-card-subtitle>
+          </ion-card-header>
+
+          <ion-card-content>
+            <img [src]="compra.productoImagen || 'https://via.placeholder.com/150'" alt="{{ compra.productoNombre }}" style="width: 100%; max-width: 200px; display:block; margin: auto;"/>
+
+            <!-- Caminito -->
+            <div style="margin-top: 20px; border-left: 3px solid #4caf50; padding-left: 10px;">
+              <div *ngFor="let paso of ['Pedido confirmado', 'Paquete dentro de centro de distribución', 'Paquete en camino', 'Paquete llega en 3 minutos', 'Fue entregado exitosamente']; let i = index;">
+                <div style="display:flex; align-items: center; margin-bottom: 10px;">
+                  <img *ngIf="i <= obtenerEstadoIndex(compra.estado)" src="https://cdn-icons-png.flaticon.com/512/190/190411.png" alt="check" width="16" height="16" style="margin-right: 8px;">
+                  <div [style.color]="i <= obtenerEstadoIndex(compra.estado) ? 'green' : '#999'" style="font-weight: bold;">
+                    {{ paso }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

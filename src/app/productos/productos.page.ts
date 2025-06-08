@@ -12,7 +12,6 @@ import { add, cartOutline, chatboxEllipsesOutline } from 'ionicons/icons';
 import { CarritoService, CartItem } from '../services/carrito.service';
 import { getDatabase, ref, get, child, onValue } from 'firebase/database';
 import { getAuth } from 'firebase/auth';
-import { PopoverController } from '@ionic/angular';
 
 interface Producto {
   id: string;
@@ -22,7 +21,7 @@ interface Producto {
   categoria?: string;
   descripcion?: string;
   creadoPor: string;
-  unidades?: number; // ← añadido
+  unidades?: number;
 }
 
 @Component({
@@ -41,16 +40,21 @@ export class ProductosPage {
   carritoCount = 0;
   mensajeCount = 0;
   nombreUsuario: string = '';
+  currentUserEmail: string = '';
+  currentUserId: string = '';
+
   productos: Producto[] = [];
   productosOriginales: Producto[] = [];
   productosFiltrados: Producto[] = [];
-  currentUserId: string = '';
   terminoBusqueda: string = '';
+
+  notificaciones: any[] = [];
+  notificacionesSinLeerCount = 0;
+  mostrarNotificaciones = false;
 
   constructor(
     private carritoService: CarritoService,
     private router: Router
-    // private popoverController: PopoverController proxima actualización
   ) {}
 
   async ngOnInit() {
@@ -59,7 +63,10 @@ export class ProductosPage {
 
     const auth = getAuth();
     const user = auth.currentUser;
-    if (user) this.currentUserId = user.uid;
+    if (user) {
+      this.currentUserId = user.uid;
+      this.currentUserEmail = user.email || '';
+    }
 
     const db = getDatabase();
     const dbRef = ref(db);
@@ -75,7 +82,7 @@ export class ProductosPage {
         descripcion: data[id].descripcion || '',
         categoria: data[id].categoria || 'General',
         creadoPor: data[id].creadoPor,
-        unidades: data[id].unidades || 0 // ← añadido
+        unidades: data[id].unidades || 0
       }));
 
       this.productosFiltrados = [...this.productosOriginales];
@@ -84,6 +91,7 @@ export class ProductosPage {
     }
 
     this.cargarContadorMensajes();
+    this.cargarNotificaciones();
   }
 
   ionViewWillEnter() {
@@ -141,4 +149,65 @@ export class ProductosPage {
     );
   }
 
+  cargarNotificaciones() {
+    const db = getDatabase();
+
+    // Notificaciones de COMPRADOR
+    const ventasRef = ref(db, 'ventas');
+    onValue(ventasRef, (snapshot) => {
+      const data = snapshot.val() || {};
+      const nuevasNotificaciones: any[] = [];
+
+      Object.entries(data).forEach(([id, venta]: any) => {
+        if (venta.compradorEmail === this.currentUserEmail) {
+          nuevasNotificaciones.push({
+            tipo: 'Estado de pedido',
+            productoNombre: venta.productoNombre,
+            estado: venta.estado,
+            productoImagen: venta.productoImagen,
+            productoId: venta.productoId // ✅ Aquí lo agrego para que se pase a mis-compras
+          });
+        }
+      });
+
+      // Notificaciones de VENDEDOR
+      const notiVendedorRef = ref(db, `notificacionesVendedor/${this.currentUserId}`);
+      onValue(notiVendedorRef, (snap) => {
+        const dataVendedor = snap.val() || {};
+
+        Object.values(dataVendedor).forEach((noti: any) => {
+          nuevasNotificaciones.push({
+            tipo: 'Nueva compra recibida',
+            productoNombre: noti.productoNombre,
+            mensaje: noti.mensaje,
+            productoImagen: noti.productoImagen
+          });
+        });
+
+        // Actualizamos lista completa
+        this.notificaciones = nuevasNotificaciones;
+        this.notificacionesSinLeerCount = nuevasNotificaciones.length;
+      });
+    });
+  }
+
+  abrirNotificaciones() {
+    this.mostrarNotificaciones = true;
+    this.notificacionesSinLeerCount = 0;
+  }
+
+  cerrarNotificaciones() {
+    this.mostrarNotificaciones = false;
+  }
+
+  irAMisCompras(noti: any) {
+    if (noti.productoId) {
+      this.router.navigate(['/mis-compras'], {
+        queryParams: { productoId: noti.productoId }
+      });
+    } else {
+      // Si no es de tipo Estado de pedido, simplemente ir a /mis-compras
+      this.router.navigate(['/mis-compras']);
+    }
+  }
 }

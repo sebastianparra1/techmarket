@@ -22,8 +22,24 @@
           </ion-card-header>
 
           <ion-card-content>
+            <!-- Estado actual -->
             <p>Estado actual: <strong>{{ venta.estado }}</strong></p>
 
+            <!-- Dirección con icono -->
+            <p>
+              <strong>📍 Dirección:</strong>
+              <a href="#" (click)="abrirEnGoogleMaps(venta.direccion)" style="text-decoration: underline; color: #1e88e5;">
+                {{ venta.direccion }} 🗺️
+              </a>
+            </p>
+
+            <!-- RUT -->
+            <p><strong>RUT:</strong> {{ venta.rut }}</p>
+
+            <!-- Teléfono con icono -->
+            <p><strong>📞 Teléfono:</strong> {{ venta.telefono }}</p>
+
+            <!-- BOTONES DE ESTADO -->
             <ion-button expand="block"
                         [color]="esEstadoActivo(venta.estado, 'Paquete dentro de centro de distribución') ? 'success' : 'medium'"
                         (click)="actualizarEstado(venta, 'Paquete dentro de centro de distribución')">

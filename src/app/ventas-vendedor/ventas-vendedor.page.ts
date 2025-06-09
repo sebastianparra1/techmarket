@@ -17,7 +17,8 @@ export class VentasVendedorPage implements OnInit {
   ventas: any[] = [];
   vendedorId: string = '';
 
-  // Definir el orden de estados
+  usuariosMap: any = {}; // Mapa de usuarios (email → datos usuario)
+
   estadosOrden = [
     'Paquete dentro de centro de distribución',
     'Paquete en camino',
@@ -31,7 +32,32 @@ export class VentasVendedorPage implements OnInit {
     if (!currentUser) return;
 
     this.vendedorId = currentUser.uid;
-    this.cargarVentas();
+
+    this.cargarUsuarios(() => {
+      this.cargarVentas();
+    });
+  }
+
+  cargarUsuarios(callback: () => void) {
+    const db = getDatabase();
+    const usuariosRef = ref(db, 'usuarios');
+
+    onValue(usuariosRef, (snapshot) => {
+      const data = snapshot.val() || {};
+      this.usuariosMap = {};
+
+      Object.entries(data).forEach(([id, usuario]: any) => {
+        this.usuariosMap[usuario.correo] = {
+          direccion: usuario.direccion || '',
+          region: usuario.region || '',
+          rut: usuario.rut || '',
+          telefono: usuario.telefono || ''
+        };
+      });
+
+      // Luego de cargar usuarios, cargamos las ventas
+      callback();
+    });
   }
 
   cargarVentas() {
@@ -41,7 +67,23 @@ export class VentasVendedorPage implements OnInit {
     onValue(ventasRef, (snapshot) => {
       const data = snapshot.val() || {};
       this.ventas = Object.entries(data)
-        .map(([id, venta]: any) => ({ id, ...venta }))
+        .map(([id, venta]: any) => {
+          const usuarioExtra = this.usuariosMap[venta.compradorEmail] || {
+            direccion: 'Desconocida',
+            region: 'Desconocida',
+            rut: 'Desconocido',
+            telefono: 'Desconocido'
+          };
+
+          return {
+            id,
+            ...venta,
+            direccion: usuarioExtra.direccion,
+            region: usuarioExtra.region,
+            rut: usuarioExtra.rut,
+            telefono: usuarioExtra.telefono
+          };
+        })
         .filter(venta => venta.vendedorId === this.vendedorId);
     });
   }
@@ -77,10 +119,14 @@ export class VentasVendedorPage implements OnInit {
       });
   }
 
-  // FUNCION PARA MOSTRAR EL ICONO ✅ en botones
   esEstadoActivo(estadoActual: string, estadoBoton: string): boolean {
     const indexActual = this.estadosOrden.indexOf(estadoActual);
     const indexBoton = this.estadosOrden.indexOf(estadoBoton);
     return indexActual >= indexBoton && indexActual !== -1 && indexBoton !== -1;
+  }
+
+  abrirEnGoogleMaps(direccion: string) {
+    const query = encodeURIComponent(direccion);
+    window.open(`https://www.google.com/maps/search/?api=1&query=${query}`, '_blank');
   }
 }

@@ -22,6 +22,7 @@ interface Producto {
   descripcion?: string;
   creadoPor: string;
   unidades?: number;
+  
 }
 
 @Component({
@@ -101,6 +102,7 @@ export class ProductosPage {
   agregarAlCarrito(producto: Producto) {
     const item: CartItem = {
       name: producto.nombre,
+      id: producto.id,
       price: producto.precio,
       quantity: 1,
       image: producto.imagen

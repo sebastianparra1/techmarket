@@ -70,6 +70,7 @@ export class ProductoDetallePage implements OnInit {
 
   agregarAlCarrito() {
     const item: CartItem = {
+      id: this.producto.id,
       name: this.producto.nombre,
       price: this.producto.precio,
       quantity: 1,

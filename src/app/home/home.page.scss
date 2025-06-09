@@ -1,4 +1,4 @@
-/* Ajustes generales para un diseño limpio y profesional */
+/* HEADER */
 .header-toolbar {
   --background: #ffffff;
   --color: #222;
@@ -8,7 +8,6 @@
   justify-content: space-between;
 }
 
-/* Alineación del logo y texto */
 ion-buttons[slot="start"] {
   display: flex;
   align-items: center;
@@ -34,28 +33,45 @@ ion-avatar img {
   color: #333;
 }
 
-/* Botones alineados a la derecha */
 ion-buttons[slot="end"] {
   display: flex;
   justify-content: flex-end;
   gap: 8px;
 }
 
-/* Banner de bienvenida */
+.carrito-button {
+  position: relative;
+}
+
+.badge-count {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  font-size: 0.75em;
+}
+
+/* Bienvenida Card */
+.bienvenida-card {
+  margin-top: 20px;
+  background: linear-gradient(135deg, #a2d79e 0%, #29C454 100%);
+  color: #020803;
+  text-align: center;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+
+  ion-card-title {
+    color: #020803 !important;
+  }
+}
+
+/* Banner */
 .banner {
   text-align: center;
-  margin-bottom: 50px;
+  margin: 30px 0;
   padding: 20px;
   background: #f9f9f9;
   border-radius: 10px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.banner h1 {
-  font-size: 2rem;
-  font-weight: bold;
-  margin-bottom: 5px;
-  color: #333;
 }
 
 .banner p {
@@ -64,12 +80,16 @@ ion-buttons[slot="end"] {
   margin-bottom: 15px;
 }
 
-/* Botones generales */
-ion-button {
-  --border-radius: 12px;
+.banner ion-button {
+  --background: #1DB954;
+  --background-hover: #1ed760;
+  --background-activated: #1ed760;
+  --color: #fff;
+  border-radius: 8px;
+  font-weight: 500;
 }
 
-/* Títulos de secciones */
+/* Secciones */
 .section-title {
   font-size: 1.5rem;
   font-weight: 600;
@@ -78,7 +98,7 @@ ion-button {
   text-align: center;
 }
 
-/* Grid de productos destacados */
+/* Grid productos destacados */
 .product-grid {
   display: flex;
   flex-wrap: wrap;
@@ -90,9 +110,9 @@ ion-button {
 .product-card {
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
-  background: #1f1f1f; /* fondo oscuro para match con la página de productos */
+  background: #1f1f1f;
   width: 320px;
 }
 
@@ -109,25 +129,11 @@ ion-button {
   padding: 10px;
 }
 
-/* Precio */
-.price {
-  color: #28a745;
-  font-weight: bold;
+ion-card-title {
   font-size: 1.1rem;
-}
-
-/* Filtros por categoría */
-.category-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-bottom: 40px;
-  justify-content: center;
-}
-
-.category-row ion-chip {
-  font-size: 1rem;
-  padding: 10px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #f5f5f5;
 }
 
 /* Botón dentro de card */
@@ -141,43 +147,41 @@ ion-card-content ion-button {
   font-weight: 500;
 }
 
-/* FAB carrito */
-ion-fab {
-  bottom: 20px;
-  right: 20px;
+/* Categorías */
+.category-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 40px;
+  justify-content: center;
 }
 
-.cart-img {
-  width: 28px;
-  height: 28px;
-  object-fit: contain;
-  margin-left: 4px;
-}
-
-ion-fab-button {
-  --box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+.category-row ion-chip {
+  font-size: 1rem;
+  padding: 10px;
 }
 
 /* Footer */
 .footer-section {
   margin-top: 2rem;
   padding: 2rem 1rem;
-  background: #2e2c2c;
-  border-top: 1px solid #2e2c2c;
+  background: #1e1e1e;
+  border-top: 2px solid #444;
   border-radius: 10px;
+  text-align: center;
 
   .footer-box {
     margin-bottom: 1.5rem;
 
     h3 {
       font-size: 1.1rem;
-      color: #ffffff;
+      color: #f0f0f0;
       margin-bottom: 0.5rem;
     }
 
     p, a {
       font-size: 0.95rem;
-      color: #ffffff;
+      color: #aaaaaa;
       line-height: 1.4;
     }
 
@@ -209,47 +213,21 @@ ion-fab-button {
   }
 }
 
-/* Banner de bienvenida (si lo usas en Home) */
-.bienvenida-card {
-  margin-top: 20px;
-  background: linear-gradient(135deg, #a2d79e 0%, #29C454 100%);
-  color: #020803;
-  text-align: center;
-  border-radius: 16px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-
-  ion-card-title {
-    color: #020803 !important;
-  }
-}
-
+/* Dirección */
 .direccion-texto {
   font-size: 0.8em;
   color: #3c91e6;
   margin-top: 4px;
 }
 
-/* Responsivo */
+/* Responsive */
 @media (max-width: 768px) {
-  .banner h1 {
-    font-size: 1.6rem;
-  }
-
   .product-card {
-    width: 90%; /* que las cards se vean bien en móvil */
+    width: 90%;
     margin: 10px 0;
   }
 
   .product-card img {
     height: 200px;
-
-
-
   }
-  .menu-button {
-    display: block; /* muestro el menú en móvil */
-  }
-
 }
-
-

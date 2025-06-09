@@ -7,7 +7,8 @@ import {
   IonCard, IonCardHeader, IonCardTitle, IonCardContent
 } from '@ionic/angular/standalone';
 import { CarritoService, CartItem } from '../services/carrito.service';
-import { RouterModule } from '@angular/router'; 
+import { RouterModule } from '@angular/router';
+import { getDatabase, ref, update, get, child } from 'firebase/database'; // 👈 añadido
 
 @Component({
   selector: 'app-carrito-de-compras',
@@ -56,7 +57,29 @@ export class CarritoDeComprasPage implements OnInit {
     }
   }
 
-  checkout(): void {
+  // ✅ Aquí actualizamos las ventas al confirmar compra
+  async checkout(): Promise<void> {
+    const db = getDatabase();
+
+    for (const item of this.cartItems) {
+      const productoRef = ref(db, `productos/${item.id}`);
+
+      try {
+        const snapshot = await get(child(ref(db), `productos/${item.id}`));
+
+        if (snapshot.exists()) {
+          const productoData = snapshot.val();
+          const ventasActuales = productoData.ventas || 0;
+
+          await update(productoRef, {
+            ventas: ventasActuales + item.quantity
+          });
+        }
+      } catch (error) {
+        console.error(`Error actualizando ventas para el producto ${item.name}:`, error);
+      }
+    }
+
     alert('¡Gracias por tu compra!');
     this.carritoService.clearCart();
     this.cartItems = [];

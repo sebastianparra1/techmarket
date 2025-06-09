@@ -1,13 +1,35 @@
+<!-- Menú lateral (hamburguesa en móvil) -->
+<ion-menu side="start" contentId="main-content">
+  <ion-header>
+    <ion-toolbar color="light">
+      <ion-title>Menú</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <ion-content>
+    <ion-list>
+      <ion-item button routerLink="/pagina-vendedor">Vende tus Productos</ion-item>
+      <ion-item button (click)="verTusChats()">Ver tus chats</ion-item>
+      <ion-item button routerLink="/login">Cerrar Sesión</ion-item>
+      <ion-item button routerLink="/carrito-de-compras">Carrito de Compras</ion-item>
+    </ion-list>
+  </ion-content>
+</ion-menu>
+
+<!-- HEADER -->
 <ion-header>
   <ion-toolbar class="header-toolbar" color="light">
+
+    <!-- MENÚ HAMBURGUESA solo en móvil -->
     <ion-buttons slot="start">
-      <ion-avatar slot="start">
+      <ion-menu-button></ion-menu-button>
+      <ion-avatar slot="start" style="margin-left: 10px;">
         <img src="https://play-lh.googleusercontent.com/rCc1T9PFomPVLTeHgT-pIRBHco7a9UACNQOy-DQ8io-YjGXTveRm2PHqbzfhYWw6eoHI" routerLink="/home" />
       </ion-avatar>
       <div class="logo-title">TechMarket</div>
     </ion-buttons>
 
-    <ion-buttons slot="end">
+    <!-- BOTONES DERECHA solo en PC -->
+    <ion-buttons slot="end" class="desktop-buttons">
       <ion-button fill="clear" color="success" routerLink="/pagina-vendedor">Vende tus Productos</ion-button>
       <ion-button fill="clear" color="success" (click)="verTusChats()">
         <ion-icon name="chatbox-ellipses-outline" slot="start"></ion-icon>
@@ -15,7 +37,6 @@
         <ion-badge color="danger" *ngIf="mensajeCount > 0" style="margin-left: 6px;">{{ mensajeCount }}</ion-badge>
       </ion-button>
 
-      <!-- BOTÓN DE NOTIFICACIONES -->
       <ion-button fill="clear" color="success" (click)="abrirNotificaciones()">
         <img src="https://cdn-icons-png.flaticon.com/512/6915/6915254.png" alt="Notificaciones"
              style="width: 24px; height: 24px;" />
@@ -25,10 +46,12 @@
       </ion-button>
 
       <ion-button fill="clear" routerLink="/carrito-de-compras" class="carrito-button">
-        <img src="https://cdn-icons-png.flaticon.com/512/8762/8762418.png" alt="Carrito" style="width: 7vw; max-width: 32px; min-width: 24px; height: auto;" />
+        <img src="https://cdn-icons-png.flaticon.com/512/8762/8762418.png" alt="Carrito"
+             style="width: 7vw; max-width: 32px; min-width: 24px; height: auto;" />
         <ion-badge color="danger" *ngIf="carritoCount > 0">{{ carritoCount }}</ion-badge>
       </ion-button>
     </ion-buttons>
+
   </ion-toolbar>
 </ion-header>
 
@@ -41,7 +64,7 @@
 ></ion-searchbar>
 
 <!-- Productos -->
-<ion-content class="ion-padding">
+<ion-content id="main-content" class="ion-padding">
   <ion-grid>
     <ion-row>
       <ion-col size="12" size-md="6" size-lg="4" *ngFor="let producto of productosFiltrados">
@@ -118,6 +141,7 @@
     </ng-template>
   </ion-modal>
 
+  <!-- FOOTER -->
   <div class="footer-section">
     <h2 class="section-title">Para más información :</h2>
 

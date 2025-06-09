@@ -8,8 +8,8 @@
 .logo-title {
   font-size: 1.2em;
   font-weight: bold;
-  margin-left: 30px;
-  color: success;
+  margin-left: 10px;
+  color: #ffffff; /* corregido */
 }
 
 .carrito-button {
@@ -92,4 +92,32 @@ ion-col {
   text-align: center;
   font-size: 0.9rem;
   color: #aaa;
+}
+
+/* BOTONES DERECHA en PC */
+.desktop-buttons {
+  display: flex;
+}
+
+/* CONTROL RESPONSIVO */
+
+@media (max-width: 768px) {
+  /* Ocultamos botones de la derecha en móvil */
+  .desktop-buttons {
+    display: none;
+  }
+
+  /* Mostramos solo el menú hamburguesa en móvil */
+  ion-menu-button {
+    display: block;
+  }
+}
+
+/* En PC ocultamos el menú hamburguesa */
+ion-menu-button {
+  display: none;
+
+  @media (max-width: 768px) {
+    display: block;
+  }
 }

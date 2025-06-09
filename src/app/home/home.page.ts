@@ -11,6 +11,7 @@ import { add } from 'ionicons/icons';
 import { CarritoService, CartItem } from '../services/carrito.service';
 import { ProductoService } from '../services/productos.service';
 import { FirebaseService } from '../services/firebase.service';
+import { getDatabase, ref, child, get } from 'firebase/database';
 
 @Component({
   selector: 'app-home',
@@ -51,26 +52,7 @@ export class HomePage implements OnInit {
   usuarios: any[] = [];
 
   categorias: string[] = ['Periféricos', 'Electrónica', 'Monitores', 'Audio'];
-  destacados = [
-    {
-      nombre: 'Monitor LG UltraGear 27"',
-      precio: 129990,
-      imagen: 'https://www.profesionalreview.com/wp-content/uploads/2019/09/Acer-XV3-Monitor-gaming.png',
-      descripcion: 'Monitor de 27" con 165Hz y 1ms'
-    },
-    {
-      nombre: 'Audífonos Logitech G733',
-      precio: 99990,
-      imagen: 'https://www.basurto.cl/cdn/shop/files/product_202109281025402071626389-2ef54fbb-5c34-4bab-92ad-f8968ad937e0.png?v=1719253494',
-      descripcion: 'Audífonos Logitech G733 Wireless Black'
-    },
-    {
-      nombre: 'Teclado Logitech',
-      precio: 39990,
-      imagen: 'https://resource.logitech.com/content/dam/gaming/en/products/pro-keyboard/pro-keyboard-gallery/pan-pro-gaming-keyboard-gallery-topdown.png',
-      descripcion: 'Teclado Logitech mecánico RGB'
-    }
-  ];
+  destacados: any[] = []; // ← productos destacados (últimos o más vendidos)
 
   constructor(
     private productosService: ProductoService,
@@ -80,7 +62,7 @@ export class HomePage implements OnInit {
     private firebaseService: FirebaseService
   ) {}
 
-  ngOnInit() {
+  async ngOnInit() {
     this.actualizarContador();
     this.nombreUsuario = localStorage.getItem('nombreUsuario') || 'Usuario';
     this.idUsuario = localStorage.getItem('id') || this.route.snapshot.paramMap.get('id') || '';
@@ -88,6 +70,37 @@ export class HomePage implements OnInit {
       this.obtenerDireccion();
     }
     this.obtenerTodosLosUsuarios();
+
+    // 👉 Obtener productos reales
+    const db = getDatabase();
+    const dbRef = ref(db);
+    const snapshot = await get(child(dbRef, 'productos'));
+
+    if (snapshot.exists()) {
+      const data = snapshot.val();
+      const productos = Object.keys(data).map(id => ({
+        id,
+        nombre: data[id].nombre,
+        precio: data[id].precio,
+        imagen: data[id].imagen,
+        descripcion: data[id].descripcion || '',
+        categoria: data[id].categoria || 'General',
+        creadoPor: data[id].creadoPor,
+        unidades: data[id].unidades || 0,
+        ventas: data[id].ventas || 0 // 👈 si tienes el campo ventas, ya lo recogemos
+      }));
+
+      // 👉 OPCIÓN A → Los más vendidos
+      productos.sort((a, b) => (b.ventas || 0) - (a.ventas || 0));
+      this.destacados = productos.slice(0, 3); // top 3 más vendidos
+
+      // 👉 OPCIÓN B → Si no tienes ventas, puedes dejar los últimos 3 agregados:
+      // this.destacados = productos.slice(-3).reverse();
+
+      // 👉 Solo descomenta la opción que quieras (yo te dejo la A activa, es la que pediste 😉)
+    } else {
+      console.log('No se encontraron productos para destacados.');
+    }
   }
 
   ionViewWillEnter() {
@@ -117,6 +130,7 @@ export class HomePage implements OnInit {
 
   agregarAlCarrito(producto: any) {
     const item: CartItem = {
+      id: producto.id,
       name: producto.nombre,
       price: producto.precio,
       quantity: 1,

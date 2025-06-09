@@ -50,6 +50,7 @@ export class HomePage implements OnInit {
   idUsuario: string = '';
   direccion: string = 'Cargando dirección...';
   usuarios: any[] = [];
+  fotoPerfil: string = ''; // NUEVO
 
   categorias: string[] = ['Periféricos', 'Electrónica', 'Monitores', 'Audio'];
   destacados: any[] = []; // ← productos destacados (últimos o más vendidos)
@@ -66,9 +67,12 @@ export class HomePage implements OnInit {
     this.actualizarContador();
     this.nombreUsuario = localStorage.getItem('nombreUsuario') || 'Usuario';
     this.idUsuario = localStorage.getItem('id') || this.route.snapshot.paramMap.get('id') || '';
+
     if (this.idUsuario) {
       this.obtenerDireccion();
+      this.obtenerFotoPerfil(); // NUEVO → cargar foto de perfil
     }
+
     this.obtenerTodosLosUsuarios();
 
     // 👉 Obtener productos reales
@@ -117,6 +121,17 @@ export class HomePage implements OnInit {
       }
     } catch (error) {
       this.direccion = '⚠️ Error al obtener dirección';
+    }
+  }
+
+  async obtenerFotoPerfil() {
+    try {
+      const usuario = await this.firebaseService.getUsuarioPorId(this.idUsuario);
+      if (usuario) {
+        this.fotoPerfil = usuario.fotoPerfil || ''; // NUEVO
+      }
+    } catch (error) {
+      console.error('Error al obtener foto de perfil:', error);
     }
   }
 

@@ -20,7 +20,8 @@ export class FirebaseService {
     direccion: string,
     comuna: string,
     region: string,
-    rol: string // nuevo cambio añadir Rol al vendedor
+    rol: string,
+    fotoPerfil: string // 👈 añadimos fotoPerfil aquí
   ): Promise<void> {
     const auth = getAuth();
     const userCredential = await createUserWithEmailAndPassword(auth, correo, clave);
@@ -30,12 +31,14 @@ export class FirebaseService {
     await set(usuariosRef, {
       nombreUsuario: nombre,
       correo: correo,
+      clave: clave, // 👈 ojo, tú sí guardas la clave en DB, la mantengo igual
       rut: rut,
       telefono: telefono,
       direccion: direccion,
       comuna: comuna,
       region: region,
-      rol: rol
+      rol: rol,
+      fotoPerfil: fotoPerfil // 👈 guardamos la fotoPerfil
     });
   }
 
@@ -52,7 +55,7 @@ export class FirebaseService {
 
   async actualizarUsuario(id: string, datos: any): Promise<void> {
     const userRef = ref(this.db, `usuarios/${id}`);
-    await update(userRef, datos);
+    await update(userRef, datos); // 👈 esto ya soporta fotoPerfil porque pasas {...usuario, fotoPerfil}
   }
 
   async validarLoginPorCorreo(correo: string, clave: string): Promise<any | null> {

@@ -1,9 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, AfterViewInit } from '@angular/core';
 import { IonicModule, ToastController } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { FirebaseService } from '../services/firebase.service';
+
+declare const google: any;
 
 @Component({
   selector: 'app-registro',
@@ -12,15 +14,13 @@ import { FirebaseService } from '../services/firebase.service';
   templateUrl: './registro.page.html',
   styleUrls: ['./registro.page.scss'],
 })
-export class RegistroPage {
+export class RegistroPage implements AfterViewInit {
   nombre: string = '';
   correo: string = '';
   contrasena: string = '';
   rut: string = '';
   telefono: string = '';
   direccion: string = '';
-  comuna: string = '';
-  region: string = '';
   rolSeleccionado: string = 'comprador';
 
   selectedFile: File | null = null;
@@ -34,7 +34,6 @@ export class RegistroPage {
 
   esRutValido(rut: string): boolean {
     rut = rut.toLowerCase().replace(/[^0-9k]/g, '');
-
     if (rut.length < 2 || rut.length > 9) return false;
 
     const cuerpo = rut.slice(0, -1);
@@ -67,7 +66,7 @@ export class RegistroPage {
 
     const formData = new FormData();
     formData.append('file', this.selectedFile);
-    formData.append('upload_preset', 'ecommerce_upload'); // tu preset
+    formData.append('upload_preset', 'ecommerce_upload'); // tu preset en Cloudinary
 
     const response = await fetch('https://api.cloudinary.com/v1_1/doa5jzxjx/image/upload', {
       method: 'POST',
@@ -79,38 +78,39 @@ export class RegistroPage {
   }
 
   async registrarUsuario() {
-    // Validación de campos vacíos
     if (
-      !this.nombre || !this.correo || !this.contrasena || !this.rut ||
-      !this.telefono || !this.direccion || !this.comuna || !this.region
+      !this.nombre ||
+      !this.correo ||
+      !this.contrasena ||
+      !this.rut ||
+      !this.telefono ||
+      !this.direccion
     ) {
       const toast = await this.toastCtrl.create({
         message: 'Por favor, completa todos los campos.',
         duration: 2000,
-        color: 'danger'
+        color: 'danger',
       });
       await toast.present();
       return;
     }
 
-    // Validación de RUT
     if (!this.esRutValido(this.rut)) {
       const toast = await this.toastCtrl.create({
         message: 'El RUT ingresado no es válido.',
         duration: 2000,
-        color: 'danger'
+        color: 'danger',
       });
       await toast.present();
       return;
     }
 
-    // Validación de teléfono
     const telefonoValido = /^[0-9]{9,}$/.test(this.telefono);
     if (!telefonoValido) {
       const toast = await this.toastCtrl.create({
         message: 'El teléfono debe tener solo números y al menos 9 dígitos.',
         duration: 2000,
-        color: 'danger'
+        color: 'danger',
       });
       await toast.present();
       return;
@@ -126,16 +126,14 @@ export class RegistroPage {
         this.rut,
         this.telefono,
         this.direccion,
-        this.comuna,
-        this.region,
         this.rolSeleccionado || 'comprador',
-        fotoPerfilURL // enviamos fotoPerfil
+        fotoPerfilURL
       );
 
       const toast = await this.toastCtrl.create({
         message: '¡Registro exitoso!',
         duration: 2000,
-        color: 'success'
+        color: 'success',
       });
       await toast.present();
       this.router.navigate(['/login']);
@@ -143,9 +141,26 @@ export class RegistroPage {
       const toast = await this.toastCtrl.create({
         message: 'Error al registrar. Intenta nuevamente.',
         duration: 2000,
-        color: 'danger'
+        color: 'danger',
       });
       await toast.present();
     }
+  }
+
+  ngAfterViewInit() {
+    const input = document.getElementById('autocomplete') as HTMLInputElement;
+    if (!input) return;
+
+    const autocomplete = new google.maps.places.Autocomplete(input, {
+      componentRestrictions: { country: 'cl' },
+      types: ['geocode'],
+    });
+
+    autocomplete.addListener('place_changed', () => {
+      const place = autocomplete.getPlace();
+      if (place && place.formatted_address) {
+        this.direccion = place.formatted_address;
+      }
+    });
   }
 }

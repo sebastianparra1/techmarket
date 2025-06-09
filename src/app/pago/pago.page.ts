@@ -22,21 +22,17 @@ export class PagoComponent {
   girar = false;
   animarShine = false;
 
-  // Campos adicionales del comprador
   nombre: string = '';
   apellido: string = '';
   emailComprador: string = '';
   codigoPostal: string = '';
   rut: string = '';
-  direccion: string = '';
-  region: string = '';
 
-  // Variables del producto
   productoId: string = '';
   productoNombre: string = '';
   productoPrecio: number = 0;
   productoImagen: string = '';
-  vendedorId: string = '';  // vendedorId recibido
+  vendedorId: string = '';
 
   constructor(private route: ActivatedRoute) {}
 
@@ -129,9 +125,7 @@ export class PagoComponent {
       this.apellido,
       this.emailComprador,
       this.codigoPostal,
-      this.rut,
-      this.direccion,
-      this.region
+      this.rut
     ];
 
     const hayCampoVacio = camposObligatorios.some(campo => !campo || campo.trim() === '');
@@ -174,7 +168,6 @@ export class PagoComponent {
                 .then(() => {
                   console.log('Unidades actualizadas:', nuevasUnidades);
 
-                  // GUARDAR VENTA EN 'ventas'
                   const ventasRef = ref(db, 'ventas');
                   const nuevaVentaRef = push(ventasRef);
 
@@ -185,13 +178,12 @@ export class PagoComponent {
                     compradorEmail: this.emailComprador,
                     productoId: this.productoId,
                     productoNombre: this.productoNombre,
-                    productoImagen: this.productoImagen,  // importante para las notificaciones
+                    productoImagen: this.productoImagen,
                     estado: 'Pendiente'
                   })
                     .then(() => {
                       console.log('Venta registrada con éxito.');
 
-                      // GUARDAR NOTIFICACION PARA EL VENDEDOR
                       if (this.vendedorId) {
                         const notiVendedorRef = ref(db, `notificacionesVendedor/${this.vendedorId}`);
                         const nuevaNotiRef = push(notiVendedorRef);

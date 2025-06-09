@@ -6,6 +6,7 @@
 
 <ion-content class="ion-padding">
   <form (ngSubmit)="registrarUsuario()">
+
     <ion-item>
       <ion-label position="floating">Usuario</ion-label>
       <ion-input [(ngModel)]="nombre" name="nombre" required></ion-input>
@@ -31,32 +32,27 @@
       <ion-input [(ngModel)]="telefono" name="telefono" type="tel" required></ion-input>
     </ion-item>
 
+    <!-- Dirección con Autocomplete (igual que editar-usuario) -->
     <ion-item>
       <ion-label position="floating">Dirección</ion-label>
-      <ion-input [(ngModel)]="direccion" name="direccion" required></ion-input>
+      <input id="autocomplete" type="text" class="native-input sc-ion-input-md"
+             [(ngModel)]="direccion" name="direccion" required
+             style="width: 100%; border: none; outline: none; padding: 12px; font-size: 16px; color: var(--ion-color-dark);">
     </ion-item>
 
+    <!-- Foto de perfil -->
     <ion-item>
-      <ion-label position="floating">Comuna</ion-label>
-      <ion-input [(ngModel)]="comuna" name="comuna" required></ion-input>
-    </ion-item>
-
-    <ion-item>
-      <ion-label position="floating">Región</ion-label>
-      <ion-input [(ngModel)]="region" name="region" required></ion-input>
-    </ion-item>
-    <ion-item>
-
-    <ion-label position="stacked">Foto de perfil</ion-label>
+      <ion-label position="stacked">Foto de perfil</ion-label>
       <input type="file" (change)="onFileSelected($event)" />
-      </ion-item>
+    </ion-item>
 
     <ion-item lines="none">
-        <ion-avatar>
-      <img [src]="fotoPerfilURL || 'https://via.placeholder.com/150'" />
-    </ion-avatar>
+      <ion-avatar>
+        <img [src]="fotoPerfilURL || 'https://via.placeholder.com/150'" />
+      </ion-avatar>
     </ion-item>
 
+    <!-- Botón -->
     <ion-button expand="block" color="success" type="submit">
       Registrarse
     </ion-button>

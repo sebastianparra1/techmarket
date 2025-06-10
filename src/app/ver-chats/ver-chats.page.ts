@@ -32,6 +32,8 @@ export class VerChatsPage implements OnInit {
       const data = snapshot.val();
       const ids = new Set<string>();
 
+      this.chats = []; // 🚀 Limpiar array para evitar duplicados
+
       for (const chatId in data) {
         const [uid1, uid2] = chatId.split('_');
         if (uid1 === this.currentUserId || uid2 === this.currentUserId) {
@@ -40,17 +42,26 @@ export class VerChatsPage implements OnInit {
           if (!ids.has(otroUid)) {
             ids.add(otroUid);
 
+            // Obtener nombre del otro usuario
             const userRef = ref(db, `usuarios/${otroUid}`);
             const userSnap = await get(userRef);
             const nombre = userSnap.exists() ? userSnap.val().nombreUsuario || 'Usuario' : 'Usuario';
 
+            // Obtener el último mensaje (protegiendo timestamp)
             const mensajes = data[chatId];
             const mensajesArray = Object.values(mensajes || {}) as any[];
-            const ultimo = mensajesArray.sort((a, b) =>
-              new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
-            )[0];
 
-            this.chats.push({ id: otroUid, nombre, ultimoMensaje: ultimo?.text || '' });
+            const ultimo = mensajesArray.sort((a, b) => {
+              const t1 = new Date(a.timestamp || 0).getTime();
+              const t2 = new Date(b.timestamp || 0).getTime();
+              return t2 - t1; // orden descendente → más reciente primero
+            })[0];
+
+            this.chats.push({
+              id: otroUid,
+              nombre,
+              ultimoMensaje: ultimo?.text || ''
+            });
           }
         }
       }

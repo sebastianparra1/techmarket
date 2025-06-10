@@ -4,18 +4,20 @@ import { getAuth } from 'firebase/auth';
 import { getDatabase, ref, onValue, push, set, get } from 'firebase/database';
 import { IonicModule } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-chat',
   templateUrl: './chat.page.html',
   styleUrls: ['./chat.page.scss'],
   standalone: true,
-  imports: [IonicModule, FormsModule]
+  imports: [IonicModule, FormsModule, CommonModule]
 })
 export class ChatPage {
   nombreUsuario = localStorage.getItem('nombreUsuario') || 'Invitado';
   vendedorId: string = '';
   nombreVendedor: string = '';
+  fotoPerfilVendedor: string = ''; // 🚀 AÑADIDO
   nuevoMensaje: string = '';
   mensajes: any[] = [];
   chatId: string = '';
@@ -29,6 +31,8 @@ export class ChatPage {
     if (!user) return;
 
     this.currentUserId = user.uid;
+    console.log('currentUserId cargado:', this.currentUserId);
+
     this.vendedorId = this.route.snapshot.paramMap.get('vendedorId') || '';
 
     if (!this.vendedorId) {
@@ -37,11 +41,13 @@ export class ChatPage {
     }
 
     this.chatId = [this.currentUserId, this.vendedorId].sort().join('_');
+    console.log('chatId armado:', this.chatId);
 
     const db = getDatabase();
     const vendedorRef = ref(db, `usuarios/${this.vendedorId}`);
     const snap = await get(vendedorRef);
     this.nombreVendedor = snap.exists() ? snap.val().nombreUsuario || 'Vendedor' : 'Vendedor';
+    this.fotoPerfilVendedor = snap.exists() ? snap.val().fotoPerfil || '' : ''; // 🚀 AÑADIDO
 
     this.subscribeToChat();
   }
@@ -69,35 +75,48 @@ export class ChatPage {
     const chatRef = ref(db, `chats/${this.chatId}`);
     onValue(chatRef, (snapshot) => {
       const data = snapshot.val();
+      console.log('Snapshot chat:', data);
+
       if (!data) return;
 
       const mensajesArray = Object.entries(data)
         .map(([id, mensaje]: any) => ({ id, ...mensaje }))
         .filter(m => m.text)
-        .sort((a, b) =>
-          new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
-        );
+        .sort((a, b) => {
+          const t1 = new Date(a.timestamp || 0).getTime();
+          const t2 = new Date(b.timestamp || 0).getTime();
+          return t1 - t2;
+        });
 
       this.mensajes = mensajesArray;
+      console.log('Mensajes cargados:', this.mensajes);
 
       setTimeout(() => {
         const el = document.querySelector('.messages-container');
         if (el) el.scrollTop = el.scrollHeight;
-      }, 100);
+      }, 300);
     });
   }
 
   enviarMensaje() {
     if (!this.nuevoMensaje.trim()) return;
 
+    if (!this.currentUserId) {
+      console.error('currentUserId no está listo → no se puede enviar el mensaje');
+      return;
+    }
+
     const db = getDatabase();
     const chatRef = ref(db, `chats/${this.chatId}`);
     const mensaje = {
       sender: this.nombreUsuario,
+      senderId: this.currentUserId,
       text: this.nuevoMensaje,
       timestamp: new Date().toISOString(),
       leido: false
     };
+
+    console.log('Enviando mensaje:', mensaje);
 
     const mensajeRef = push(chatRef);
     set(mensajeRef, mensaje).then(() => {

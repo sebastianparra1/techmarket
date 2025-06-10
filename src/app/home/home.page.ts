@@ -50,10 +50,10 @@ export class HomePage implements OnInit {
   idUsuario: string = '';
   direccion: string = 'Cargando dirección...';
   usuarios: any[] = [];
-  fotoPerfil: string = ''; // NUEVO
+  fotoPerfil: string = '';
 
   categorias: string[] = ['Periféricos', 'Electrónica', 'Monitores', 'Audio'];
-  destacados: any[] = []; // ← productos destacados (últimos o más vendidos)
+  destacados: any[] = [];
 
   constructor(
     private productosService: ProductoService,
@@ -70,12 +70,11 @@ export class HomePage implements OnInit {
 
     if (this.idUsuario) {
       this.obtenerDireccion();
-      this.obtenerFotoPerfil(); // NUEVO → cargar foto de perfil
+      this.obtenerFotoPerfil();
     }
 
     this.obtenerTodosLosUsuarios();
 
-    // 👉 Obtener productos reales
     const db = getDatabase();
     const dbRef = ref(db);
     const snapshot = await get(child(dbRef, 'productos'));
@@ -91,17 +90,11 @@ export class HomePage implements OnInit {
         categoria: data[id].categoria || 'General',
         creadoPor: data[id].creadoPor,
         unidades: data[id].unidades || 0,
-        ventas: data[id].ventas || 0 // 👈 si tienes el campo ventas, ya lo recogemos
+        ventas: data[id].ventas || 0
       }));
 
-      // 👉 OPCIÓN A → Los más vendidos
       productos.sort((a, b) => (b.ventas || 0) - (a.ventas || 0));
-      this.destacados = productos.slice(0, 3); // top 3 más vendidos
-
-      // 👉 OPCIÓN B → Si no tienes ventas, puedes dejar los últimos 3 agregados:
-      // this.destacados = productos.slice(-3).reverse();
-
-      // 👉 Solo descomenta la opción que quieras (yo te dejo la A activa, es la que pediste 😉)
+      this.destacados = productos.slice(0, 3);
     } else {
       console.log('No se encontraron productos para destacados.');
     }
@@ -128,7 +121,7 @@ export class HomePage implements OnInit {
     try {
       const usuario = await this.firebaseService.getUsuarioPorId(this.idUsuario);
       if (usuario) {
-        this.fotoPerfil = usuario.fotoPerfil || ''; // NUEVO
+        this.fotoPerfil = usuario.fotoPerfil || '';
       }
     } catch (error) {
       console.error('Error al obtener foto de perfil:', error);
@@ -164,6 +157,10 @@ export class HomePage implements OnInit {
     if (this.idUsuario) {
       this.router.navigate(['/editar-usuario', this.idUsuario]);
     }
+  }
+
+  verTusChats() { // 🚀 NUEVA FUNCIÓN
+    this.router.navigate(['/ver-chats']);
   }
 
   cerrarSesion() {

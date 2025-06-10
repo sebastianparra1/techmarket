@@ -1,16 +1,29 @@
 <ion-header>
-  <ion-toolbar>
-    <ion-title color="success">Chat con {{ nombreVendedor }}</ion-title>
+  <ion-toolbar color="dark">
+    <ion-avatar slot="start">
+      <img [src]="fotoPerfilVendedor || 'https://via.placeholder.com/150'" />
+    </ion-avatar>
+    <ion-title>{{ nombreVendedor }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
+<ion-content [fullscreen]="true" class="chat-content"> <!-- 🚀 añadimos clase para fondo negro -->
   <div class="messages-container">
     <div
       *ngFor="let msg of mensajes"
       class="message"
-      [class.own]="msg.sender === nombreUsuario">
-      {{ msg.text }}
+      [class.own]="msg.senderId === currentUserId">
+
+      <!-- Mostrar el nombre del otro usuario si NO es mi mensaje -->
+      <div *ngIf="msg.senderId !== currentUserId" class="sender-name">
+        {{ msg.sender }}
+      </div>
+
+      <!-- Texto del mensaje -->
+      <div>{{ msg.text }}</div>
+
+      <!-- Timestamp -->
+      <div class="timestamp">{{ msg.timestamp | date: 'shortTime' }}</div>
     </div>
   </div>
 

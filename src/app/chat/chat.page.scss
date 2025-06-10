@@ -1,22 +1,46 @@
+.chat-content {
+  --background: #000; /* 🚀 fondo negro */
+}
+
 .messages-container {
   display: flex;
   flex-direction: column;
+  gap: 8px;
   overflow-y: auto;
-  height: calc(100vh - 160px); /* ajusta según tu header/footer */
+  height: calc(100vh - 160px);
   padding: 10px;
+  background-color: transparent; /* 🚀 para que el fondo sea negro */
 }
+
 .message {
   max-width: 70%;
   padding: 10px;
   border-radius: 10px;
   font-size: 14px;
   line-height: 1.4;
-  background-color: #e5e5ea;
+  background-color: #333;
+  color: #eee;
   align-self: flex-start;
   word-wrap: break-word;
+  position: relative;
 }
 
 .message.own {
-  background-color: #dcf8c6;
+  background-color: #4caf50;
+  color: white;
   align-self: flex-end;
+}
+
+.sender-name {
+  font-size: 12px;
+  font-weight: bold;
+  color: #aaa;
+  margin-bottom: 4px;
+}
+
+.timestamp {
+  font-size: 10px;
+  color: #999;
+  margin-top: 4px;
+  text-align: right;
 }

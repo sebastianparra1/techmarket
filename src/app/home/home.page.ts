@@ -2,7 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import {
   IonHeader, IonToolbar, IonTitle, IonContent, IonAvatar, IonButton,
   IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonChip,
-  IonFab, IonFabButton, IonIcon, IonButtons, IonBadge, IonPopover, IonList, IonItem
+  IonFab, IonFabButton, IonIcon, IonButtons, IonBadge, IonPopover, IonList, IonItem,
+  IonModal, IonLabel, IonThumbnail // 👈 AÑADIDO
 } from '@ionic/angular/standalone';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router, ActivatedRoute } from '@angular/router';
@@ -11,7 +12,8 @@ import { add } from 'ionicons/icons';
 import { CarritoService, CartItem } from '../services/carrito.service';
 import { ProductoService } from '../services/productos.service';
 import { FirebaseService } from '../services/firebase.service';
-import { getDatabase, ref, child, get } from 'firebase/database';
+import { getDatabase, ref, child, get, onValue } from 'firebase/database';
+import { getAuth } from 'firebase/auth';
 
 @Component({
   selector: 'app-home',
@@ -38,6 +40,9 @@ import { getDatabase, ref, child, get } from 'firebase/database';
     IonPopover,
     IonList,
     IonItem,
+    IonModal,          // 👈 AÑADIDO
+    IonLabel,          // 👈 AÑADIDO
+    IonThumbnail,      // 👈 AÑADIDO
     FormsModule
   ],
   templateUrl: './home.page.html',
@@ -55,6 +60,13 @@ export class HomePage implements OnInit {
   categorias: string[] = ['Periféricos', 'Electrónica', 'Monitores', 'Audio'];
   destacados: any[] = [];
 
+  // Variables para notificaciones 🚀
+  currentUserEmail: string = '';
+  currentUserId: string = '';
+  notificaciones: any[] = [];
+  notificacionesSinLeerCount = 0;
+  mostrarNotificaciones = false;
+
   constructor(
     private productosService: ProductoService,
     private carritoService: CarritoService,
@@ -68,12 +80,20 @@ export class HomePage implements OnInit {
     this.nombreUsuario = localStorage.getItem('nombreUsuario') || 'Usuario';
     this.idUsuario = localStorage.getItem('id') || this.route.snapshot.paramMap.get('id') || '';
 
+    const auth = getAuth();
+    const user = auth.currentUser;
+    if (user) {
+      this.currentUserId = user.uid;
+      this.currentUserEmail = user.email || '';
+    }
+
     if (this.idUsuario) {
       this.obtenerDireccion();
       this.obtenerFotoPerfil();
     }
 
     this.obtenerTodosLosUsuarios();
+    this.cargarNotificaciones(); // 🚀
 
     const db = getDatabase();
     const dbRef = ref(db);
@@ -153,13 +173,74 @@ export class HomePage implements OnInit {
     this.carritoCount = items.reduce((acc, item) => acc + item.quantity, 0);
   }
 
+  // 🚀 CARGAR NOTIFICACIONES (igual que productos.page.ts)
+  cargarNotificaciones() {
+    const db = getDatabase();
+
+    // Notificaciones de COMPRADOR
+    const ventasRef = ref(db, 'ventas');
+    onValue(ventasRef, (snapshot) => {
+      const data = snapshot.val() || {};
+      const nuevasNotificaciones: any[] = [];
+
+      Object.entries(data).forEach(([id, venta]: any) => {
+        if (venta.compradorEmail === this.currentUserEmail) {
+          nuevasNotificaciones.push({
+            tipo: 'Estado de pedido',
+            productoNombre: venta.productoNombre,
+            estado: venta.estado,
+            productoImagen: venta.productoImagen,
+            productoId: venta.productoId
+          });
+        }
+      });
+
+      // Notificaciones de VENDEDOR
+      const notiVendedorRef = ref(db, `notificacionesVendedor/${this.currentUserId}`);
+      onValue(notiVendedorRef, (snap) => {
+        const dataVendedor = snap.val() || {};
+
+        Object.values(dataVendedor).forEach((noti: any) => {
+          nuevasNotificaciones.push({
+            tipo: 'Nueva compra recibida',
+            productoNombre: noti.productoNombre,
+            mensaje: noti.mensaje,
+            productoImagen: noti.productoImagen
+          });
+        });
+
+        this.notificaciones = nuevasNotificaciones;
+        this.notificacionesSinLeerCount = nuevasNotificaciones.length;
+      });
+    });
+  }
+
+  abrirNotificaciones() {
+    this.mostrarNotificaciones = true;
+    this.notificacionesSinLeerCount = 0;
+  }
+
+  cerrarNotificaciones() {
+    this.mostrarNotificaciones = false;
+  }
+
+  irAMisCompras(noti: any) {
+    if (noti.productoId) {
+      this.router.navigate(['/mis-compras'], {
+        queryParams: { productoId: noti.productoId }
+      });
+    } else {
+      this.router.navigate(['/mis-compras']);
+    }
+  }
+
   irAEditarPerfil() {
     if (this.idUsuario) {
       this.router.navigate(['/editar-usuario', this.idUsuario]);
     }
   }
 
-  verTusChats() { // 🚀 NUEVA FUNCIÓN
+  verTusChats() {
     this.router.navigate(['/ver-chats']);
   }
 

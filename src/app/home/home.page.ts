@@ -3,17 +3,18 @@ import {
   IonHeader, IonToolbar, IonTitle, IonContent, IonAvatar, IonButton,
   IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonChip,
   IonFab, IonFabButton, IonIcon, IonButtons, IonBadge, IonPopover, IonList, IonItem,
-  IonModal, IonLabel, IonThumbnail // 👈 AÑADIDO
+  IonModal, IonLabel, IonThumbnail, // 👈 AÑADIDO
 } from '@ionic/angular/standalone';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { add } from 'ionicons/icons';
+import { add, personOutline, pricetagOutline, chatboxEllipsesOutline, logOutOutline } from 'ionicons/icons';
 import { CarritoService, CartItem } from '../services/carrito.service';
 import { ProductoService } from '../services/productos.service';
 import { FirebaseService } from '../services/firebase.service';
 import { getDatabase, ref, child, get, onValue } from 'firebase/database';
 import { getAuth } from 'firebase/auth';
+import { addIcons } from 'ionicons';
 
 @Component({
   selector: 'app-home',
@@ -73,7 +74,8 @@ export class HomePage implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private firebaseService: FirebaseService
-  ) {}
+  ) {
+      addIcons({personOutline,pricetagOutline,chatboxEllipsesOutline,logOutOutline});}
 
   async ngOnInit() {
     this.actualizarContador();

@@ -69,14 +69,31 @@
     <ion-row>
       <ion-col size="12" size-md="6" size-lg="4" *ngFor="let producto of productosFiltrados">
         <ion-card class="producto-card">
-          <img [src]="producto.imagen" alt="{{ producto.nombre }}" />
-          <ion-card-header>
-            <ion-card-title>{{ producto.nombre }}</ion-card-title>
-            <ion-card-subtitle *ngIf="producto.categoria && producto.categoria !== 'General'">
-              {{ producto.categoria }}
-            </ion-card-subtitle>
-          </ion-card-header>
+  
+  <img [src]="producto.imagen" alt="{{ producto.nombre }}" />
+
+  
+  <ion-card-header class="producto-card-header">
+<!--<div>
+    <ion-card-title>{{ producto.nombre }}</ion-card-title>
+    <ion-card-subtitle *ngIf="producto.categoria && producto.categoria !== 'General'">
+      {{ producto.categoria }}
+    </ion-card-subtitle>
+  </div>-->
+  <!-- Header con 3 puntitos -->
+    <button><div class="emoji-report-button" (click)="abrirMenuReportes($event, producto)" title="Reportar producto">
+  ⚠️
+</div></button>
+  
+  
+  
+  </ion-card-header>
+          
+
+
+          
           <ion-card-content>
+            <ion-card-title>{{ producto.nombre }}</ion-card-title>
             <p><strong>Precio:</strong> ${{ producto.precio | number: '1.0-0' }}</p>
             <p *ngIf="producto.descripcion"><strong>Descripción:</strong> {{ producto.descripcion }}</p>
 

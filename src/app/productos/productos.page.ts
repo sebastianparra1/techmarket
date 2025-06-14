@@ -3,15 +3,16 @@ import {
   IonHeader, IonToolbar, IonTitle, IonContent, IonAvatar, IonButton,
   IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonChip,
   IonFab, IonFabButton, IonIcon, IonButtons, IonBadge, IonicModule,
-  IonSearchbar
+  IonSearchbar, PopoverController
 } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { add, cartOutline, chatboxEllipsesOutline } from 'ionicons/icons';
 import { CarritoService, CartItem } from '../services/carrito.service';
-import { getDatabase, ref, get, child, onValue } from 'firebase/database';
+import { getDatabase, ref, get, child, onValue, set } from 'firebase/database';
 import { getAuth } from 'firebase/auth';
+import { ReportarPopoverComponent } from '../components/reportar-popover/reportar-popover.component';
 
 interface Producto {
   id: string;
@@ -55,7 +56,8 @@ export class ProductosPage {
 
   constructor(
     private carritoService: CarritoService,
-    private router: Router
+    private router: Router,
+    private popoverController: PopoverController
   ) {}
 
   async ngOnInit() {
@@ -94,6 +96,7 @@ export class ProductosPage {
     this.cargarContadorMensajes();
     this.cargarNotificaciones();
   }
+  
 
   ionViewWillEnter() {
     this.actualizarContador();
@@ -212,4 +215,44 @@ export class ProductosPage {
       this.router.navigate(['/mis-compras']);
     }
   }
+  async abrirMenuReportes(ev: Event, producto: Producto) {
+  const popover = await this.popoverController.create({
+    component: ReportarPopoverComponent,
+    event: ev,
+    translucent: true,
+    componentProps: {
+      productoId: producto.id,   // 👈 PASAMOS el ID
+      productoNombre: producto.nombre,      
+      currentUserId: this.currentUserId, // 👈 PASAMOS el usuario actual
+      productoCreadoPor: producto.creadoPor // le mandas el vendedor
+    }
+  });
+  await popover.present();
+}
+
+
+reportarProducto(productoId: string) {
+  const db = getDatabase();
+  const auth = getAuth();
+  const currentUser = auth.currentUser;
+
+  if (!currentUser) {
+    alert('Debes iniciar sesión para reportar un producto.');
+    return;
+  }
+
+  const reporteRef = ref(db, `reportes/${productoId}/${currentUser.uid}`);
+  set(reporteRef, {
+    timestamp: new Date().toISOString(),
+    usuario: currentUser.uid
+  }).then(() => {
+    alert('Producto reportado correctamente.');
+  }).catch((error) => {
+    console.error('Error al reportar producto:', error);
+    alert('Error al reportar producto.');
+  });
+}
+
+
+
 }

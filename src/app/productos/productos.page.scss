@@ -9,7 +9,7 @@
   font-size: 1.2em;
   font-weight: bold;
   margin-left: 10px;
-  color: #ffffff; /* corregido */
+  color: #ffffff;
 }
 
 .carrito-button {
@@ -29,6 +29,7 @@
   overflow: hidden;
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  position: relative; /* necesario para posicionar los 3 puntitos */
 }
 
 .producto-card:hover {
@@ -43,6 +44,24 @@
   display: block;
   background-color: #f9f9f9;
   padding: 10px;
+}
+
+/* Botón 3 puntitos (menu en cada card) */
+.producto-card .menu-button {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 10;
+  --padding-start: 0;
+  --padding-end: 0;
+  --background: transparent;
+  --color: #333;
+  font-size: 1.2em;
+}
+
+.producto-card .menu-button:hover {
+  --color: #1DB954; /* verde al hover */
+  cursor: pointer;
 }
 
 /* Contenido centrado y limpio */
@@ -67,7 +86,7 @@ ion-card-subtitle {
 
 /* Botones más suaves */
 ion-button {
-  --background: #1DB954; /* verde suave tipo Spotify */
+  --background: #1DB954;
   --background-hover: #1ed760;
   --background-activated: #1ed760;
   --color: #fff;
@@ -100,14 +119,11 @@ ion-col {
 }
 
 /* CONTROL RESPONSIVO */
-
 @media (max-width: 768px) {
-  /* Ocultamos botones de la derecha en móvil */
   .desktop-buttons {
     display: none;
   }
 
-  /* Mostramos solo el menú hamburguesa en móvil */
   ion-menu-button {
     display: block;
   }
@@ -120,4 +136,64 @@ ion-menu-button {
   @media (max-width: 768px) {
     display: block;
   }
+}
+
+.producto-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start; /* alinea arriba */
+  padding: 8px 12px;
+}
+
+.producto-card-header ion-button {
+  --padding-start: 0;
+  --padding-end: 0;
+  --padding-top: 0;
+  --padding-bottom: 0;
+  width: 32px;
+  height: 32px;
+  --border-radius: 50%;
+  --background: #e11414;
+  --color: #888; /* color gris bonito */
+}
+
+.producto-card-header ion-button:hover {
+  --color: #1DB954; /* verde bonito al hover */
+}
+
+
+/* Responsive ajuste botón 3 puntitos */
+@media (max-width: 768px) {
+  .producto-card-header ion-button {
+    width: 28px;
+    height: 28px;
+    --icon-size: 20px;
+  }
+
+  .producto-card-header ion-card-title {
+    font-size: 1rem;
+  }
+
+  .producto-card-header ion-card-subtitle {
+    font-size: 0.8rem;
+  }
+
+  .emoji-report-button {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  font-size: 1.4rem;
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.2s ease;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.05);
+  padding: 2px 6px;
+
+  &:hover {
+    transform: scale(1.2);
+    background-color: rgba(255, 255, 255, 0.15);
+  }
+}
+
 }

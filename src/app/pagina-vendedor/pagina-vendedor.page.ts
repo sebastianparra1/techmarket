@@ -190,21 +190,23 @@ export class PaginaVendedorPage implements OnInit {
     this.productoEditando = { ...producto };
   }
 
-  async guardarEdicion() {
-    if (!this.productoEditando.id) return;
+ async guardarEdicion() {
+  if (!this.productoEditando.id) return;
 
-    const db = getDatabase();
-    const productoRef = ref(db, `productos/${this.productoEditando.id}`);
+  const db = getDatabase();
+  const productoRef = ref(db, `productos/${this.productoEditando.id}`);
 
-    await update(productoRef, {
-      nombre: this.productoEditando.nombre,
-      precio: this.productoEditando.precio,
-      descripcion: this.productoEditando.descripcion,
-      categoria: this.productoEditando.categoria || 'General'
-    });
+  await update(productoRef, {
+    nombre: this.productoEditando.nombre,
+    precio: this.productoEditando.precio,
+    descripcion: this.productoEditando.descripcion,
+    categoria: this.productoEditando.categoria || 'General',
+    unidades: this.productoEditando.unidades
+  });
 
-    this.productoEditando = null;
-  }
+  this.productoEditando = null;
+}
+
 
   cancelarEdicion() {
     this.productoEditando = null;

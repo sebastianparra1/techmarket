@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import emailjs, { EmailJSResponseStatus } from 'emailjs-com';
 import { getDatabase, ref, get, update, push, set } from 'firebase/database';
 
@@ -27,29 +27,30 @@ export class PagoComponent {
   emailComprador: string = '';
   codigoPostal: string = '';
   rut: string = '';
+  carrito: any[] = [];
 
-  productoId: string = '';
-  productoNombre: string = '';
-  productoPrecio: number = 0;
-  productoImagen: string = '';
-  vendedorId: string = '';
-
-  constructor(private route: ActivatedRoute) {}
+  constructor(private route: ActivatedRoute, private router: Router) {}
 
   ngOnInit() {
     this.route.queryParams.subscribe(params => {
-      this.productoId = params['id'] || '';
-      this.productoNombre = params['nombre'] || '';
-      this.productoPrecio = params['precio'] || 0;
-      this.productoImagen = params['imagen'] || '';
-      this.vendedorId = params['vendedorId'] || '';
+      if (params['cart']) {
+        this.carrito = JSON.parse(params['cart']);
+      } else {
+        this.carrito = [{
+          id: params['id'] || '',
+          nombre: params['nombre'] || '',
+          price: params['precio'] || 0,
+          image: params['imagen'] || '',
+          vendedorId: params['vendedorId'] || '',
+          quantity: 1
+        }];
+      }
     });
   }
 
   filtrarRut(event: any) {
     let valor = (event.detail.value || '').toLowerCase();
-    valor = valor.replace(/[^0-9k]/g, '');
-    valor = valor.slice(0, 9);
+    valor = valor.replace(/[^0-9k]/g, '').slice(0, 9);
     const kIndex = valor.indexOf('k');
     if (kIndex !== -1 && kIndex !== valor.length - 1) {
       valor = valor.replace(/k/g, '');
@@ -66,10 +67,8 @@ export class PagoComponent {
     const input = event.detail.value || '';
     const soloNumeros = input.replace(/\D/g, '').slice(0, 16);
     const formateado = soloNumeros.replace(/(.{4})/g, '$1 ').trim();
-
     this.numero = soloNumeros;
     event.target.value = formateado;
-
     if (soloNumeros.length === 16) {
       this.animarShine = true;
       setTimeout(() => (this.animarShine = false), 1000);
@@ -96,128 +95,75 @@ export class PagoComponent {
     if (rut.length < 2 || rut.length > 9) return false;
     const cuerpo = rut.slice(0, -1);
     const dvIngresado = rut.slice(-1);
-
-    let suma = 0;
-    let multiplo = 2;
-
+    let suma = 0, multiplo = 2;
     for (let i = cuerpo.length - 1; i >= 0; i--) {
       suma += parseInt(cuerpo.charAt(i)) * multiplo;
       multiplo = multiplo < 7 ? multiplo + 1 : 2;
     }
-
     const dvCalculado = 11 - (suma % 11);
-    let dvFinal = '';
-
-    if (dvCalculado === 11) dvFinal = '0';
-    else if (dvCalculado === 10) dvFinal = 'k';
-    else dvFinal = dvCalculado.toString();
-
+    const dvFinal = dvCalculado === 11 ? '0' : dvCalculado === 10 ? 'k' : dvCalculado.toString();
     return dvIngresado === dvFinal;
   }
 
   pagar() {
     const camposObligatorios = [
-      this.numero,
-      this.nombreTitular,
-      this.vencimiento,
-      this.cvv,
-      this.nombre,
-      this.apellido,
-      this.emailComprador,
-      this.codigoPostal,
-      this.rut
+      this.numero, this.nombreTitular, this.vencimiento, this.cvv,
+      this.nombre, this.apellido, this.emailComprador, this.codigoPostal, this.rut
     ];
-
-    const hayCampoVacio = camposObligatorios.some(campo => !campo || campo.trim() === '');
-
-    if (hayCampoVacio) {
+    if (camposObligatorios.some(campo => !campo || campo.trim() === '')) {
       alert('Por favor, completa todos los campos antes de continuar.');
       return;
     }
-
     if (!this.esRutValido(this.rut)) {
       alert('RUT inválido. Por favor revisa el rut ingresado.');
       return;
     }
 
-    const templateParams = {
-      to_name: this.nombre + ' ' + this.apellido,
-      user_email: this.emailComprador,
-      producto_nombre: this.productoNombre,
-      producto_precio: `$${this.productoPrecio}`,
-      producto_imagen: this.productoImagen,
-      mensaje: 'Su paquete va camino al centro de distribución'
-    };
+    const db = getDatabase();
 
-    emailjs.send('service_17lzgkc', 'template_ecwohrd', templateParams, '089yXtpwCl6dhowXI')
-      .then((response: EmailJSResponseStatus) => {
-        console.log('SUCCESS!', response.status, response.text);
-        alert('¡Se ha enviado un correo con su recibo!');
+    for (const item of this.carrito) {
+      const templateParams = {
+        to_name: this.nombre + ' ' + this.apellido,
+        user_email: this.emailComprador,
+        producto_nombre: item.name || item.nombre,
+        producto_precio: `$${item.price}`,
+        producto_imagen: item.image,
+        unidades_compradas: item.quantity,
+        mensaje: 'Su paquete va camino al centro de distribución'
+      };
 
-        if (this.productoId) {
-          const db = getDatabase();
-          const productoRef = ref(db, `productos/${this.productoId}`);
+      emailjs.send('service_17lzgkc', 'template_ecwohrd', templateParams, '089yXtpwCl6dhowXI')
+        .then(() => console.log('Correo enviado para', item.nombre))
+        .catch(err => console.error('Error al enviar correo', err));
 
-          get(productoRef).then((snapshot) => {
-            if (snapshot.exists()) {
-              const data = snapshot.val();
-              const unidadesActuales = +data.unidades || 0;
-              const nuevasUnidades = unidadesActuales > 0 ? unidadesActuales - 1 : 0;
+      const productoRef = ref(db, `productos/${item.id}`);
+      get(productoRef).then(snapshot => {
+        if (snapshot.exists()) {
+          const data = snapshot.val();
+          const nuevasUnidades = Math.max((+data.unidades || 0) - item.quantity, 0);
+          update(productoRef, { unidades: nuevasUnidades });
 
-              update(productoRef, { unidades: nuevasUnidades })
-                .then(() => {
-                  console.log('Unidades actualizadas:', nuevasUnidades);
-
-                  const ventasRef = ref(db, 'ventas');
-                  const nuevaVentaRef = push(ventasRef);
-
-                  set(nuevaVentaRef, {
-                    vendedorId: this.vendedorId,
-                    compradorId: '',
-                    compradorNombre: this.nombre + ' ' + this.apellido,
-                    compradorEmail: this.emailComprador,
-                    productoId: this.productoId,
-                    productoNombre: this.productoNombre,
-                    productoImagen: this.productoImagen,
-                    estado: 'Pendiente'
-                  })
-                    .then(() => {
-                      console.log('Venta registrada con éxito.');
-
-                      if (this.vendedorId) {
-                        const notiVendedorRef = ref(db, `notificacionesVendedor/${this.vendedorId}`);
-                        const nuevaNotiRef = push(notiVendedorRef);
-
-                        set(nuevaNotiRef, {
-                          mensaje: `El usuario ${this.nombre} ${this.apellido} ha comprado tu producto ${this.productoNombre}.`,
-                          productoNombre: this.productoNombre,
-                          compradorNombre: this.nombre + ' ' + this.apellido,
-                          productoImagen: this.productoImagen,
-                          leida: false,
-                          timestamp: Date.now()
-                        })
-                          .then(() => {
-                            console.log('Notificación enviada al vendedor.');
-                          })
-                          .catch(error => {
-                            console.error('Error al guardar notificación:', error);
-                          });
-                      }
-                    })
-                    .catch(error => {
-                      console.error('Error al registrar la venta:', error);
-                    });
-                })
-                .catch(error => {
-                  console.error('Error al actualizar unidades:', error);
-                });
-            }
+          const ventasRef = ref(db, 'ventas');
+          const nuevaVentaRef = push(ventasRef);
+          set(nuevaVentaRef, {
+            vendedorId: item.vendedorId || '',
+            compradorId: '',
+            compradorNombre: this.nombre + ' ' + this.apellido,
+            compradorEmail: this.emailComprador,
+            productoId: item.id,
+            productoNombre: item.nombre,
+            productoImagen: item.image,
+            cantidad: item.quantity,
+            estado: 'Pendiente'
           });
         }
-
-      }, (err) => {
-        console.log('FAILED...', err);
-        alert('Error al enviar el correo. Intente nuevamente.');
       });
+    }
+
+    // 🚀 Alert y redirección automática a Home
+    alert('¡Compra Realizada!');
+    setTimeout(() => {
+      this.router.navigate(['/home']);
+    }, 1000); // esperar 1 segundo y redirigir
   }
 }

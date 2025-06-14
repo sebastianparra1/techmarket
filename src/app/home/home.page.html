@@ -1,4 +1,4 @@
-<ion-header>
+<ion-header> 
   <ion-toolbar class="header-toolbar">
     <ion-buttons slot="start" style="display: flex; align-items: center;">
       <ion-avatar>
@@ -92,7 +92,7 @@
 </ion-modal>
 
 <ion-content class="ion-padding">
-  <!-- El resto de tu contenido igual que antes -->
+  <!-- Bienvenida -->
   <ion-card class="bienvenida-card">
     <ion-card-header>
       <ion-card-title>👋 ¡Bienvenido, {{ nombreUsuario }}!</ion-card-title>
@@ -102,6 +102,7 @@
     </ion-card-content>
   </ion-card>
 
+  <!-- Banner -->
   <div class="banner">
     <p>TechMarket es una plataforma de e-commerce que ofrece productos electrónicos y periféricos...</p>
     <ion-button expand="block" color="success" [routerLink]="['/productos']">
@@ -109,6 +110,7 @@
     </ion-button>
   </div>
 
+  <!-- Productos destacados -->
   <h2 class="section-title">Productos Destacados</h2>
   <div class="product-grid">
     <ion-card *ngFor="let producto of destacados" class="product-card">
@@ -120,21 +122,41 @@
         <p><strong>Precio:</strong> ${{ producto.precio | number: '1.0-0' }}</p>
         <p *ngIf="producto.descripcion"><strong>Descripción:</strong> {{ producto.descripcion }}</p>
 
-        <ion-button expand="block" color="success">Observar</ion-button>
-        <ion-button expand="block" color="success" (click)="agregarAlCarrito(producto)">
+        <!-- Unidades disponibles o agotado -->
+        <p *ngIf="producto.unidades === 0" style="color: red; font-weight: bold;">
+          Producto agotado
+        </p>
+        <p *ngIf="producto.unidades > 0">
+          <strong>Unidades disponibles:</strong> {{ producto.unidades }}
+        </p>
+
+        <!-- Botón Observar -->
+        <ion-button expand="block" color="success" (click)="irAProductoDetalle(producto)">
+          Observar
+        </ion-button>
+
+        <!-- Botón Agregar al carrito -->
+        <ion-button expand="block" color="success" 
+                    (click)="agregarAlCarrito(producto)" 
+                    [disabled]="producto.unidades === 0">
           Agregar al carrito
         </ion-button>
-        <ion-button expand="block" color="success" [routerLink]="['/chat']">Proponer intercambio</ion-button>
+
+        <!-- Botón Proponer intercambio -->
+        <ion-button expand="block" color="success" (click)="irAChat(producto.creadoPor)">
+          Proponer intercambio
+        </ion-button>
       </ion-card-content>
     </ion-card>
   </div>
 
+  <!-- Categorías -->
   <h2 class="section-title">Categorías</h2>
   <div class="category-row">
     <ion-chip *ngFor="let categoria of categorias" color="success" outline>{{ categoria }}</ion-chip>
   </div>
 
-  <!-- Footer igual que tenías -->
+  <!-- Footer -->
   <div class="footer-section">
     <h2 class="section-title">Para más información :)</h2>
 

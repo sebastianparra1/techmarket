@@ -7,8 +7,8 @@ import {
   IonCard, IonCardHeader, IonCardTitle, IonCardContent
 } from '@ionic/angular/standalone';
 import { CarritoService, CartItem } from '../services/carrito.service';
-import { RouterModule } from '@angular/router';
-import { getDatabase, ref, update, get, child } from 'firebase/database'; // 👈 añadido
+import { RouterModule, Router } from '@angular/router';
+import { getDatabase, ref, update, get, child } from 'firebase/database';
 
 @Component({
   selector: 'app-carrito-de-compras',
@@ -24,10 +24,9 @@ import { getDatabase, ref, update, get, child } from 'firebase/database'; // �
   ]
 })
 export class CarritoDeComprasPage implements OnInit {
-
   cartItems: CartItem[] = [];
 
-  constructor(private carritoService: CarritoService) {}
+  constructor(private carritoService: CarritoService, private router: Router) {}
 
   ngOnInit() {
     this.cartItems = this.carritoService.getItems();
@@ -57,31 +56,11 @@ export class CarritoDeComprasPage implements OnInit {
     }
   }
 
-  // ✅ Aquí actualizamos las ventas al confirmar compra
-  async checkout(): Promise<void> {
-    const db = getDatabase();
-
-    for (const item of this.cartItems) {
-      const productoRef = ref(db, `productos/${item.id}`);
-
-      try {
-        const snapshot = await get(child(ref(db), `productos/${item.id}`));
-
-        if (snapshot.exists()) {
-          const productoData = snapshot.val();
-          const ventasActuales = productoData.ventas || 0;
-
-          await update(productoRef, {
-            ventas: ventasActuales + item.quantity
-          });
-        }
-      } catch (error) {
-        console.error(`Error actualizando ventas para el producto ${item.name}:`, error);
+  irAPagar() {
+    this.router.navigate(['/pago'], {
+      queryParams: {
+        cart: JSON.stringify(this.cartItems)
       }
-    }
-
-    alert('¡Gracias por tu compra!');
-    this.carritoService.clearCart();
-    this.cartItems = [];
+    });
   }
 }

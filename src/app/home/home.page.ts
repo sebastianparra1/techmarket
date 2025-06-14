@@ -3,12 +3,11 @@ import {
   IonHeader, IonToolbar, IonTitle, IonContent, IonAvatar, IonButton,
   IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonChip,
   IonFab, IonFabButton, IonIcon, IonButtons, IonBadge, IonPopover, IonList, IonItem,
-  IonModal, IonLabel, IonThumbnail // 👈 AÑADIDO
+  IonModal, IonLabel, IonThumbnail
 } from '@ionic/angular/standalone';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { add } from 'ionicons/icons';
 import { CarritoService, CartItem } from '../services/carrito.service';
 import { ProductoService } from '../services/productos.service';
 import { FirebaseService } from '../services/firebase.service';
@@ -40,16 +39,15 @@ import { getAuth } from 'firebase/auth';
     IonPopover,
     IonList,
     IonItem,
-    IonModal,          // 👈 AÑADIDO
-    IonLabel,          // 👈 AÑADIDO
-    IonThumbnail,      // 👈 AÑADIDO
+    IonModal,
+    IonLabel,
+    IonThumbnail,
     FormsModule
   ],
   templateUrl: './home.page.html',
   styleUrls: ['./home.page.scss'],
 })
 export class HomePage implements OnInit {
-  add = add;
   carritoCount = 0;
   nombreUsuario: string = '';
   idUsuario: string = '';
@@ -60,7 +58,6 @@ export class HomePage implements OnInit {
   categorias: string[] = ['Periféricos', 'Electrónica', 'Monitores', 'Audio'];
   destacados: any[] = [];
 
-  // Variables para notificaciones 🚀
   currentUserEmail: string = '';
   currentUserId: string = '';
   notificaciones: any[] = [];
@@ -93,7 +90,7 @@ export class HomePage implements OnInit {
     }
 
     this.obtenerTodosLosUsuarios();
-    this.cargarNotificaciones(); // 🚀
+    this.cargarNotificaciones();
 
     const db = getDatabase();
     const dbRef = ref(db);
@@ -173,11 +170,9 @@ export class HomePage implements OnInit {
     this.carritoCount = items.reduce((acc, item) => acc + item.quantity, 0);
   }
 
-  // 🚀 CARGAR NOTIFICACIONES (igual que productos.page.ts)
   cargarNotificaciones() {
     const db = getDatabase();
 
-    // Notificaciones de COMPRADOR
     const ventasRef = ref(db, 'ventas');
     onValue(ventasRef, (snapshot) => {
       const data = snapshot.val() || {};
@@ -195,7 +190,6 @@ export class HomePage implements OnInit {
         }
       });
 
-      // Notificaciones de VENDEDOR
       const notiVendedorRef = ref(db, `notificacionesVendedor/${this.currentUserId}`);
       onValue(notiVendedorRef, (snap) => {
         const dataVendedor = snap.val() || {};
@@ -247,5 +241,15 @@ export class HomePage implements OnInit {
   cerrarSesion() {
     localStorage.clear();
     this.router.navigate(['/login']);
+  }
+
+  // ✅ NUEVA FUNCION para ir a producto-detalle
+  irAProductoDetalle(producto: any) {
+    this.router.navigate(['/producto-detalle', producto.id]);
+  }
+
+  // ✅ NUEVA FUNCION para ir al chat con vendedor
+  irAChat(vendedorId: string) {
+    this.router.navigate(['/chat', vendedorId]);
   }
 }

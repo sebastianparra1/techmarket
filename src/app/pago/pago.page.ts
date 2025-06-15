@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import emailjs, { EmailJSResponseStatus } from 'emailjs-com';
+import emailjs from 'emailjs-com';
 import { getDatabase, ref, get, update, push, set } from 'firebase/database';
 
 @Component({
@@ -28,6 +28,9 @@ export class PagoComponent {
   codigoPostal: string = '';
   rut: string = '';
   carrito: any[] = [];
+
+  // ✅ Logo de tarjeta
+  logoTarjeta: string = 'assets/default-card.png';
 
   constructor(private route: ActivatedRoute, private router: Router) {}
 
@@ -69,6 +72,16 @@ export class PagoComponent {
     const formateado = soloNumeros.replace(/(.{4})/g, '$1 ').trim();
     this.numero = soloNumeros;
     event.target.value = formateado;
+
+    // ✅ Detectar tipo de tarjeta por prefijo
+    if (soloNumeros.startsWith('4')) {
+      this.logoTarjeta = 'assets/images/Visa.png';
+    } else if (/^5[1-5]/.test(soloNumeros)) {
+      this.logoTarjeta = 'assets/images/Mastercard.png';
+    } else {
+      this.logoTarjeta = '';
+    }
+
     if (soloNumeros.length === 16) {
       this.animarShine = true;
       setTimeout(() => (this.animarShine = false), 1000);
@@ -160,10 +173,9 @@ export class PagoComponent {
       });
     }
 
-    // 🚀 Alert y redirección automática a Home
     alert('¡Compra Realizada!');
     setTimeout(() => {
       this.router.navigate(['/home']);
-    }, 1000); // esperar 1 segundo y redirigir
+    }, 1000);
   }
 }

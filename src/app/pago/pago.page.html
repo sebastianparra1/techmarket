@@ -3,15 +3,20 @@
     <div class="card-preview-container">
       <div class="credit-card" [class.flipped]="mostrarTrasera">
         <div class="front">
-          <div class="shine"></div>
-          <div class="card-number">{{ numeroFormateado || '•••• •••• •••• ••••' }}</div>
-          <div class="card-name">{{ nombreTitular || 'NOMBRE DEL TITULAR' }}</div>
-          <div class="card-expiry">{{ vencimiento || 'MM/AA' }}</div>
-        </div>
+  <div class="shine"></div>
+
+  <div class="top-bar">
+    <img *ngIf="logoTarjeta" [src]="logoTarjeta" class="card-logo" alt="Tipo de tarjeta" />
+  </div>
+
+  <div class="card-number">{{ numeroFormateado || '•••• •••• •••• ••••' }}</div>
+  <div class="card-name">{{ nombreTitular || 'NOMBRE DEL TITULAR' }}</div>
+  <div class="card-expiry">{{ vencimiento || 'MM/AA' }}</div>
+</div>
         <div class="back">
-          <div class="cvv-label">CVV</div>
-          <div class="cvv-value">{{ cvv || '•••' }}</div>
-        </div>
+    <div class="cvv-label">CVV</div>
+    <div class="cvv-value">{{ cvv || '•••' }}</div>
+  </div>
       </div>
     </div>
 
@@ -64,8 +69,8 @@
                   type="text"
                   [value]="cvv"
                   (ionInput)="actualizarCVV($event)"
-                  (focus)="mostrarTrasera = true"
-                  (blur)="mostrarTrasera = false"
+                  (ionfocus)="mostrarTrasera = true"
+                  (ionblur)="mostrarTrasera = false"
                   maxlength="3"
                   placeholder="123">
                 </ion-input>

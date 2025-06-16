@@ -66,7 +66,7 @@ export class RegistroPage implements AfterViewInit {
 
     const formData = new FormData();
     formData.append('file', this.selectedFile);
-    formData.append('upload_preset', 'ecommerce_upload'); // tu preset en Cloudinary
+    formData.append('upload_preset', 'ecommerce_upload');
 
     const response = await fetch('https://api.cloudinary.com/v1_1/doa5jzxjx/image/upload', {
       method: 'POST',
@@ -90,6 +90,7 @@ export class RegistroPage implements AfterViewInit {
         message: 'Por favor, completa todos los campos.',
         duration: 2000,
         color: 'danger',
+        position: 'bottom'
       });
       await toast.present();
       return;
@@ -100,6 +101,7 @@ export class RegistroPage implements AfterViewInit {
         message: 'El RUT ingresado no es válido.',
         duration: 2000,
         color: 'danger',
+        position: 'bottom'
       });
       await toast.present();
       return;
@@ -111,6 +113,7 @@ export class RegistroPage implements AfterViewInit {
         message: 'El teléfono debe tener solo números y al menos 9 dígitos.',
         duration: 2000,
         color: 'danger',
+        position: 'bottom'
       });
       await toast.present();
       return;
@@ -134,6 +137,7 @@ export class RegistroPage implements AfterViewInit {
         message: '¡Registro exitoso!',
         duration: 2000,
         color: 'success',
+        position: 'bottom'
       });
       await toast.present();
       this.router.navigate(['/login']);
@@ -142,6 +146,7 @@ export class RegistroPage implements AfterViewInit {
         message: 'Error al registrar. Intenta nuevamente.',
         duration: 2000,
         color: 'danger',
+        position: 'bottom'
       });
       await toast.present();
     }

@@ -22,7 +22,7 @@ export class EditarUsuarioPage implements AfterViewInit {
     direccion: '',
     comuna: '',
     region: '',
-    fotoPerfil: '' // añadimos fotoPerfil
+    fotoPerfil: ''
   };
 
   id: string = '';
@@ -43,7 +43,7 @@ export class EditarUsuarioPage implements AfterViewInit {
       const user = await this.firebaseService.getUsuarioPorId(this.id);
       if (user) {
         this.usuario = user;
-        this.fotoPerfilURL = user.fotoPerfil || ''; // cargar foto actual
+        this.fotoPerfilURL = user.fotoPerfil || '';
         setTimeout(() => {
           const input = document.getElementById('autocomplete') as HTMLInputElement;
           if (input) input.value = this.usuario.direccion || '';
@@ -80,7 +80,7 @@ export class EditarUsuarioPage implements AfterViewInit {
 
     const formData = new FormData();
     formData.append('file', this.selectedFile);
-    formData.append('upload_preset', 'ecommerce_upload'); // tu preset
+    formData.append('upload_preset', 'ecommerce_upload');
 
     const response = await fetch('https://api.cloudinary.com/v1_1/doa5jzxjx/image/upload', {
       method: 'POST',
@@ -107,7 +107,8 @@ export class EditarUsuarioPage implements AfterViewInit {
       const toast = await this.toastCtrl.create({
         message: 'Cambios guardados correctamente. Reinicia la app para ver los cambios.',
         duration: 3000,
-        color: 'success'
+        color: 'success',
+        position: 'bottom'
       });
       await toast.present();
       this.router.navigate(['/home']);
@@ -115,7 +116,8 @@ export class EditarUsuarioPage implements AfterViewInit {
       const toast = await this.toastCtrl.create({
         message: 'Error al guardar los cambios.',
         duration: 2000,
-        color: 'danger'
+        color: 'danger',
+        position: 'bottom'
       });
       await toast.present();
     }

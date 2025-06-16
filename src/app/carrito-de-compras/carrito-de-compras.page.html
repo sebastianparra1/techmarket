@@ -32,7 +32,9 @@
     </ion-card-header>
     <ion-card-content>
       <!--<ion-button expand="block" color="success" (click)="checkout()">Finalizar Compra</ion-button>-->
-      <ion-button expand="block" color="success" (click)="irAPagar()">Finalizar Compra</ion-button>
+      <ion-button expand="block" color="success" (click)="irAPagar()" [disabled]="cartItems.length === 0">
+  Finalizar Compra
+</ion-button>
     </ion-card-content>
   </ion-card>
 <br>

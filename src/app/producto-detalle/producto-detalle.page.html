@@ -6,17 +6,27 @@
       </ion-avatar>
       <div class="logo-title" style="margin-left: 10px;">
         <div style="font-weight: bold;">TechMarket</div>
-        <div style="font-size: 0.75em; color: #007bff;">
-          📍 {{ direccion }}
-        </div>
+        <div style="font-size: 0.75em; color: #007bff;">📍 {{ direccion }}</div>
       </div>
     </ion-buttons>
 
     <ion-buttons slot="end">
-      <ion-button fill="clear" id="perfil-popover" class="perfil-button">
-        <img src="https://cdn-icons-png.flaticon.com/512/6073/6073873.png" alt="Perfil"
-          style="width: 7vw; max-width: 32px; min-width: 24px; height: auto;" />
+      <!-- Notificaciones -->
+      <ion-button fill="clear" color="success" (click)="abrirNotificaciones()">
+        <img src="https://cdn-icons-png.flaticon.com/512/6915/6915254.png" alt="Notificaciones"
+             style="width: 24px; height: 24px;" />
+        <ion-badge color="danger" *ngIf="notificacionesSinLeerCount > 0" style="margin-left: 6px;">
+          {{ notificacionesSinLeerCount }}
+        </ion-badge>
       </ion-button>
+
+      <!-- Perfil -->
+      <ion-button fill="clear" id="perfil-popover" class="perfil-button">
+        <img [src]="fotoPerfil || 'https://cdn-icons-png.flaticon.com/512/6073/6073873.png'" alt="Perfil"
+          style="width: 7vw; max-width: 32px; min-width: 24px; height: auto; border-radius: 50%;" />
+      </ion-button>
+
+      <!-- Carrito -->
       <ion-button fill="clear" [routerLink]="['/carrito-de-compras']" class="carrito-button">
         <img src="https://cdn-icons-png.flaticon.com/512/8762/8762418.png" alt="Carrito"
           style="width: 7vw; max-width: 32px; min-width: 24px; height: auto;" />
@@ -26,38 +36,63 @@
   </ion-toolbar>
 </ion-header>
 
+<!-- POPOVER Perfil -->
 <ion-popover trigger="perfil-popover" triggerAction="click" showBackdrop="false">
   <ng-template>
     <ion-list>
-      <ion-item button (click)="irAEditarPerfil()">Editar</ion-item>
-      <ion-item button [routerLink]="['/pagina-vendedor']">Vende tus productos</ion-item>
-      <ion-item button (click)="cerrarSesion()">Cerrar sesión</ion-item>
+      <ion-item button (click)="irAEditarPerfil()">
+        <ion-icon name="person-outline" slot="start"></ion-icon>
+        Editar
+      </ion-item>
+      <ion-item button [routerLink]="['/pagina-vendedor']">
+        <ion-icon name="pricetag-outline" slot="start"></ion-icon>
+        Vende tus productos
+      </ion-item>
+      <ion-item button (click)="verTusChats()">
+        <ion-icon name="chatbox-ellipses-outline" slot="start"></ion-icon>
+        Ver tus chats
+      </ion-item>
+      <ion-item button (click)="cerrarSesion()">
+        <ion-icon name="log-out-outline" slot="start"></ion-icon>
+        Cerrar sesión
+      </ion-item>
     </ion-list>
   </ng-template>
 </ion-popover>
+
+<!-- MODAL Notificaciones -->
+<ion-modal [isOpen]="mostrarNotificaciones" (didDismiss)="cerrarNotificaciones()">
+  <ng-template>
+    <ion-content fullscreen>
+      <ion-toolbar color="primary">
+        <ion-title>Notificaciones</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="cerrarNotificaciones()">Cerrar</ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+
+      <ion-list>
+        <ion-item *ngFor="let noti of notificaciones" (click)="irAMisCompras(noti)">
+          <ion-thumbnail slot="start">
+            <img [src]="noti.productoImagen" />
+          </ion-thumbnail>
+          <ion-label>
+            <h2>{{ noti.productoNombre }}</h2>
+            <p *ngIf="noti.tipo === 'Estado de pedido'">{{ noti.estado }}</p>
+            <p *ngIf="noti.tipo === 'Nueva compra recibida'">{{ noti.mensaje }}</p>
+            <ion-chip color="success" style="margin-top: 5px;">{{ noti.tipo }}</ion-chip>
+          </ion-label>
+        </ion-item>
+      </ion-list>
+    </ion-content>
+  </ng-template>
+</ion-modal>
 
 <ion-content *ngIf="producto" class="ion-padding">
   <ion-card class="detalle-card" style="position: relative;">
     <img [src]="producto.imagen" [alt]="producto.nombre" class="detalle-img" />
 
-    <!-- Botón de lupa con imagen -->
-    <ion-button
-      fill="solid"
-      color="primary"
-      (click)="abrirZoom()"
-      style="
-        position: absolute;
-        top: 12px;
-        right: 12px;
-        z-index: 10;
-        --border-radius: 50%;
-        width: 44px;
-        height: 44px;
-        padding: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      ">
+    <ion-button fill="solid" color="primary" (click)="abrirZoom()" style="position: absolute; top: 12px; right: 12px; z-index: 10; --border-radius: 50%; width: 44px; height: 44px; padding: 0; display: flex; align-items: center; justify-content: center;">
       <img src="https://images.vexels.com/media/users/3/143466/isolated/svg/b47bfb19d11e66c3be00ccb0632047ce.svg" alt="Zoom" style="width: 24px; height: 24px;" />
     </ion-button>
 
@@ -67,53 +102,30 @@
     <ion-card-content>
       <h2 class="detalle-precio">${{ producto.precio | number: '1.0-0' }}</h2>
 
-      <p *ngIf="producto.descripcion" class="detalle-descripcion">
-        {{ producto.descripcion }}
-      </p>
+      <p *ngIf="producto.descripcion" class="detalle-descripcion">{{ producto.descripcion }}</p>
 
-      <!-- Si unidades undefined o 0 → mostrar Producto agotado -->
       <p *ngIf="producto.unidades === undefined || +producto.unidades === 0" style="color: red; font-weight: bold;">Producto agotado</p>
-
-      <!-- Si unidades > 0 → mostrar Unidades disponibles -->
       <p *ngIf="producto.unidades !== undefined && +producto.unidades > 0"><strong>Unidades disponibles:</strong> {{ producto.unidades }}</p>
 
-      <!-- Botón Agregar al carrito (color gris si agotado o unidades undefined) -->
-      <ion-button
-        expand="block"
-        [color]="producto.unidades === undefined || +producto.unidades === 0 ? 'medium' : 'success'"
-        (click)="agregarAlCarrito()"
-        [disabled]="producto.unidades === undefined || +producto.unidades === 0">
+      <ion-button expand="block" [color]="producto.unidades === undefined || +producto.unidades === 0 ? 'medium' : 'success'" (click)="agregarAlCarrito()" [disabled]="producto.unidades === undefined || +producto.unidades === 0">
         Agregar al carrito
       </ion-button>
 
-      <!-- Botón Comprar ahora (color gris si agotado o unidades undefined) -->
-      <ion-button
-        expand="block"
-        [color]="producto.unidades === undefined || +producto.unidades === 0 ? 'medium' : 'primary'"
-        (click)="irAPago()"
-        [disabled]="producto.unidades === undefined || +producto.unidades === 0">
+      <ion-button expand="block" [color]="producto.unidades === undefined || +producto.unidades === 0 ? 'medium' : 'primary'" (click)="irAPago()" [disabled]="producto.unidades === undefined || +producto.unidades === 0">
         Comprar ahora
       </ion-button>
 
-      <!-- Botón Proponer intercambio -->
-      <ion-button
-        expand="block"
-        color="success"
-        [routerLink]="['/chat', producto.creadoPor]">
+      <ion-button expand="block" color="success" [routerLink]="['/chat', producto.creadoPor]">
         Proponer Intercambio
       </ion-button>
     </ion-card-content>
   </ion-card>
 
-  <!-- Modal para el zoom -->
   <ion-modal [isOpen]="mostrarZoom" (didDismiss)="cerrarZoom()">
     <ng-template>
       <ion-content fullscreen scrollY="true" scrollX="true">
         <div style="display: flex; justify-content: center; align-items: center; height: 100%;">
-          <img
-            [src]="producto.imagen"
-            alt="{{ producto.nombre }}"
-            style="max-width: 90vw; max-height: 90vh; object-fit: contain; touch-action: pinch-zoom; transform-origin: center; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4); border-radius: 8px;">
+          <img [src]="producto.imagen" alt="{{ producto.nombre }}" style="max-width: 90vw; max-height: 90vh; object-fit: contain; touch-action: pinch-zoom; transform-origin: center; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4); border-radius: 8px;">
         </div>
         <ion-button expand="block" color="medium" (click)="cerrarZoom()">Cerrar</ion-button>
       </ion-content>

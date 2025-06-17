@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
@@ -15,15 +15,19 @@ import {
   IonItem,
   IonText
 } from '@ionic/angular/standalone';
-import { RouterModule } from '@angular/router';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
+
 import {
   getAuth,
   signInWithEmailAndPassword,
   GoogleAuthProvider,
-  signInWithPopup
+  signInWithPopup,
+  signInWithCredential
 } from 'firebase/auth';
 import { getDatabase, ref, get, set } from 'firebase/database';
+import { Capacitor } from '@capacitor/core';
+import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
+
 
 @Component({
   selector: 'app-login',
@@ -48,13 +52,19 @@ import { getDatabase, ref, get, set } from 'firebase/database';
     IonText
   ]
 })
-export class LoginPage {
+export class LoginPage implements OnInit {
   correo = '';
   clave = '';
   error = '';
   verPassword = false;
 
-  constructor(private router: Router) {}
+  constructor(private angularRouter: Router) {}
+
+  ngOnInit() {
+    if (Capacitor.getPlatform() !== 'web') {
+      GoogleAuth.initialize({ mode: 'system' } as any);
+    }
+  }
 
   toggleVerPassword() {
     this.verPassword = !this.verPassword;
@@ -66,13 +76,13 @@ export class LoginPage {
 
     try {
       const userCredential = await signInWithEmailAndPassword(auth, this.correo, this.clave);
-      const uid = userCredential.user.uid;
+      const uid = this.correo.replace(/[.@]/g, '_'); // Unificación del UID
 
-      // Guardar ID en localStorage
+      console.log('✅ UID con email/password:', uid);
+
       localStorage.setItem('id', uid);
       localStorage.setItem('correo', this.correo);
 
-      // Leer nombre y foto del usuario desde la base de datos
       const db = getDatabase();
       const snapshot = await get(ref(db, `usuarios/${uid}`));
       if (snapshot.exists()) {
@@ -81,7 +91,7 @@ export class LoginPage {
         localStorage.setItem('fotoPerfil', data.fotoPerfil || '');
       }
 
-      this.router.navigate(['/home']);
+      this.angularRouter.navigate(['/home']);
     } catch (err: any) {
       switch (err.code) {
         case 'auth/user-not-found':
@@ -99,73 +109,85 @@ export class LoginPage {
     }
   }
 
-  // Helper para verificar si un campo está completo
   campoCompleto(valor: any): boolean {
     return valor !== undefined && valor !== null && valor.toString().trim() !== '';
   }
 
-  // Login con Google → redirige a Editar Perfil si es nuevo o incompleto
   async loginConGoogle() {
-    this.error = '';
-    const auth = getAuth();
-    const provider = new GoogleAuthProvider();
+  this.error = '';
+  const auth = getAuth();
+  let uid = '';
+  let nombreUsuario = '';
+  let correo = '';
+  let fotoPerfil = '';
 
-    try {
+  try {
+    if (Capacitor.getPlatform() === 'web') {
+      const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
-      const uid = user.uid;
-      const nombreUsuario = user.displayName || '';
-      const correo = user.email || '';
-      const fotoPerfil = user.photoURL || '';
 
-      const db = getDatabase();
-      const userRef = ref(db, `usuarios/${uid}`);
-      const snapshot = await get(userRef);
+      uid = user.uid; // ✅ UID real
+      correo = user.email || '';
+      nombreUsuario = user.displayName || '';
+      fotoPerfil = user.photoURL || '';
 
-      let redirigirAEditarPerfil = false;
+      console.log('✅ UID con Google (web):', uid);
+    } else {
+  const googleUser = await GoogleAuth.signIn();
 
-      if (!snapshot.exists()) {
-        // Usuario nuevo → lo creamos en la DB con campos vacíos
-        await set(userRef, {
-          nombreUsuario: nombreUsuario,
-          correo: correo,
-          rut: '', // faltante
-          telefono: '',
-          direccion: '',
-          rol: 'comprador',
-          fotoPerfil: fotoPerfil
-        });
+  const credential = GoogleAuthProvider.credential(googleUser.authentication.idToken);
+  const result = await signInWithCredential(auth, credential);
+  const user = result.user;
 
+  uid = user.uid;
+  correo = user.email || '';
+  nombreUsuario = user.displayName || googleUser.name || '';
+  fotoPerfil = user.photoURL || googleUser.imageUrl || '';
+
+  console.log('✅ UID con Google (móvil):', uid);
+}
+
+    const db = getDatabase();
+    const userRef = ref(db, `usuarios/${uid}`);
+    const snapshot = await get(userRef);
+
+    let redirigirAEditarPerfil = false;
+
+    if (!snapshot.exists()) {
+      await set(userRef, {
+        nombreUsuario,
+        correo,
+        rut: '',
+        telefono: '',
+        direccion: '',
+        rol: 'comprador',
+        fotoPerfil
+      });
+      redirigirAEditarPerfil = true;
+    } else {
+      const data = snapshot.val();
+      if (
+        !this.campoCompleto(data.rut) ||
+        !this.campoCompleto(data.telefono) ||
+        !this.campoCompleto(data.direccion)
+      ) {
         redirigirAEditarPerfil = true;
-      } else {
-        // Usuario ya existe → revisamos si tiene campos obligatorios vacíos
-        const data = snapshot.val();
-
-        if (
-          !this.campoCompleto(data.rut) ||
-          !this.campoCompleto(data.telefono) ||
-          !this.campoCompleto(data.direccion)
-        ) {
-          redirigirAEditarPerfil = true;
-        }
       }
-
-      // Guardar datos en localStorage
-      localStorage.setItem('id', uid);
-      localStorage.setItem('nombreUsuario', nombreUsuario);
-      localStorage.setItem('correo', correo);
-      localStorage.setItem('fotoPerfil', fotoPerfil);
-
-      // Redirigir según corresponda
-      if (redirigirAEditarPerfil) {
-        this.router.navigate(['/editar-usuario', uid]);
-      } else {
-        this.router.navigate(['/home']);
-      }
-
-    } catch (err: any) {
-      console.error('Error al iniciar sesión con Google:', err);
-      this.error = 'Error al iniciar sesión con Google.';
     }
+
+    localStorage.setItem('id', uid);
+    localStorage.setItem('nombreUsuario', nombreUsuario);
+    localStorage.setItem('correo', correo);
+    localStorage.setItem('fotoPerfil', fotoPerfil);
+
+    if (redirigirAEditarPerfil) {
+      alert('⚠️ Te recomendamos completar tu perfil más adelante.');
+    }
+
+    this.angularRouter.navigate(['/home']);
+  } catch (err: any) {
+    console.error('❌ Error al iniciar sesión con Google:', err);
   }
+}
 }

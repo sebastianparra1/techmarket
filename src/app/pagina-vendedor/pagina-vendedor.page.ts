@@ -7,10 +7,9 @@ import {
   IonButton, IonIcon, IonInput, IonTextarea,
   IonLabel, IonItem, IonList, IonThumbnail,
 } from '@ionic/angular/standalone';
-import { RouterModule } from '@angular/router';  // <<< AGREGADO ✅
-
-import { getAuth } from 'firebase/auth';
+import { RouterModule } from '@angular/router';
 import { getDatabase, ref, get, set, push, update, remove, onValue } from 'firebase/database';
+import { UserService } from '../services/user.service'; // ✅ Asegúrate de que la ruta sea correcta
 
 @Component({
   selector: 'app-pagina-vendedor',
@@ -21,7 +20,7 @@ import { getDatabase, ref, get, set, push, update, remove, onValue } from 'fireb
     IonContent, IonHeader, IonTitle, IonToolbar,
     IonButton, IonIcon, IonInput, IonTextarea, IonThumbnail,
     IonLabel, IonItem, IonList, CommonModule, FormsModule,
-    RouterModule  // <<< AGREGADO ✅
+    RouterModule
   ]
 })
 export class PaginaVendedorPage implements OnInit {
@@ -41,7 +40,7 @@ export class PaginaVendedorPage implements OnInit {
     unidades?: number;
   } = {};
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private userService: UserService) {}
 
   ngOnInit(): void {
     const guardado = localStorage.getItem('nombreUsuario');
@@ -53,16 +52,13 @@ export class PaginaVendedorPage implements OnInit {
   }
 
   async validarAcceso() {
-    const auth = getAuth();
-    const currentUser = auth.currentUser;
-
-    if (!currentUser) {
+    const uid = this.userService.getUid();
+    if (!uid) {
       alert('Debes iniciar sesión para acceder.');
       this.router.navigate(['/login']);
       return;
     }
 
-    const uid = currentUser.uid;
     const db = getDatabase();
     const userRef = ref(db, `usuarios/${uid}`);
     const snapshot = await get(userRef);
@@ -147,11 +143,8 @@ export class PaginaVendedorPage implements OnInit {
   }
 
   async guardarProducto() {
-    const auth = getAuth();
-    const currentUser = auth.currentUser;
-    if (!currentUser) return;
-
-    const uid = currentUser.uid;
+    const uid = this.userService.getUid();
+    if (!uid) return;
 
     if (!this.nuevoProducto.nombre || !this.nuevoProducto.precio || !this.selectedFile) {
       alert('Completa todos los campos y sube una imagen.');
@@ -190,23 +183,22 @@ export class PaginaVendedorPage implements OnInit {
     this.productoEditando = { ...producto };
   }
 
- async guardarEdicion() {
-  if (!this.productoEditando.id) return;
+  async guardarEdicion() {
+    if (!this.productoEditando.id) return;
 
-  const db = getDatabase();
-  const productoRef = ref(db, `productos/${this.productoEditando.id}`);
+    const db = getDatabase();
+    const productoRef = ref(db, `productos/${this.productoEditando.id}`);
 
-  await update(productoRef, {
-    nombre: this.productoEditando.nombre,
-    precio: this.productoEditando.precio,
-    descripcion: this.productoEditando.descripcion,
-    categoria: this.productoEditando.categoria || 'General',
-    unidades: this.productoEditando.unidades
-  });
+    await update(productoRef, {
+      nombre: this.productoEditando.nombre,
+      precio: this.productoEditando.precio,
+      descripcion: this.productoEditando.descripcion,
+      categoria: this.productoEditando.categoria || 'General',
+      unidades: this.productoEditando.unidades
+    });
 
-  this.productoEditando = null;
-}
-
+    this.productoEditando = null;
+  }
 
   cancelarEdicion() {
     this.productoEditando = null;

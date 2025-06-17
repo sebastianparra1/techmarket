@@ -1,5 +1,5 @@
 .chat-content {
-  --background: #000; /* 🚀 fondo negro */
+  --background: #000;
 }
 
 .messages-container {
@@ -9,7 +9,7 @@
   overflow-y: auto;
   height: calc(100vh - 160px);
   padding: 10px;
-  background-color: transparent; /* 🚀 para que el fondo sea negro */
+  background-color: transparent;
 }
 
 .message {
@@ -18,29 +18,36 @@
   border-radius: 10px;
   font-size: 14px;
   line-height: 1.4;
-  background-color: #333;
-  color: #eee;
-  align-self: flex-start;
   word-wrap: break-word;
   position: relative;
+  background-color: #333;
+  color: #eee;
 }
 
 .message.own {
   background-color: #4caf50;
   color: white;
-  align-self: flex-end;
+  align-self: flex-end; /* ✅ Derecha */
+  border-bottom-right-radius: 0;
+}
+
+.message.other {
+  background-color: #2c2c2c;
+  color: white;
+  align-self: flex-start; /* ✅ Izquierda */
+  border-bottom-left-radius: 0;
 }
 
 .sender-name {
   font-size: 12px;
   font-weight: bold;
-  color: #aaa;
+  color: #ccc;
   margin-bottom: 4px;
 }
 
 .timestamp {
   font-size: 10px;
-  color: #999;
+  color: #aaa;
   margin-top: 4px;
   text-align: right;
 }

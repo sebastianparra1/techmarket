@@ -7,6 +7,10 @@ import { firebaseConfig } from "./environments/firebase.config";
 import { routes } from './app/app.routes';
 import { AppComponent } from './app/app.component';
 
+//import { defineCustomElements } from '@codetrix-studio/capacitor-google-auth/dist/loader';
+//defineCustomElements(window);
+import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth'; // 👈 IMPORTANTE
+
 bootstrapApplication(AppComponent, {
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
@@ -15,3 +19,4 @@ bootstrapApplication(AppComponent, {
   ],
 });
 initializeApp(firebaseConfig);
+GoogleAuth.initialize(); // 👈 ESTA LÍNEA ES FUNDAMENTAL

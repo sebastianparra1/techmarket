@@ -104,6 +104,10 @@ export class EditarUsuarioPage implements AfterViewInit {
         fotoPerfil: nuevaFotoPerfil
       });
 
+      // ✅ Actualizar localStorage con los nuevos datos
+    localStorage.setItem('nombreUsuario', this.usuario.nombreUsuario || '');
+    localStorage.setItem('fotoPerfil', nuevaFotoPerfil || '');
+
       const toast = await this.toastCtrl.create({
         message: 'Cambios guardados correctamente. Reinicia la app para ver los cambios.',
         duration: 3000,

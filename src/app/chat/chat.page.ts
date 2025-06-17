@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { getAuth } from 'firebase/auth';
 import { getDatabase, ref, onValue, push, set, get } from 'firebase/database';
 import { IonicModule } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { UserService } from '../services/user.service'; // ✅ Importado
 
 @Component({
   selector: 'app-chat',
@@ -17,21 +17,27 @@ export class ChatPage {
   nombreUsuario = localStorage.getItem('nombreUsuario') || 'Invitado';
   vendedorId: string = '';
   nombreVendedor: string = '';
-  fotoPerfilVendedor: string = ''; // 🚀 AÑADIDO
+  fotoPerfilVendedor: string = '';
   nuevoMensaje: string = '';
   mensajes: any[] = [];
   chatId: string = '';
   currentUserId: string = '';
 
-  constructor(private route: ActivatedRoute, private router: Router) {}
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private userService: UserService // ✅ Inyectado
+  ) {}
 
   async ionViewWillEnter() {
-    const auth = getAuth();
-    const user = auth.currentUser;
-    if (!user) return;
+    const uid = this.userService.getUid();
+    if (!uid) {
+      console.error('❌ No hay UID disponible');
+      return;
+    }
 
-    this.currentUserId = user.uid;
-    console.log('currentUserId cargado:', this.currentUserId);
+    this.currentUserId = uid;
+    console.log('✅ currentUserId cargado desde UserService:', this.currentUserId);
 
     this.vendedorId = this.route.snapshot.paramMap.get('vendedorId') || '';
 
@@ -41,13 +47,13 @@ export class ChatPage {
     }
 
     this.chatId = [this.currentUserId, this.vendedorId].sort().join('_');
-    console.log('chatId armado:', this.chatId);
+    console.log('🧩 chatId armado:', this.chatId);
 
     const db = getDatabase();
     const vendedorRef = ref(db, `usuarios/${this.vendedorId}`);
     const snap = await get(vendedorRef);
     this.nombreVendedor = snap.exists() ? snap.val().nombreUsuario || 'Vendedor' : 'Vendedor';
-    this.fotoPerfilVendedor = snap.exists() ? snap.val().fotoPerfil || '' : ''; // 🚀 AÑADIDO
+    this.fotoPerfilVendedor = snap.exists() ? snap.val().fotoPerfil || '' : '';
 
     this.subscribeToChat();
   }
@@ -102,7 +108,7 @@ export class ChatPage {
     if (!this.nuevoMensaje.trim()) return;
 
     if (!this.currentUserId) {
-      console.error('currentUserId no está listo → no se puede enviar el mensaje');
+      console.error('❌ UID no disponible para enviar mensaje');
       return;
     }
 
@@ -116,7 +122,7 @@ export class ChatPage {
       leido: false
     };
 
-    console.log('Enviando mensaje:', mensaje);
+    console.log('📤 Enviando mensaje:', mensaje);
 
     const mensajeRef = push(chatRef);
     set(mensajeRef, mensaje).then(() => {

@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "765737861295",
+    "firebase_url": "https://proyectotech-9cf86-default-rtdb.firebaseio.com",
+    "project_id": "proyectotech-9cf86",
+    "storage_bucket": "proyectotech-9cf86.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:765737861295:android:0681288e6155f9855f145a",
+        "android_client_info": {
+          "package_name": "io.ionic.starter"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "765737861295-lorse04pn8qrp5t0iqkdf4crtfu55b8g.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "io.ionic.starter",
+            "certificate_hash": "fa58752fda78de5beef045daa01c60a5221678ae"
+          }
+        },
+        {
+          "client_id": "765737861295-lt534cpliclvknvneu3brnn8rqgrbr74.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAQBC9r7rHSCkCSWXPa-en02WBF1bJbJAk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "765737861295-lt534cpliclvknvneu3brnn8rqgrbr74.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

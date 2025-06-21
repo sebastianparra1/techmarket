@@ -94,12 +94,11 @@ export class ProductoDetallePage implements OnInit {
 
   cargarNotificaciones() {
     const db = getDatabase();
+    const nuevasNotificaciones: any[] = [];
 
     const ventasRef = ref(db, 'ventas');
     onValue(ventasRef, (snapshot) => {
       const data = snapshot.val() || {};
-      const nuevasNotificaciones: any[] = [];
-
       Object.entries(data).forEach(([id, venta]: any) => {
         if (venta.compradorEmail === this.currentUserEmail) {
           nuevasNotificaciones.push({
@@ -115,7 +114,6 @@ export class ProductoDetallePage implements OnInit {
       const notiVendedorRef = ref(db, `notificacionesVendedor/${this.currentUserId}`);
       onValue(notiVendedorRef, (snap) => {
         const dataVendedor = snap.val() || {};
-
         Object.values(dataVendedor).forEach((noti: any) => {
           nuevasNotificaciones.push({
             tipo: 'Nueva compra recibida',
@@ -125,8 +123,21 @@ export class ProductoDetallePage implements OnInit {
           });
         });
 
-        this.notificaciones = nuevasNotificaciones;
-        this.notificacionesSinLeerCount = nuevasNotificaciones.length;
+        const notiCompradorRef = ref(db, `notificacionesComprador/${this.currentUserId}`);
+        onValue(notiCompradorRef, (snap2) => {
+          const dataComprador = snap2.val() || {};
+          Object.values(dataComprador).forEach((noti: any) => {
+            nuevasNotificaciones.push({
+              tipo: 'Compra realizada',
+              productoNombre: noti.productoNombre,
+              mensaje: noti.mensaje,
+              productoImagen: noti.productoImagen
+            });
+          });
+
+          this.notificaciones = nuevasNotificaciones;
+          this.notificacionesSinLeerCount = nuevasNotificaciones.length;
+        });
       });
     });
   }

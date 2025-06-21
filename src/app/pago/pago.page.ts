@@ -29,7 +29,6 @@ export class PagoComponent {
   rut: string = '';
   carrito: any[] = [];
 
-  // ✅ Logo de tarjeta
   logoTarjeta: string = 'assets/default-card.png';
 
   constructor(private route: ActivatedRoute, private router: Router) {}
@@ -73,7 +72,6 @@ export class PagoComponent {
     this.numero = soloNumeros;
     event.target.value = formateado;
 
-    // ✅ Detectar tipo de tarjeta por prefijo
     if (soloNumeros.startsWith('4')) {
       this.logoTarjeta = 'assets/images/Visa.png';
     } else if (/^5[1-5]/.test(soloNumeros)) {
@@ -133,10 +131,12 @@ export class PagoComponent {
     }
 
     const db = getDatabase();
+    const compradorId = localStorage.getItem('id') || '';
+    const compradorNombreCompleto = this.nombre + ' ' + this.apellido;
 
     for (const item of this.carrito) {
       const templateParams = {
-        to_name: this.nombre + ' ' + this.apellido,
+        to_name: compradorNombreCompleto,
         user_email: this.emailComprador,
         producto_nombre: item.name || item.nombre,
         producto_precio: `$${item.price}`,
@@ -160,14 +160,33 @@ export class PagoComponent {
           const nuevaVentaRef = push(ventasRef);
           set(nuevaVentaRef, {
             vendedorId: item.vendedorId || '',
-            compradorId: '',
-            compradorNombre: this.nombre + ' ' + this.apellido,
+            compradorId: compradorId,
+            compradorNombre: compradorNombreCompleto,
             compradorEmail: this.emailComprador,
             productoId: item.id,
             productoNombre: item.nombre,
             productoImagen: item.image,
             cantidad: item.quantity,
             estado: 'Pendiente'
+          });
+
+          // 🔔 Notificación para el comprador
+          const notiCompradorRef = ref(db, `notificacionesComprador/${compradorId}`);
+          push(notiCompradorRef, {
+            productoNombre: item.name || item.nombre,
+            productoImagen: item.image,
+            mensaje: `Compraste ${item.quantity} unidad(es)`
+          });
+
+          // 🔔 Notificación para el vendedor
+          const notiVendedorRef = ref(db, `notificacionesVendedor/${item.vendedorId}`);
+          push(notiVendedorRef, {
+            productoNombre: item.name || item.nombre,
+            productoImagen: item.image,
+            compradorNombre: compradorNombreCompleto,
+            mensaje: `El usuario ${compradorNombreCompleto} ha comprado tu producto ${item.nombre} (${item.quantity} unidad(es))`,
+            leida: false,
+            timestamp: Date.now()
           });
         }
       });

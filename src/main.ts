@@ -19,4 +19,4 @@ bootstrapApplication(AppComponent, {
   ],
 });
 initializeApp(firebaseConfig);
-GoogleAuth.initialize(); // 👈 ESTA LÍNEA ES FUNDAMENTAL
+GoogleAuth.initialize(); 

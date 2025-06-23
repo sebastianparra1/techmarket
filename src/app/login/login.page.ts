@@ -76,11 +76,12 @@ export class LoginPage implements OnInit {
 
     try {
       const userCredential = await signInWithEmailAndPassword(auth, this.correo, this.clave);
-      const uid = this.correo.replace(/[.@]/g, '_'); // Unificación del UID
+      const uid = userCredential.user.uid; // ✅ ESTA es la línea correcta
 
       console.log('✅ UID con email/password:', uid);
 
       localStorage.setItem('id', uid);
+      localStorage.setItem('uid', uid);
       localStorage.setItem('correo', this.correo);
 
       const db = getDatabase();

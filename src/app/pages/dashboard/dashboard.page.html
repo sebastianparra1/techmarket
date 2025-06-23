@@ -1,0 +1,99 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>📊 Dashboard</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-grid>
+    <!-- Tarjetas resumen -->
+    <ion-row>
+      <ion-col size="6" sizeMd="3">
+        <ion-card class="resumen-card">
+          <ion-card-header>
+            <ion-card-subtitle>📦 Productos</ion-card-subtitle>
+            <ion-card-title>{{ totalProductos }}</ion-card-title>
+          </ion-card-header>
+        </ion-card>
+      </ion-col>
+
+      <ion-col size="6" sizeMd="3">
+        <ion-card class="resumen-card">
+          <ion-card-header>
+            <ion-card-subtitle>🛒 Vendidos</ion-card-subtitle>
+            <ion-card-title>{{ ventasRealizadas }}</ion-card-title>
+          </ion-card-header>
+        </ion-card>
+      </ion-col>
+
+      <ion-col size="12" sizeMd="6">
+        <ion-card class="resumen-card success">
+          <ion-card-header>
+            <ion-card-subtitle>💰 Ganancias Totales</ion-card-subtitle>
+            <div>
+  {{ formatearPrecio(gananciasTotales) }}
+  <span class="badge-porcentaje negativo">-2.1%</span>
+</div>
+
+          </ion-card-header>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+
+    <!-- Gráficos -->
+<ion-row>
+  <ion-col size="12" sizeMd="6">
+    <ion-card class="grafico-card">
+      <ion-card-header><ion-card-title>📦 Productos por Mes</ion-card-title></ion-card-header>
+      <ion-card-content><canvas #ventasChartCanvas></canvas></ion-card-content>
+    </ion-card>
+  </ion-col>
+
+  <ion-col size="12" sizeMd="6">
+    <ion-card class="grafico-card">
+      <ion-card-header><ion-card-title>📈 Ingresos por Mes</ion-card-title></ion-card-header>
+      <ion-card-content><canvas #ingresosChartCanvas></canvas></ion-card-content>
+    </ion-card>
+  </ion-col>
+</ion-row>
+
+    <!-- Ganancias Detectadas -->
+    <ion-row>
+      <ion-col size="12" sizeMd="4">
+        <ion-card color="tertiary">
+          <ion-card-header>
+            <ion-card-title>💵 Ganancias Detectadas</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            {{ formatearPrecio(gananciasDetectadas) }} en {{ ventasDetectadas }} ventas con datos válidos
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+
+      <ion-col size="12" sizeMd="8">
+        <ion-card>
+          <ion-card-header><ion-card-title>📋 Historial por Mes</ion-card-title></ion-card-header>
+          <ion-card-content style="max-height: 300px; overflow-y: auto;">
+            <ion-accordion-group>
+              <ion-accordion *ngFor="let grupo of ventasAgrupadasPorMes | keyvalue">
+                <ion-item slot="header">
+                  <ion-label>🗓 {{ grupo.key }}</ion-label>
+                </ion-item>
+                <div class="ion-padding" slot="content">
+                  <div *ngFor="let venta of grupo.value" style="margin-bottom: 8px;">
+                    <strong>{{ venta.productoNombre }}</strong><br>
+                    Precio: {{ formatearPrecio(venta.precio) }}<br>
+                    Categoría: {{ venta.categoria }}<br>
+                    Fecha: {{ formatearFecha(venta.fecha) }}
+                    <hr>
+                  </div>
+                  <p><strong>Total:</strong> {{ formatearPrecio(getTotalPorGrupo(grupo.value)) }}</p>
+                </div>
+              </ion-accordion>
+            </ion-accordion-group>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

@@ -1,4 +1,4 @@
-<!-- Menú lateral (hamburguesa en móvil) -->
+<!-- productos.page.html -->
 <ion-menu side="start" contentId="main-content">
   <ion-header>
     <ion-toolbar color="light">
@@ -11,15 +11,22 @@
       <ion-item button (click)="verTusChats()">Ver tus chats</ion-item>
       <ion-item button routerLink="/login">Cerrar Sesión</ion-item>
       <ion-item button routerLink="/carrito-de-compras">Carrito de Compras</ion-item>
+      <ion-item *ngIf="!esPremium" button (click)="mostrarModalPremium()">
+        <ion-icon name="star-outline" slot="start"></ion-icon>
+        Hacerse Premium
+      </ion-item>
+      <ion-item *ngIf="esPremium">
+        <ion-chip color="warning">
+          <ion-icon name="star" slot="start"></ion-icon>
+          Usuario Premium - {{ diasRestantes }} días restantes
+        </ion-chip>
+      </ion-item>
     </ion-list>
   </ion-content>
 </ion-menu>
 
-<!-- HEADER -->
 <ion-header>
   <ion-toolbar class="header-toolbar" color="light">
-
-    <!-- MENÚ HAMBURGUESA solo en móvil -->
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
       <ion-avatar slot="start" style="margin-left: 10px;">
@@ -28,8 +35,17 @@
       <div class="logo-title">TechMarket</div>
     </ion-buttons>
 
-    <!-- BOTONES DERECHA solo en PC -->
     <ion-buttons slot="end" class="desktop-buttons">
+      <ion-chip color="warning" *ngIf="esPremium" class="ion-margin-end">
+        <ion-icon name="star" slot="start"></ion-icon>
+        Usuario Premium - {{ diasRestantes }} días restantes
+      </ion-chip>
+
+      <ion-button *ngIf="!esPremium" fill="outline" color="success" (click)="mostrarModalPremium()">
+        <ion-icon name="star-outline" slot="start"></ion-icon>
+        Hacerse Premium
+      </ion-button>
+
       <ion-button fill="clear" color="success" routerLink="/pagina-vendedor">Vende tus Productos</ion-button>
       <ion-button fill="clear" color="success" (click)="verTusChats()">
         <ion-icon name="chatbox-ellipses-outline" slot="start"></ion-icon>
@@ -51,56 +67,37 @@
         <ion-badge color="danger" *ngIf="carritoCount > 0">{{ carritoCount }}</ion-badge>
       </ion-button>
     </ion-buttons>
-
   </ion-toolbar>
 </ion-header>
 
-<!-- Buscador arriba -->
 <ion-searchbar
   [(ngModel)]="terminoBusqueda"
   placeholder="Buscar productos..."
   debounce="300"
-  (ionInput)="filtrarProductos()"
-></ion-searchbar>
+  (ionInput)="filtrarProductos()">
+</ion-searchbar>
 
-<!-- Productos -->
 <ion-content id="main-content" class="ion-padding">
   <ion-grid>
     <ion-row>
       <ion-col size="12" size-md="6" size-lg="4" *ngFor="let producto of productosFiltrados">
         <ion-card class="producto-card">
-  
-  <img [src]="producto.imagen" alt="{{ producto.nombre }}" />
+          <img [src]="producto.imagen" alt="{{ producto.nombre }}" />
 
-  
-  <ion-card-header class="producto-card-header">
-<!--<div>
-    <ion-card-title>{{ producto.nombre }}</ion-card-title>
-    <ion-card-subtitle *ngIf="producto.categoria && producto.categoria !== 'General'">
-      {{ producto.categoria }}
-    </ion-card-subtitle>
-  </div>-->
-  <!-- Header con 3 puntitos -->
-    <button><div class="emoji-report-button" (click)="abrirMenuReportes($event, producto)" title="Reportar producto">
-  ⚠️
-</div></button>
-  
-  
-  
-  </ion-card-header>
-          
+          <ion-card-header class="producto-card-header">
+            <button>
+              <div class="emoji-report-button" (click)="abrirMenuReportes($event, producto)" title="Reportar producto">
+                ⚠️
+              </div>
+            </button>
+          </ion-card-header>
 
-
-          
           <ion-card-content>
             <ion-card-title>{{ producto.nombre }}</ion-card-title>
             <p><strong>Precio:</strong> ${{ producto.precio | number: '1.0-0' }}</p>
             <p *ngIf="producto.descripcion"><strong>Descripción:</strong> {{ producto.descripcion }}</p>
 
-            <!-- Si unidades == 0, mostrar Producto agotado en rojo -->
             <p *ngIf="producto.unidades === undefined || +producto.unidades === 0" style="color: red; font-weight: bold;">Producto agotado</p>
-
-            <!-- Si unidades > 0, mostrar Unidades disponibles -->
             <p *ngIf="producto.unidades !== undefined && +producto.unidades > 0"><strong>Unidades disponibles:</strong> {{ producto.unidades }}</p>
 
             <ion-button expand="block" color="success" [routerLink]="['/producto-detalle', producto.id]">
@@ -108,20 +105,18 @@
               Observar
             </ion-button>
 
-            <ion-button
-              expand="block"
-              color="success"
-              (click)="agregarAlCarrito(producto)"
-              [disabled]="producto.unidades === undefined || +producto.unidades === 0">
+            <ion-button expand="block" color="success" (click)="agregarAlCarrito(producto)" [disabled]="producto.unidades === undefined || +producto.unidades === 0">
               <ion-icon name="cart" slot="start"></ion-icon>
               Agregar al carrito
             </ion-button>
 
-            <ion-button
-              expand="block"
-              color="success"
-              [routerLink]="['/chat', producto.creadoPor]">
+            <ion-button *ngIf="esPremium" expand="block" color="success" [routerLink]="['/chat', producto.creadoPor]">
               <ion-icon name="swap-horizontal" slot="start"></ion-icon>
+              Proponer Intercambio
+            </ion-button>
+
+            <ion-button *ngIf="!esPremium" expand="block" color="warning" (click)="mostrarToastPremiumRequerido()">
+              <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
               Proponer Intercambio
             </ion-button>
           </ion-card-content>
@@ -130,7 +125,6 @@
     </ion-row>
   </ion-grid>
 
-  <!-- MODAL DE NOTIFICACIONES -->
   <ion-modal [isOpen]="mostrarNotificaciones" (didDismiss)="cerrarNotificaciones()">
     <ng-template>
       <ion-content fullscreen>
@@ -158,7 +152,6 @@
     </ng-template>
   </ion-modal>
 
-  <!-- FOOTER -->
   <div class="footer-section">
     <h2 class="section-title">Para más información :</h2>
 

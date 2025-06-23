@@ -11,7 +11,7 @@ import { FormsModule } from '@angular/forms';
 import { CarritoService, CartItem } from '../services/carrito.service';
 import { ProductoService } from '../services/productos.service';
 import { FirebaseService } from '../services/firebase.service';
-import { getDatabase, ref, child, get, onValue } from 'firebase/database';
+import { getDatabase, ref, child, get, onValue, update } from 'firebase/database';
 import { getAuth } from 'firebase/auth';
 
 @Component({
@@ -61,6 +61,9 @@ export class HomePage implements OnInit {
   notificaciones: any[] = [];
   notificacionesSinLeerCount = 0;
   mostrarNotificaciones = false;
+  esPremium: boolean = false;
+  diasRestantes: number = 0;
+  modalPremium = false;
 
   constructor(
     private productosService: ProductoService,
@@ -80,6 +83,25 @@ export class HomePage implements OnInit {
     if (user) {
       this.currentUserId = user.uid;
       this.currentUserEmail = user.email || '';
+
+      const db = getDatabase();
+      const userRef = ref(db, `usuarios/${this.currentUserId}`);
+      onValue(userRef, (snapshot) => {
+        const userData = snapshot.val();
+        this.esPremium = userData?.premium === true;
+
+        if (this.esPremium && userData.premiumInicio) {
+          const fechaInicio = new Date(Number(userData.premiumInicio));
+          const fechaActual = new Date();
+          const diferencia = Math.floor((fechaInicio.getTime() + 30 * 24 * 60 * 60 * 1000 - fechaActual.getTime()) / (1000 * 60 * 60 * 24));
+          this.diasRestantes = Math.max(0, diferencia);
+
+          if (this.diasRestantes === 0) {
+            update(userRef, { premium: false });
+            this.esPremium = false;
+          }
+        }
+      });
     }
 
     if (this.idUsuario) {
@@ -199,7 +221,6 @@ export class HomePage implements OnInit {
           });
         });
 
-        // Agregar notificaciones del comprador también
         const notiCompradorRef = ref(db, `notificacionesComprador/${this.currentUserId}`);
         onValue(notiCompradorRef, (snap2) => {
           const dataComprador = snap2.val() || {};
@@ -259,5 +280,14 @@ export class HomePage implements OnInit {
 
   irAChat(vendedorId: string) {
     this.router.navigate(['/chat', vendedorId]);
+  }
+
+  mostrarModalPremium() {
+    this.modalPremium = true;
+  }
+
+  irAPagoPremium() {
+    this.modalPremium = false;
+    this.router.navigate(['/pago-premium']);
   }
 }

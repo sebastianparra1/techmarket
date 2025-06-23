@@ -52,6 +52,16 @@
         <ion-icon name="chatbox-ellipses-outline" slot="start"></ion-icon>
         Ver tus chats
       </ion-item>
+      <ion-item *ngIf="!esPremium" button (click)="mostrarModalPremium()">
+        <ion-icon name="star-outline" slot="start"></ion-icon>
+        Hacerse Premium
+      </ion-item>
+      <ion-item *ngIf="esPremium">
+        <ion-chip color="warning">
+          <ion-icon name="star" slot="start"></ion-icon>
+          Usuario Premium - {{ diasRestantes }} días restantes
+        </ion-chip>
+      </ion-item>
       <ion-item button (click)="cerrarSesion()">
         <ion-icon name="log-out-outline" slot="start"></ion-icon>
         Cerrar sesión
@@ -60,33 +70,7 @@
   </ng-template>
 </ion-popover>
 
-<ion-modal [isOpen]="mostrarNotificaciones" (didDismiss)="cerrarNotificaciones()">
-  <ng-template>
-    <ion-content fullscreen>
-      <ion-toolbar color="primary">
-        <ion-title>Notificaciones</ion-title>
-        <ion-buttons slot="end">
-          <ion-button (click)="cerrarNotificaciones()">Cerrar</ion-button>
-        </ion-buttons>
-      </ion-toolbar>
-
-      <ion-list>
-        <ion-item *ngFor="let noti of notificaciones" (click)="irAMisCompras(noti)">
-          <ion-thumbnail slot="start">
-            <img [src]="noti.productoImagen" />
-          </ion-thumbnail>
-          <ion-label>
-            <h2>{{ noti.productoNombre }}</h2>
-            <p *ngIf="noti.tipo === 'Estado de pedido'">{{ noti.estado }}</p>
-            <p *ngIf="noti.tipo === 'Nueva compra recibida'">{{ noti.mensaje }}</p>
-            <ion-chip color="success" style="margin-top: 5px;">{{ noti.tipo }}</ion-chip>
-          </ion-label>
-        </ion-item>
-      </ion-list>
-    </ion-content>
-  </ng-template>
-</ion-modal>
-
+<!-- CONTENIDO PRINCIPAL -->
 <ion-content class="ion-padding">
   <ion-card class="bienvenida-card">
     <ion-card-header>
@@ -119,27 +103,27 @@
       <ion-card-content>
         <p><strong>Precio:</strong> ${{ producto.precio | number: '1.0-0' }}</p>
         <p *ngIf="producto.descripcion"><strong>Descripción:</strong> {{ producto.descripcion }}</p>
-        <p *ngIf="producto.unidades === 0" style="color: red; font-weight: bold;">
-          Producto agotado
-        </p>
-        <p *ngIf="producto.unidades > 0">
-          <strong>Unidades disponibles:</strong> {{ producto.unidades }}
-        </p>
-        <ion-button expand="block" color="success" (click)="irAProductoDetalle(producto)">
-          Observar
-        </ion-button>
-        <ion-button expand="block" color="success" 
-                    (click)="agregarAlCarrito(producto)" 
-                    [disabled]="producto.unidades === 0">
+        <p *ngIf="producto.unidades === 0" style="color: red; font-weight: bold;">Producto agotado</p>
+        <p *ngIf="producto.unidades > 0"><strong>Unidades disponibles:</strong> {{ producto.unidades }}</p>
+
+        <ion-button expand="block" color="success" (click)="irAProductoDetalle(producto)">Observar</ion-button>
+        <ion-button expand="block" color="success" (click)="agregarAlCarrito(producto)" [disabled]="producto.unidades === 0">
           Agregar al carrito
         </ion-button>
-        <ion-button expand="block" color="success" (click)="irAChat(producto.creadoPor)">
+
+        <ion-button *ngIf="esPremium" expand="block" color="success" (click)="irAChat(producto.creadoPor)">
+          <ion-icon name="swap-horizontal" slot="start"></ion-icon>
           Proponer intercambio
+        </ion-button>
+        <ion-button *ngIf="!esPremium" expand="block" class="solo-premium-btn" (click)="mostrarModalPremium()">
+          <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
+          Solo Premium
         </ion-button>
       </ion-card-content>
     </ion-card>
   </div>
 
+  <!-- Footer -->
   <div class="footer-section">
     <h2 class="section-title">Para más información :)</h2>
 

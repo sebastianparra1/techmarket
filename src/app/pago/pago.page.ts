@@ -1,6 +1,7 @@
+// pago.page.ts
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule, ToastController } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import emailjs from 'emailjs-com';
@@ -31,7 +32,7 @@ export class PagoComponent {
 
   logoTarjeta: string = 'assets/default-card.png';
 
-  constructor(private route: ActivatedRoute, private router: Router) {}
+  constructor(private route: ActivatedRoute, private router: Router, private toastCtrl: ToastController) {}
 
   ngOnInit() {
     this.route.queryParams.subscribe(params => {
@@ -134,66 +135,70 @@ export class PagoComponent {
     const compradorId = localStorage.getItem('id') || '';
     const compradorNombreCompleto = this.nombre + ' ' + this.apellido;
 
+    // ACTUALIZA A PREMIUM CON FECHA
+    update(ref(db, 'usuarios/' + compradorId), {
+      premium: true,
+      premiumInicio: new Date().toISOString()
+    });
+
     for (const item of this.carrito) {
-  const nombreProducto = item.name || item.nombre;
-  const vendedorId = item.vendedorId || '';
+      const nombreProducto = item.name || item.nombre;
+      const vendedorId = item.vendedorId || '';
 
-  const templateParams = {
-    to_name: compradorNombreCompleto,
-    user_email: this.emailComprador,
-    producto_nombre: nombreProducto,
-    producto_precio: `$${item.price}`,
-    producto_imagen: item.image,
-    unidades_compradas: item.quantity,
-    mensaje: 'Su paquete va camino al centro de distribución'
-  };
+      const templateParams = {
+        to_name: compradorNombreCompleto,
+        user_email: this.emailComprador,
+        producto_nombre: nombreProducto,
+        producto_precio: `$${item.price}`,
+        producto_imagen: item.image,
+        unidades_compradas: item.quantity,
+        mensaje: 'Su paquete va camino al centro de distribución'
+      };
 
-  emailjs.send('service_17lzgkc', 'template_ecwohrd', templateParams, '089yXtpwCl6dhowXI')
-    .then(() => console.log('Correo enviado para', nombreProducto))
-    .catch(err => console.error('Error al enviar correo', err));
+      emailjs.send('service_17lzgkc', 'template_ecwohrd', templateParams, '089yXtpwCl6dhowXI')
+        .then(() => console.log('Correo enviado para', nombreProducto))
+        .catch(err => console.error('Error al enviar correo', err));
 
-  const productoRef = ref(db, `productos/${item.id}`);
-  get(productoRef).then(snapshot => {
-    if (snapshot.exists()) {
-      const data = snapshot.val();
-      const nuevasUnidades = Math.max((+data.unidades || 0) - item.quantity, 0);
-      update(productoRef, { unidades: nuevasUnidades });
+      const productoRef = ref(db, `productos/${item.id}`);
+      get(productoRef).then(snapshot => {
+        if (snapshot.exists()) {
+          const data = snapshot.val();
+          const nuevasUnidades = Math.max((+data.unidades || 0) - item.quantity, 0);
+          update(productoRef, { unidades: nuevasUnidades });
 
-      const ventasRef = ref(db, 'ventas');
-      const nuevaVentaRef = push(ventasRef);
-      set(nuevaVentaRef, {
-        vendedorId,
-        compradorId,
-        compradorNombre: compradorNombreCompleto,
-        compradorEmail: this.emailComprador,
-        productoId: item.id,
-        productoNombre: nombreProducto,
-        productoImagen: item.image,
-        cantidad: item.quantity,
-        estado: 'Pendiente'
-      });
+          const ventasRef = ref(db, 'ventas');
+          const nuevaVentaRef = push(ventasRef);
+          set(nuevaVentaRef, {
+            vendedorId,
+            compradorId,
+            compradorNombre: compradorNombreCompleto,
+            compradorEmail: this.emailComprador,
+            productoId: item.id,
+            productoNombre: nombreProducto,
+            productoImagen: item.image,
+            cantidad: item.quantity,
+            estado: 'Pendiente'
+          });
 
-      // 🔔 Notificación para el comprador
-      const notiCompradorRef = ref(db, `notificacionesComprador/${compradorId}`);
-      push(notiCompradorRef, {
-        productoNombre: nombreProducto,
-        productoImagen: item.image,
-        mensaje: `Compraste ${item.quantity} unidad(es)`
-      });
+          const notiCompradorRef = ref(db, `notificacionesComprador/${compradorId}`);
+          push(notiCompradorRef, {
+            productoNombre: nombreProducto,
+            productoImagen: item.image,
+            mensaje: `Compraste ${item.quantity} unidad(es)`
+          });
 
-      // 🔔 Notificación para el vendedor
-      const notiVendedorRef = ref(db, `notificacionesVendedor/${vendedorId}`);
-      push(notiVendedorRef, {
-        productoNombre: nombreProducto,
-        productoImagen: item.image,
-        compradorNombre: compradorNombreCompleto,
-        mensaje: `El usuario ${compradorNombreCompleto} ha comprado tu producto ${nombreProducto} (${item.quantity} unidad(es))`,
-        leida: false,
-        timestamp: Date.now()
+          const notiVendedorRef = ref(db, `notificacionesVendedor/${vendedorId}`);
+          push(notiVendedorRef, {
+            productoNombre: nombreProducto,
+            productoImagen: item.image,
+            compradorNombre: compradorNombreCompleto,
+            mensaje: `El usuario ${compradorNombreCompleto} ha comprado tu producto ${nombreProducto} (${item.quantity} unidad(es))`,
+            leida: false,
+            timestamp: Date.now()
+          });
+        }
       });
     }
-  });
-}
 
     alert('¡Compra Realizada!');
     setTimeout(() => {

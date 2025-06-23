@@ -242,3 +242,22 @@ ion-card-content ion-button {
     height: 200px;
   }
 }
+.solo-premium-btn {
+  --background: #f44336;
+  --background-hover: #e53935;
+  --color: #fff;
+  border-radius: 8px;
+  font-weight: 600;
+  margin-top: 8px;
+  ion-icon {
+    margin-right: 6px;
+  }
+}
+
+.chip-premium {
+  --color: #000;
+  --background: #ffd700;
+  font-weight: bold;
+  border-radius: 16px;
+  padding: 0 10px;
+}

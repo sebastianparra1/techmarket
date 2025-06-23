@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { FirebaseService } from '../services/firebase.service';
+import { getAuth } from 'firebase/auth';
 
 declare const google: any;
 
@@ -132,6 +133,14 @@ export class RegistroPage implements AfterViewInit {
         this.rolSeleccionado || 'comprador',
         fotoPerfilURL
       );
+
+      // ✅ Guardar UID y nombreUsuario en localStorage
+      const auth = getAuth();
+      const user = auth.currentUser;
+      if (user) {
+        localStorage.setItem('id', user.uid);
+        localStorage.setItem('nombreUsuario', this.nombre);
+      }
 
       const toast = await this.toastCtrl.create({
         message: '¡Registro exitoso!',

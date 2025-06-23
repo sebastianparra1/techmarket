@@ -194,21 +194,17 @@ export class ProductoDetallePage implements OnInit {
   }
 
   irAPago() {
-    this.router.navigate(['/pago'], {
-      queryParams: {
-        id: this.producto.id,
-        nombre: this.producto.nombre,
-        precio: this.producto.precio,
-        imagen: this.producto.imagen,
-
-        vendedorId: this.producto.creadoPor
-
-        vendedorId: this.producto.creadoPor,  // <<< AGREGADO
-        fecha: Date.now(), // ej: 1721768400000
- c17ccae (dashboard)
-      }
-    });
-  }
+  this.router.navigate(['/pago'], {
+    queryParams: {
+      id: this.producto.id,
+      nombre: this.producto.nombre,
+      precio: this.producto.precio,
+      imagen: this.producto.imagen,
+      vendedorId: this.producto.creadoPor,
+      fecha: Date.now()
+    }
+  });
+}
 
   abrirZoom() {
     this.mostrarZoom = true;

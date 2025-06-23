@@ -38,9 +38,9 @@ export class PagoComponent {
     this.route.queryParams.subscribe(params => {
       if (params['cart']) {
         this.carrito = JSON.parse(params['cart']).map((item: any) => ({
-  ...item,
-  price: Number(item.price)  // 🔥 lo convertimos a número real aquí
-}));
+          ...item,
+          price: Number(item.price)
+        }));
       } else {
         this.carrito = [{
           id: params['id'] || '',
@@ -138,7 +138,7 @@ export class PagoComponent {
     const compradorId = localStorage.getItem('id') || '';
     const compradorNombreCompleto = this.nombre + ' ' + this.apellido;
 
-    // ACTUALIZA A PREMIUM CON FECHA
+    // Actualizar estado a Premium
     update(ref(db, 'usuarios/' + compradorId), {
       premium: true,
       premiumInicio: new Date().toISOString()
@@ -162,22 +162,12 @@ export class PagoComponent {
         .then(() => console.log('Correo enviado para', nombreProducto))
         .catch(err => console.error('Error al enviar correo', err));
 
-<<<<<<< HEAD
       const productoRef = ref(db, `productos/${item.id}`);
       get(productoRef).then(snapshot => {
         if (snapshot.exists()) {
           const data = snapshot.val();
           const nuevasUnidades = Math.max((+data.unidades || 0) - item.quantity, 0);
           update(productoRef, { unidades: nuevasUnidades });
-=======
-
-  const productoRef = ref(db, `productos/${item.id}`);
-  get(productoRef).then(snapshot => {
-    if (snapshot.exists()) {
-      const data = snapshot.val();
-      const nuevasUnidades = Math.max((+data.unidades || 0) - item.quantity, 0);
-      update(productoRef, { unidades: nuevasUnidades });
->>>>>>> e6833ef81195deef379129d6264f6c56dae90f20
 
           const ventasRef = ref(db, 'ventas');
           const nuevaVentaRef = push(ventasRef);
@@ -200,7 +190,6 @@ export class PagoComponent {
             mensaje: `Compraste ${item.quantity} unidad(es)`
           });
 
-<<<<<<< HEAD
           const notiVendedorRef = ref(db, `notificacionesVendedor/${vendedorId}`);
           push(notiVendedorRef, {
             productoNombre: nombreProducto,
@@ -211,36 +200,6 @@ export class PagoComponent {
             timestamp: Date.now()
           });
         }
-=======
-      // 🔔 Notificación para el vendedor
-      const notiVendedorRef = ref(db, `notificacionesVendedor/${vendedorId}`);
-      push(notiVendedorRef, {
-        productoNombre: nombreProducto,
-        productoImagen: item.image,
-        compradorNombre: compradorNombreCompleto,
-        mensaje: `El usuario ${compradorNombreCompleto} ha comprado tu producto ${nombreProducto} (${item.quantity} unidad(es))`,
-        leida: false,
-        timestamp: Date.now()
-
-          const ventasRef = ref(db, 'ventas');
-          const nuevaVentaRef = push(ventasRef);
-          set(nuevaVentaRef, {
-            vendedorId: item.vendedorId || '',
-            compradorId: '',
-            compradorNombre: this.nombre + ' ' + this.apellido,
-            compradorEmail: this.emailComprador,
-            productoId: item.id,
-            productoNombre: item.nombre,
-            productoImagen: item.image,
-            precio: Number(item.price),  // ✅ fuerza a que se guarde como número
-            cantidad: item.quantity,
-            estado: 'Pendiente',
-            fecha: Date.now()
-
-          });
-        }
- c17ccae (dashboard)
->>>>>>> e6833ef81195deef379129d6264f6c56dae90f20
       });
     }
 

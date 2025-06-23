@@ -74,8 +74,95 @@ export class FirebaseService {
   }
 
   // ✅ Login manual con nombreUsuario y clave (si lo usas)
-  async validarLogin(nombreUsuario: string, clave: string): Promise<any | null> {
-    const usuarios = await this.getUsuarios();
-    return usuarios.find(user => user.nombreUsuario === nombreUsuario && user.clave === clave) || null;
+  async getProductosDeUsuario(uid: string): Promise<any[]> {
+  const dbRef = ref(this.db);
+  const snapshot = await get(child(dbRef, 'productos'));
+
+  if (snapshot.exists()) {
+    const productos = snapshot.val();
+
+    const filtrados = Object.keys(productos)
+      .filter(key => productos[key].creadoPor === uid)
+      .map(key => ({ id: key, ...productos[key] }));
+
+    console.log('Productos encontrados:', filtrados);  // ✅ ahora sí funciona
+    return filtrados;
+  } else {
+    return [];
   }
 }
+
+async getIntercambios(uid: string): Promise<any[]> {
+  const dbRef = ref(this.db);
+  const snapshot = await get(child(dbRef, 'intercambios'));
+  if (snapshot.exists()) {
+    const intercambios = snapshot.val();
+    return Object.keys(intercambios)
+      .filter(key => intercambios[key].creadoPor === uid)
+      .map(key => ({ id: key, ...intercambios[key] }));
+  } else {
+    return [];
+  }
+}
+
+async getProductosAgrupadosPorMes(uid: string): Promise<{ [mes: string]: number }> {
+  const productos = await this.getProductosDeUsuario(uid);
+  const agrupados: { [mes: string]: number } = {};
+
+  productos.forEach(producto => {
+    if (!producto.creadoEn) return;
+    const fecha = new Date(producto.creadoEn);
+    const mes = fecha.toLocaleString('default', { month: 'short', year: 'numeric' }); // Ej: "Jun 2025"
+    agrupados[mes] = (agrupados[mes] || 0) + 1;
+  });
+
+  return agrupados;
+}
+
+
+async getVentasDelUsuario(uid: string): Promise<any[]> {
+  const dbRef = ref(this.db);
+  const snapshot = await get(child(dbRef, 'ventas'));
+
+  if (snapshot.exists()) {
+    const ventas = snapshot.val();
+    return Object.keys(ventas)
+      .filter(key => ventas[key].vendedorId === uid)
+      .map(key => ({ id: key, ...ventas[key] }));
+  } else {
+    return [];
+  }
+}
+
+async getIngresosPorMes(uid: string): Promise<{ [mes: string]: number }> {
+  const dbRef = ref(this.db);
+  const snapshot = await get(child(dbRef, 'ventas'));
+
+  const ingresos: { [mes: string]: number } = {};
+
+  if (snapshot.exists()) {
+    const ventas = snapshot.val();
+
+    for (const key of Object.keys(ventas)) {
+      const venta = ventas[key];
+      if (venta.vendedorId !== uid) continue;
+
+      const fechaStr = venta.fecha || venta.creadoEn;
+      const precio = venta.precio || 0;
+
+      if (!fechaStr || !precio) continue;
+
+      const fecha = new Date(fechaStr);
+      const mes = fecha.toLocaleString('default', { month: 'short', year: 'numeric' }); // Ej: "Jun 2025"
+
+      ingresos[mes] = (ingresos[mes] || 0) + precio;
+    }
+  }
+
+  return ingresos;
+}
+
+
+}
+
+

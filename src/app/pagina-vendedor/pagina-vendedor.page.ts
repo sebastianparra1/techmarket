@@ -2,25 +2,22 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import {
-  IonContent, IonHeader, IonTitle, IonToolbar,
-  IonButton, IonIcon, IonInput, IonTextarea,
-  IonLabel, IonItem, IonList, IonThumbnail, IonText, IonChip } from '@ionic/angular/standalone';
+import { IonicModule, ModalController, ToastController } from '@ionic/angular';
 import { RouterModule } from '@angular/router';
 import { getDatabase, ref, get, set, push, update, remove, onValue } from 'firebase/database';
-import { UserService } from '../services/user.service'; // ✅ Asegúrate de que la ruta sea correcta
-
+import { UserService } from '../services/user.service';
+import { ModalPremiumComponent } from '../components/modal-premium/modal-premium.component';
 
 @Component({
   selector: 'app-pagina-vendedor',
   templateUrl: './pagina-vendedor.page.html',
   styleUrls: ['./pagina-vendedor.page.scss'],
   standalone: true,
-  imports: [IonChip, IonText, 
-    IonContent, IonHeader, IonTitle, IonToolbar,
-    IonButton, IonIcon, IonInput, IonTextarea, IonThumbnail,
-    IonLabel, IonItem, IonList, CommonModule, FormsModule,
-    RouterModule
+  imports: [
+    CommonModule,
+    FormsModule,
+    RouterModule,
+    IonicModule
   ]
 })
 export class PaginaVendedorPage implements OnInit {
@@ -31,6 +28,7 @@ export class PaginaVendedorPage implements OnInit {
   nombreUsuario: string = '';
   productosVendedor: any[] = [];
   productoEditando: any = null;
+  esPremium: boolean = false;
 
   nuevoProducto: {
     nombre?: string;
@@ -40,14 +38,16 @@ export class PaginaVendedorPage implements OnInit {
     unidades?: number;
   } = {};
 
-  constructor(private router: Router, private userService: UserService) {}
+  constructor(
+    private router: Router,
+    private userService: UserService,
+    private modalCtrl: ModalController,
+    private toastController: ToastController
+  ) {}
 
   ngOnInit(): void {
     const guardado = localStorage.getItem('nombreUsuario');
-    if (guardado) {
-      this.nombreUsuario = guardado;
-    }
-
+    if (guardado) this.nombreUsuario = guardado;
     this.validarAcceso();
   }
 
@@ -65,11 +65,11 @@ export class PaginaVendedorPage implements OnInit {
 
     if (snapshot.exists()) {
       const data = snapshot.val();
-      const nombre = data.nombre || data.nombreUsuario || 'Usuario';
-      this.nombreUsuario = nombre;
-      localStorage.setItem('nombreUsuario', nombre);
-
+      this.nombreUsuario = data.nombre || data.nombreUsuario || 'Usuario';
+      localStorage.setItem('nombreUsuario', this.nombreUsuario);
       this.permitidoVender = true;
+      this.esPremium = !!data.premium;
+
       this.cargarProductosDelVendedor(uid);
     } else {
       alert('No se encontró información del usuario.');
@@ -89,7 +89,17 @@ export class PaginaVendedorPage implements OnInit {
     });
   }
 
-  agregarProducto() {
+  async agregarProducto() {
+    if (!this.esPremium && this.productosVendedor.length >= 10) {
+      const toast = await this.toastController.create({
+        message: 'Has alcanzado el límite de productos como usuario gratuito.',
+        duration: 3000,
+        color: 'warning',
+        position: 'bottom'
+      });
+      await toast.present();
+      return;
+    }
     this.mostrarZonaCarga = !this.mostrarZonaCarga;
   }
 
@@ -151,6 +161,17 @@ export class PaginaVendedorPage implements OnInit {
       return;
     }
 
+    if (!this.esPremium && this.productosVendedor.length >= 10) {
+      const toast = await this.toastController.create({
+        message: 'Límite de 10 productos alcanzado. ¡Hazte Premium para publicar más!',
+        duration: 3000,
+        color: 'warning',
+        position: 'bottom'
+      });
+      await toast.present();
+      return;
+    }
+
     try {
       const imageUrl = await this.uploadToCloudinary(this.selectedFile);
       const db = getDatabase();
@@ -208,5 +229,16 @@ export class PaginaVendedorPage implements OnInit {
     const db = getDatabase();
     const productoRef = ref(db, `productos/${id}`);
     await remove(productoRef);
+  }
+
+  async mostrarModalPremium() {
+    const modal = await this.modalCtrl.create({
+      component: ModalPremiumComponent,
+      breakpoints: [0, 0.5, 0.8],
+      initialBreakpoint: 0.8,
+      cssClass: 'premium-modal'
+    });
+
+    await modal.present();
   }
 }

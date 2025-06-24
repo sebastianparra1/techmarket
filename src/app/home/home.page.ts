@@ -11,11 +11,6 @@ import { CarritoService, CartItem } from '../services/carrito.service';
 import { ProductoService } from '../services/productos.service';
 import { FirebaseService } from '../services/firebase.service';
 
-
-
-
-
-
 @Component({
   selector: 'app-home',
   standalone: true,
@@ -23,7 +18,7 @@ import { FirebaseService } from '../services/firebase.service';
     CommonModule,
     FormsModule,
     RouterModule,
-    IonicModule, // ✅ solo este para evitar conflictos
+    IonicModule,
   ],
   templateUrl: './home.page.html',
   styleUrls: ['./home.page.scss'],
@@ -157,7 +152,7 @@ export class HomePage implements OnInit {
       price: producto.precio,
       quantity: 1,
       image: producto.imagen,
-      vendedorId: producto.creadoPor || ''  // 👈 esto es lo que faltaba
+      vendedorId: producto.creadoPor || ''
     };
     this.carritoService.addItem(item);
     this.actualizarContador();
@@ -286,5 +281,10 @@ export class HomePage implements OnInit {
       color: 'warning'
     });
     await toast.present();
+  }
+
+  irAVenta() {
+    console.log('👉 Redirigiendo a /pagina-vendedor');
+    this.router.navigate(['/pagina-vendedor']);
   }
 }

@@ -4,17 +4,17 @@ import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { IonicModule, ModalController, ToastController } from '@ionic/angular';
 import { getDatabase, ref, child, get, onValue, update } from 'firebase/database';
-import { getAuth } from 'firebase/auth';
+import { getAuth, onAuthStateChanged} from 'firebase/auth';
 
 import { ModalPremiumComponent } from '../components/modal-premium/modal-premium.component';
 import { CarritoService, CartItem } from '../services/carrito.service';
 import { ProductoService } from '../services/productos.service';
 import { FirebaseService } from '../services/firebase.service';
-<<<<<<< HEAD
-import { getDatabase, ref, child, get, update } from 'firebase/database';
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
-=======
->>>>>>> 3f75c91a24fa77bc0be1c7679a825451a4241688
+
+
+
+
+
 
 @Component({
   selector: 'app-home',

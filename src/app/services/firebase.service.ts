@@ -148,19 +148,21 @@ async getIngresosPorMes(uid: string): Promise<{ [mes: string]: number }> {
       if (venta.vendedorId !== uid) continue;
 
       const fechaStr = venta.fecha || venta.creadoEn;
-      const precio = venta.precio || 0;
+      const rawMonto = venta.total || venta.precio || 0;
+      const monto = Number(rawMonto);
 
-      if (!fechaStr || !precio) continue;
+      if (!fechaStr || isNaN(monto)) continue;
 
       const fecha = new Date(fechaStr);
-      const mes = fecha.toLocaleString('default', { month: 'short', year: 'numeric' }); // Ej: "Jun 2025"
+      const mes = fecha.toLocaleString('default', { month: 'short', year: 'numeric' }); // Ej: "jun 2025"
 
-      ingresos[mes] = (ingresos[mes] || 0) + precio;
+      ingresos[mes] = (ingresos[mes] || 0) + monto;
     }
   }
 
   return ingresos;
 }
+
 
 
 }

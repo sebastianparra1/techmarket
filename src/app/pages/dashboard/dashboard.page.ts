@@ -164,17 +164,16 @@ export class DashboardPage implements OnInit {
       const mes = date.toLocaleString('default', { month: 'short', year: 'numeric' });
 
       // Buscar producto por nombre
-      let precio = 0;
-let categoria = 'General';
-const productoId = venta.productoId;
+      let precio = venta.total || 0; // ✅ Preferimos el total directo desde la venta
+      let categoria = 'General';
+      const productoId = venta.productoId;
 
-if (productoId && productosSnap.hasChild(productoId)) {
-  const producto = productosSnap.child(productoId).val();
-  precio = producto.precio || 0;
-  categoria = producto.categoria || 'General';
-}else {
-  console.warn(`No se encontró el producto con ID ${productoId}`);
-}
+      if ((!precio || precio === 0) && productoId && productosSnap.hasChild(productoId)) {
+        const producto = productosSnap.child(productoId).val();
+        precio = producto.precio || 0;
+        categoria = producto.categoria || 'General';
+      }
+      
 
       // Asignar al objeto venta
       venta.precio = precio;
@@ -196,6 +195,10 @@ if (productoId && productosSnap.hasChild(productoId)) {
   this.ventasDetectadas = todasLasVentas.length;
   this.gananciasDetectadas = todasLasVentas.reduce(
   (sum: number, venta: any) => sum + (venta.precio || 0), 0);
+
+
+
+
 }
 
 getTotalPorGrupo(grupo: any[]): number {

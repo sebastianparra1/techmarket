@@ -51,7 +51,7 @@ export class PagoComponent {
         this.carrito = [{
           id: params['id'] || '',
           nombre: params['nombre'] || '',
-          price: Number(params['precio'] || 0),
+          price: params['precio'] || 0,  //cambiado por price: Number(params['precio'] || 0),
           image: params['imagen'] || '',
           vendedorId: params['vendedorId'] || '',
           quantity: 1
@@ -187,6 +187,8 @@ export class PagoComponent {
             productoNombre: nombreProducto,
             productoImagen: item.image,
             cantidad: item.quantity,
+            precio: item.price,
+            fecha: new Date().toISOString(),
             estado: 'Pendiente'
           });
 

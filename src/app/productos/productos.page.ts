@@ -129,7 +129,8 @@ export class ProductosPage {
       id: producto.id,
       price: producto.precio,
       quantity: 1,
-      image: producto.imagen
+      image: producto.imagen,
+      vendedorId: producto.creadoPor || ''  // 👈 esto es lo que faltaba
     };
     this.carritoService.addItem(item);
     this.actualizarContador();

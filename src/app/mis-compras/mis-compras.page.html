@@ -19,7 +19,6 @@
     </p>
   </ion-text>
 
-  <!-- Botón fuera de ion-text para que funcione bien el routerLink -->
   <div *ngIf="compras.length === 0" style="text-align: center; margin-top: 20px;">
     <ion-button color="success" routerLink="/productos">
       Hace tu primera compra aqui :)
@@ -37,7 +36,12 @@
           </ion-card-header>
 
           <ion-card-content>
-            <img [src]="compra.productoImagen || 'https://via.placeholder.com/150'" alt="{{ compra.productoNombre }}" style="width: 100%; max-width: 200px; display:block; margin: auto;"/>
+            <img [src]="compra.productoImagen || 'https://via.placeholder.com/150'" alt="{{ compra.productoNombre }}" style="width: 100%; max-width: 200px; display:block; margin: auto;" />
+
+            <!-- NUEVO: Unidades compradas -->
+            <p style="text-align: center; font-weight: bold; margin-top: 10px;">
+              🛒 Unidades compradas: {{ compra.cantidad }}
+            </p>
 
             <!-- Caminito -->
             <div style="margin-top: 20px; border-left: 3px solid #4caf50; padding-left: 10px;">

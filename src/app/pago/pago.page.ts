@@ -6,6 +6,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import emailjs from 'emailjs-com';
 import { getDatabase, ref, get, update, push, set } from 'firebase/database';
+import { getAuth } from 'firebase/auth';
 
 @Component({
   selector: 'app-pago',
@@ -37,15 +38,20 @@ export class PagoComponent {
   ngOnInit() {
     this.route.queryParams.subscribe(params => {
       if (params['cart']) {
-        this.carrito = JSON.parse(params['cart']).map((item: any) => ({
-          ...item,
-          price: Number(item.price)
+        const rawCarrito = JSON.parse(params['cart']);
+        this.carrito = rawCarrito.map((item: any) => ({
+          id: item.id || '',
+          nombre: item.name || item.nombre || '',
+          price: Number(item.price || 0),
+          image: item.image || item.imagen || '',
+          vendedorId: item.vendedorId || '',
+          quantity: item.quantity || 1
         }));
       } else {
         this.carrito = [{
           id: params['id'] || '',
           nombre: params['nombre'] || '',
-          price: params['precio'] || 0,
+          price: Number(params['precio'] || 0),
           image: params['imagen'] || '',
           vendedorId: params['vendedorId'] || '',
           quantity: 1
@@ -135,10 +141,11 @@ export class PagoComponent {
     }
 
     const db = getDatabase();
-    const compradorId = localStorage.getItem('id') || '';
+    const auth = getAuth();
+    const user = auth.currentUser;
+    const compradorId = user?.uid || '';
     const compradorNombreCompleto = this.nombre + ' ' + this.apellido;
 
-    // Actualizar estado a Premium
     update(ref(db, 'usuarios/' + compradorId), {
       premium: true,
       premiumInicio: new Date().toISOString()

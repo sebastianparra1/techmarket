@@ -11,8 +11,8 @@ import { FormsModule } from '@angular/forms';
 import { CarritoService, CartItem } from '../services/carrito.service';
 import { ProductoService } from '../services/productos.service';
 import { FirebaseService } from '../services/firebase.service';
-import { getDatabase, ref, child, get, onValue, update } from 'firebase/database';
-import { getAuth } from 'firebase/auth';
+import { getDatabase, ref, child, get, update } from 'firebase/database';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
 
 @Component({
   selector: 'app-home',
@@ -79,14 +79,14 @@ export class HomePage implements OnInit {
     this.idUsuario = localStorage.getItem('id') || this.route.snapshot.paramMap.get('id') || '';
 
     const auth = getAuth();
-    const user = auth.currentUser;
-    if (user) {
-      this.currentUserId = user.uid;
-      this.currentUserEmail = user.email || '';
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        this.currentUserId = user.uid;
+        this.currentUserEmail = user.email || '';
 
-      const db = getDatabase();
-      const userRef = ref(db, `usuarios/${this.currentUserId}`);
-      onValue(userRef, (snapshot) => {
+        const db = getDatabase();
+        const userRef = ref(db, `usuarios/${this.currentUserId}`);
+        const snapshot = await get(userRef);
         const userData = snapshot.val();
         this.esPremium = userData?.premium === true;
 
@@ -101,8 +101,10 @@ export class HomePage implements OnInit {
             this.esPremium = false;
           }
         }
-      });
-    }
+
+        await this.cargarNotificaciones();
+      }
+    });
 
     if (this.idUsuario) {
       this.obtenerDireccion();
@@ -110,7 +112,6 @@ export class HomePage implements OnInit {
     }
 
     this.obtenerTodosLosUsuarios();
-    this.cargarNotificaciones();
 
     const db = getDatabase();
     const dbRef = ref(db);
@@ -179,7 +180,8 @@ export class HomePage implements OnInit {
       name: producto.nombre,
       price: producto.precio,
       quantity: 1,
-      image: producto.imagen
+      image: producto.imagen,
+      vendedorId: producto.creadoPor || ''  // 👈 esto es lo que faltaba
     };
     this.carritoService.addItem(item);
     this.actualizarContador();
@@ -190,16 +192,23 @@ export class HomePage implements OnInit {
     this.carritoCount = items.reduce((acc, item) => acc + item.quantity, 0);
   }
 
-  cargarNotificaciones() {
-    const db = getDatabase();
-    const nuevasNotificaciones: any[] = [];
+  async cargarNotificaciones() {
+    if (!this.currentUserId || !this.currentUserEmail) return;
 
-    const ventasRef = ref(db, 'ventas');
-    onValue(ventasRef, (snapshot) => {
-      const data = snapshot.val() || {};
-      Object.entries(data).forEach(([id, venta]: any) => {
+    const db = getDatabase();
+    let nuevas: any[] = [];
+
+    try {
+      const [ventasSnap, vendedorSnap, compradorSnap] = await Promise.all([
+        get(ref(db, 'ventas')),
+        get(ref(db, `notificacionesVendedor/${this.currentUserId}`)),
+        get(ref(db, `notificacionesComprador/${this.currentUserId}`))
+      ]);
+
+      const ventasData = ventasSnap.val() || {};
+      for (const venta of Object.values<any>(ventasData)) {
         if (venta.compradorEmail === this.currentUserEmail) {
-          nuevasNotificaciones.push({
+          nuevas.push({
             tipo: 'Estado de pedido',
             productoNombre: venta.productoNombre,
             estado: venta.estado,
@@ -207,37 +216,34 @@ export class HomePage implements OnInit {
             productoId: venta.productoId
           });
         }
-      });
+      }
 
-      const notiVendedorRef = ref(db, `notificacionesVendedor/${this.currentUserId}`);
-      onValue(notiVendedorRef, (snap) => {
-        const dataVendedor = snap.val() || {};
-        Object.values(dataVendedor).forEach((noti: any) => {
-          nuevasNotificaciones.push({
-            tipo: 'Nueva compra recibida',
-            productoNombre: noti.productoNombre,
-            mensaje: noti.mensaje,
-            productoImagen: noti.productoImagen
-          });
+      const vendedorData = vendedorSnap.val() || {};
+      for (const noti of Object.values<any>(vendedorData)) {
+        nuevas.push({
+          tipo: 'Nueva compra recibida',
+          productoNombre: noti.productoNombre,
+          mensaje: noti.mensaje,
+          productoImagen: noti.productoImagen
         });
+      }
 
-        const notiCompradorRef = ref(db, `notificacionesComprador/${this.currentUserId}`);
-        onValue(notiCompradorRef, (snap2) => {
-          const dataComprador = snap2.val() || {};
-          Object.values(dataComprador).forEach((noti: any) => {
-            nuevasNotificaciones.push({
-              tipo: 'Compra realizada',
-              productoNombre: noti.productoNombre,
-              mensaje: noti.mensaje,
-              productoImagen: noti.productoImagen
-            });
-          });
-
-          this.notificaciones = nuevasNotificaciones;
-          this.notificacionesSinLeerCount = nuevasNotificaciones.length;
+      const compradorData = compradorSnap.val() || {};
+      for (const noti of Object.values<any>(compradorData)) {
+        nuevas.push({
+          tipo: 'Compra realizada',
+          productoNombre: noti.productoNombre,
+          mensaje: noti.mensaje,
+          productoImagen: noti.productoImagen
         });
-      });
-    });
+      }
+
+      this.notificaciones = [...nuevas];
+      this.notificacionesSinLeerCount = this.notificaciones.length;
+
+    } catch (err) {
+      console.error('Error cargando notificaciones:', err);
+    }
   }
 
   abrirNotificaciones() {

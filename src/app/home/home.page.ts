@@ -1,48 +1,29 @@
 import { Component, OnInit } from '@angular/core';
-import {
-  IonHeader, IonToolbar, IonTitle, IonContent, IonAvatar, IonButton,
-  IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonChip,
-  IonFab, IonFabButton, IonIcon, IonButtons, IonBadge, IonPopover, IonList, IonItem,
-  IonModal, IonLabel, IonThumbnail
-} from '@ionic/angular/standalone';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { IonicModule, ModalController, ToastController } from '@ionic/angular';
+import { getDatabase, ref, child, get, onValue, update } from 'firebase/database';
+import { getAuth } from 'firebase/auth';
+
+import { ModalPremiumComponent } from '../components/modal-premium/modal-premium.component';
 import { CarritoService, CartItem } from '../services/carrito.service';
 import { ProductoService } from '../services/productos.service';
 import { FirebaseService } from '../services/firebase.service';
+<<<<<<< HEAD
 import { getDatabase, ref, child, get, update } from 'firebase/database';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
+=======
+>>>>>>> 3f75c91a24fa77bc0be1c7679a825451a4241688
 
 @Component({
   selector: 'app-home',
   standalone: true,
   imports: [
     CommonModule,
+    FormsModule,
     RouterModule,
-    IonHeader,
-    IonToolbar,
-    IonTitle,
-    IonContent,
-    IonAvatar,
-    IonButton,
-    IonCard,
-    IonCardHeader,
-    IonCardTitle,
-    IonCardContent,
-    IonChip,
-    IonFab,
-    IonFabButton,
-    IonIcon,
-    IonButtons,
-    IonBadge,
-    IonPopover,
-    IonList,
-    IonItem,
-    IonModal,
-    IonLabel,
-    IonThumbnail,
-    FormsModule
+    IonicModule, // ✅ solo este para evitar conflictos
   ],
   templateUrl: './home.page.html',
   styleUrls: ['./home.page.scss'],
@@ -63,14 +44,15 @@ export class HomePage implements OnInit {
   mostrarNotificaciones = false;
   esPremium: boolean = false;
   diasRestantes: number = 0;
-  modalPremium = false;
 
   constructor(
     private productosService: ProductoService,
     private carritoService: CarritoService,
     private router: Router,
     private route: ActivatedRoute,
-    private firebaseService: FirebaseService
+    private firebaseService: FirebaseService,
+    private toastController: ToastController,
+    private modalCtrl: ModalController
   ) {}
 
   async ngOnInit() {
@@ -145,12 +127,8 @@ export class HomePage implements OnInit {
   async obtenerDireccion() {
     try {
       const usuario = await this.firebaseService.getUsuarioPorId(this.idUsuario);
-      if (usuario) {
-        this.direccion = usuario.direccion || '⚠️ Dirección no registrada';
-      } else {
-        this.direccion = '⚠️ Usuario no encontrado';
-      }
-    } catch (error) {
+      this.direccion = usuario?.direccion || '⚠️ Dirección no registrada';
+    } catch {
       this.direccion = '⚠️ Error al obtener dirección';
     }
   }
@@ -158,9 +136,7 @@ export class HomePage implements OnInit {
   async obtenerFotoPerfil() {
     try {
       const usuario = await this.firebaseService.getUsuarioPorId(this.idUsuario);
-      if (usuario) {
-        this.fotoPerfil = usuario.fotoPerfil || '';
-      }
+      this.fotoPerfil = usuario?.fotoPerfil || '';
     } catch (error) {
       console.error('Error al obtener foto de perfil:', error);
     }
@@ -256,13 +232,8 @@ export class HomePage implements OnInit {
   }
 
   irAMisCompras(noti: any) {
-    if (noti.productoId) {
-      this.router.navigate(['/mis-compras'], {
-        queryParams: { productoId: noti.productoId }
-      });
-    } else {
-      this.router.navigate(['/mis-compras']);
-    }
+    const queryParams = noti.productoId ? { productoId: noti.productoId } : {};
+    this.router.navigate(['/mis-compras'], { queryParams });
   }
 
   irAEditarPerfil() {
@@ -288,12 +259,32 @@ export class HomePage implements OnInit {
     this.router.navigate(['/chat', vendedorId]);
   }
 
-  mostrarModalPremium() {
-    this.modalPremium = true;
+  async mostrarModalPremium() {
+    const userId = localStorage.getItem('id');
+    if (!userId) {
+      const toast = await this.toastController.create({
+        message: 'Debes iniciar sesión para hacerte Premium.',
+        duration: 3000,
+        color: 'danger',
+        position: 'bottom'
+      });
+      await toast.present();
+      return;
+    }
+
+    const modal = await this.modalCtrl.create({
+      component: ModalPremiumComponent
+    });
+    await modal.present();
   }
 
-  irAPagoPremium() {
-    this.modalPremium = false;
-    this.router.navigate(['/pago-premium']);
+  async mostrarAvisoPremium() {
+    const toast = await this.toastController.create({
+      message: 'Debes ser usuario Premium para proponer intercambios.',
+      duration: 2500,
+      position: 'bottom',
+      color: 'warning'
+    });
+    await toast.present();
   }
 }

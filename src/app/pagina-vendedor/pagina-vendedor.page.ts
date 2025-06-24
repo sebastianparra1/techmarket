@@ -5,18 +5,18 @@ import { FormsModule } from '@angular/forms';
 import {
   IonContent, IonHeader, IonTitle, IonToolbar,
   IonButton, IonIcon, IonInput, IonTextarea,
-  IonLabel, IonItem, IonList, IonThumbnail,
-} from '@ionic/angular/standalone';
+  IonLabel, IonItem, IonList, IonThumbnail, IonText, IonChip } from '@ionic/angular/standalone';
 import { RouterModule } from '@angular/router';
 import { getDatabase, ref, get, set, push, update, remove, onValue } from 'firebase/database';
 import { UserService } from '../services/user.service'; // ✅ Asegúrate de que la ruta sea correcta
+
 
 @Component({
   selector: 'app-pagina-vendedor',
   templateUrl: './pagina-vendedor.page.html',
   styleUrls: ['./pagina-vendedor.page.scss'],
   standalone: true,
-  imports: [
+  imports: [IonChip, IonText, 
     IonContent, IonHeader, IonTitle, IonToolbar,
     IonButton, IonIcon, IonInput, IonTextarea, IonThumbnail,
     IonLabel, IonItem, IonList, CommonModule, FormsModule,

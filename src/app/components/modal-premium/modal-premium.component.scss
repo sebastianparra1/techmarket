@@ -1,0 +1,38 @@
+ion-card {
+  &.beneficios-card {
+    border-left: 6px solid #ffc107;
+    background-color: #fdfaf0;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    border-radius: 12px;
+
+    ion-card-title {
+      color: #333;
+      font-size: 1.2em;
+      font-weight: bold;
+    }
+
+    ion-item {
+      --background: transparent;
+      --color: #333;
+      font-size: 15px;
+
+      ion-icon {
+        font-size: 20px;
+      }
+
+      ion-label {
+        margin-left: 6px;
+      }
+    }
+  }
+}
+
+.credit-card {
+  border-radius: 16px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+}
+
+.ion-margin-top {
+  margin-top: 16px;
+}

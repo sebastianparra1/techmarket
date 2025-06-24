@@ -120,9 +120,9 @@
           <ion-icon name="swap-horizontal" slot="start"></ion-icon>
           Proponer intercambio
         </ion-button>
-        <ion-button *ngIf="!esPremium" expand="block" class="solo-premium-btn" (click)="mostrarModalPremium()">
+        <ion-button *ngIf="!esPremium" expand="block" class="solo-premium-btn" (click)="mostrarAvisoPremium()">
           <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
-          Solo Premium
+          Proponer intercambio
         </ion-button>
       </ion-card-content>
     </ion-card>
@@ -158,3 +158,15 @@
     </div>
   </div>
 </ion-content>
+
+<script>
+  async function mostrarAvisoPremium() {
+    const toast = document.createElement('ion-toast');
+    toast.message = 'Debes ser usuario Premium para proponer intercambios.';
+    toast.duration = 2500;
+    toast.color = 'warning';
+    toast.position = 'bottom';
+    document.body.appendChild(toast);
+    await toast.present();
+  }
+</script>

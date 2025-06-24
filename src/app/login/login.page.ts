@@ -80,6 +80,9 @@ export class LoginPage implements OnInit {
 
       console.log('✅ UID con email/password:', uid);
 
+      console.log('Intentando login con Google...');
+
+
       localStorage.setItem('id', uid);
       localStorage.setItem('uid', uid);
       localStorage.setItem('correo', this.correo);

@@ -1,0 +1,68 @@
+:host {
+  height: 100%;
+}
+
+.recuperar-content {
+  --background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  padding: 0;
+}
+
+.recuperar-wrapper {
+  width: 100%;
+  max-width: 400px;
+  margin: auto;
+}
+
+.recuperar-card {
+  background: white;
+  padding: 30px 20px;
+  border-radius: 20px;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+  text-align: center;
+
+  .logo-img {
+    width: 70px;
+    margin-bottom: 15px;
+  }
+
+  h2 {
+    font-size: 1.6rem;
+    margin-bottom: 10px;
+    color: #2c5364;
+  }
+
+  p {
+    font-size: 0.95rem;
+    margin-bottom: 20px;
+    color: #555;
+  }
+
+  ion-item {
+    --background: #f0f0f0;
+    border-radius: 10px;
+    margin-bottom: 20px;
+
+    ion-label {
+      color: #666;
+    }
+
+    ion-input {
+      color: #111;
+    }
+  }
+
+  ion-button {
+    border-radius: 12px;
+    font-weight: 500;
+    margin-top: 10px;
+  }
+
+  .info-text {
+    margin-top: 15px;
+    font-size: 0.9rem;
+  }
+}

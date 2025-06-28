@@ -1,60 +1,74 @@
-<ion-header>
-  <ion-toolbar color="success">
-    <ion-title>Registro</ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-content class="registro-content">
+  <div class="registro-wrapper">
 
-<ion-content class="ion-padding">
-  <form (ngSubmit)="registrarUsuario()">
+    <!-- Panel visual izquierdo -->
+    <div class="registro-side-panel">
+      <img src="https://play-lh.googleusercontent.com/rCc1T9PFomPVLTeHgT-pIRBHco7a9UACNQOy-DQ8io-YjGXTveRm2PHqbzfhYWw6eoHI"
+           alt="Logo" class="logo-img" />
+      <h2>¡Crea tu cuenta en TechMarket!</h2>
+      <p>Haz parte de nuestra comunidad tecnológica y accede a todas las funcionalidades de la plataforma.</p>
+    </div>
 
-    <ion-item>
-      <ion-label position="floating">Usuario</ion-label>
-      <ion-input [(ngModel)]="nombre" name="nombre" required></ion-input>
-    </ion-item>
+    <!-- Panel de formulario -->
+    <div class="registro-form-panel">
+      <h1 class="brand-title">Registro</h1>
+      <form (ngSubmit)="registrarUsuario()">
 
-    <ion-item>
-      <ion-label position="floating">Correo</ion-label>
-      <ion-input [(ngModel)]="correo" name="correo" type="email" required></ion-input>
-    </ion-item>
+        <ion-item>
+          <ion-label position="floating">Usuario</ion-label>
+          <ion-input [(ngModel)]="nombre" name="nombre" required></ion-input>
+        </ion-item>
 
-    <ion-item>
-      <ion-label position="floating">Contraseña</ion-label>
-      <ion-input [(ngModel)]="contrasena" name="contrasena" type="password" required></ion-input>
-    </ion-item>
+        <ion-item>
+          <ion-label position="floating">Correo</ion-label>
+          <ion-input [(ngModel)]="correo" name="correo" type="email" required></ion-input>
+        </ion-item>
 
-    <ion-item>
-      <ion-label position="floating">RUT</ion-label>
-      <ion-input [(ngModel)]="rut" name="rut" required></ion-input>
-    </ion-item>
+        <ion-item>
+          <ion-label position="floating">Contraseña</ion-label>
+          <ion-input [(ngModel)]="contrasena" name="contrasena" type="password" required></ion-input>
+        </ion-item>
 
-    <ion-item>
-      <ion-label position="floating">Teléfono</ion-label>
-      <ion-input [(ngModel)]="telefono" name="telefono" type="tel" required></ion-input>
-    </ion-item>
+        <ion-item>
+          <ion-label position="floating">RUT</ion-label>
+          <ion-input [(ngModel)]="rut" name="rut" required></ion-input>
+        </ion-item>
 
-    <!-- Dirección con Autocomplete (igual que editar-usuario) -->
-    <ion-item>
-      <ion-label position="floating">Dirección</ion-label>
-      <input id="autocomplete" type="text" class="native-input sc-ion-input-md"
-             [(ngModel)]="direccion" name="direccion" required
-             style="width: 100%; border: none; outline: none; padding: 12px; font-size: 16px; color: var(--ion-color-dark);">
-    </ion-item>
+        <ion-item>
+          <ion-label position="floating">Teléfono</ion-label>
+          <ion-input [(ngModel)]="telefono" name="telefono" type="tel" required></ion-input>
+        </ion-item>
 
-    <!-- Foto de perfil -->
-    <ion-item>
-      <ion-label position="stacked">Foto de perfil</ion-label>
-      <input type="file" (change)="onFileSelected($event)" />
-    </ion-item>
+      <!-- Dirección con Autocomplete (igual que editar-usuario) -->
+    <div class="custom-autocomplete">
+  <label for="autocomplete">Dirección</label>
+  <input id="autocomplete"
+         type="text"
+         [(ngModel)]="direccion"
+         name="direccion"
+         required />
+</div>
 
-    <ion-item lines="none">
-      <ion-avatar>
-        <img [src]="fotoPerfilURL || 'https://via.placeholder.com/150'" />
-      </ion-avatar>
-    </ion-item>
 
-    <!-- Botón -->
-    <ion-button expand="block" color="success" type="submit">
-      Registrarse
-    </ion-button>
-  </form>
+
+
+
+        <ion-item>
+          <ion-label position="stacked">Foto de perfil</ion-label>
+          <input type="file" (change)="onFileSelected($event)" />
+        </ion-item>
+
+        <ion-item lines="none">
+          <ion-avatar>
+            <img [src]="fotoPerfilURL || 'https://via.placeholder.com/150'" />
+          </ion-avatar>
+        </ion-item>
+
+        <ion-button expand="block" color="success" type="submit">
+          Registrarse
+        </ion-button>
+      </form>
+    </div>
+
+  </div>
 </ion-content>

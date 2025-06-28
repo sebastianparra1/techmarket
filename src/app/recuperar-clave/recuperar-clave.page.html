@@ -1,26 +1,29 @@
-<ion-header>
-  <ion-toolbar color="success">
-    <ion-title>Recuperar Contraseña</ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-content class="recuperar-content">
+  <div class="recuperar-wrapper">
+    <div class="recuperar-card">
+      <img src="https://play-lh.googleusercontent.com/rCc1T9PFomPVLTeHgT-pIRBHco7a9UACNQOy-DQ8io-YjGXTveRm2PHqbzfhYWw6eoHI"
+           alt="Logo" class="logo-img" />
+      <h2>Recuperar Contraseña</h2>
+      <p>Ingresa tu correo para recibir un enlace de recuperación</p>
 
-<ion-content class="ion-padding">
-  <form (ngSubmit)="enviarCorreo()">
-    <ion-item>
-      <ion-label position="floating">Correo electrónico</ion-label>
-      <ion-input [(ngModel)]="correo" name="correo" type="email" required></ion-input>
-    </ion-item>
+      <form (ngSubmit)="enviarCorreo()">
+        <ion-item lines="none">
+          <ion-label position="floating">Correo electrónico</ion-label>
+          <ion-input [(ngModel)]="correo" name="correo" type="email" required></ion-input>
+        </ion-item>
 
-    <ion-button expand="block" type="submit" color="success">
-      Enviar enlace de recuperación
-    </ion-button>
+        <ion-button expand="block" type="submit" color="success">
+          Enviar enlace de recuperación
+        </ion-button>
 
-    <ion-text color="success" *ngIf="mensaje">
-      <p style="margin-top: 10px;">{{ mensaje }}</p>
-    </ion-text>
+        <ion-text color="success" *ngIf="mensaje">
+          <p class="info-text">{{ mensaje }}</p>
+        </ion-text>
 
-    <ion-text color="danger" *ngIf="error">
-      <p style="margin-top: 10px;">{{ error }}</p>
-    </ion-text>
-  </form>
+        <ion-text color="danger" *ngIf="error">
+          <p class="info-text">{{ error }}</p>
+        </ion-text>
+      </form>
+    </div>
+  </div>
 </ion-content>

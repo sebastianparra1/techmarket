@@ -1,0 +1,158 @@
+:host {
+  height: 100%;
+  overflow: visible;
+}
+
+.registro-content {
+  --background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+  height: auto;
+  min-height: 100vh;
+  padding: 40px 0;
+  overflow: visible;
+  position: relative;
+  z-index: 1;
+}
+
+
+.registro-wrapper {
+  display: flex;
+  flex-direction: row;
+  width: 90%;
+  max-width: 1000px;
+  background: transparent;
+  border-radius: 20px;
+  margin: auto;
+  overflow: visible;          // ✅ esta es la correcta
+  position: relative;         // ✅ necesaria para z-index
+  z-index: 0;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    height: auto;
+    border-radius: 0;
+  }
+}
+
+
+.registro-side-panel {
+  flex: 1;
+  background: rgba(44, 198, 164, 0.95);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+  text-align: center;
+
+  .logo-img {
+    width: 80px;
+    margin-bottom: 20px;
+  }
+
+  h2 {
+    font-size: 1.8rem;
+    margin-bottom: 10px;
+  }
+
+  p {
+    font-size: 1rem;
+    margin-bottom: 20px;
+  }
+}
+
+.registro-form-panel {
+  flex: 1;
+  background: white;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  .brand-title {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #2c5364;
+    margin-bottom: 25px;
+    text-align: center;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  ion-item {
+    --background: #f0f0f0;
+    border-radius: 10px;
+  }
+
+  input[type="file"] {
+  background-color: #f0f0f0;
+  padding: 10px;
+  border-radius: 10px;
+  width: 100%;
+  color: #333;
+}
+
+
+  ion-avatar {
+    margin: 10px auto;
+    width: 80px;
+    height: 80px;
+
+    img {
+      border-radius: 50%;
+      object-fit: cover;
+    }
+  }
+
+  ion-button {
+    margin-top: 10px;
+    border-radius: 10px;
+  }
+
+  ion-item {
+  --background: #f0f0f0;
+  border-radius: 10px;
+
+  ion-label {
+    color: #666; // Color del texto flotante
+  }
+
+  ion-input,
+  input {
+    color: #111 !important; // Color del texto que escribe el usuario
+  }
+
+  input::placeholder {
+    color: #999;
+  }
+}
+
+.custom-autocomplete {
+  margin-bottom: 15px;
+  z-index: 1000;
+
+  label {
+    display: block;
+    margin-bottom: 5px;
+    color: #444;
+    font-weight: 500;
+  }
+
+  input {
+    width: 100%;
+    padding: 12px;
+    border-radius: 10px;
+    font-size: 16px;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    color: #111;
+  }
+}
+}
+
+
+

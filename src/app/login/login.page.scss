@@ -1,65 +1,159 @@
+:host {
+  height: 100%;
+}
+
 .login-content {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: #f4f4f4;
-    padding: 16px; /* Por si el contenido es más grande en pantallas pequeñas */
-    box-sizing: border-box;
-  }
-  
-  .login-card {
-    width: 90%;
-    max-width: 400px;
-    padding: 20px;
-    border-radius: 18px;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
-    background: white;
-    text-align: center;
-  }
-  
-  .logo-img {
-    width: 120px;
+  --background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; // 👈 altura total
+  padding: 0;
+  position: relative;
+}
+
+.login-wrapper {
+  display: flex;
+  flex-direction: row;
+  width: 90%;
+  max-width: 950px;
+  height: 85vh;
+  background: transparent;
+  border-radius: 20px;
+  box-shadow: none;
+  margin: 0 auto; // 💡 ESTO centra horizontalmente
+  height: auto; // 👈 esto lo centra mejor verticalmente
+
+  @media (max-width: 768px) {
+    flex-direction: column;
     height: auto;
-    margin: 0 auto 10px;
   }
+}
+
+
+.login-wrapper {
+  display: flex;
+  flex-direction: row;
+  width: 90%;
+  max-width: 950px;
+  height: 85vh;
+  background: transparent; // sin color
+  border-radius: 0;
+  box-shadow: none;
+  overflow: hidden;
   
-  .brand-title {
-    font-size: 1.8rem;
-    font-weight: bold;
-    margin-bottom: 10px;
-    color: #ffffff;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    height: auto;
   }
-  ion-content.login-content {
-    --background: #111; // Fondo oscuro si quieres mantenerlo así
-  
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-  }
-  
-  .welcome-text {
-    font-size: 1.1rem;
-    margin-bottom: 8px;
-  }
-  
-  .description-text {
-    font-size: 0.95rem;
-    color: #ffffff;
+}
+
+.login-side-panel {
+  flex: 1;
+  background: rgba(44, 198, 164, 0.95); // verde con transparencia ligera
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+  border-top-left-radius: 20px;
+  border-bottom-left-radius: 20px;
+
+  .logo-img {
+    width: 80px;
     margin-bottom: 20px;
   }
-  
-  .input-margin {
-    margin-top: 15px;
+
+  h2 {
+    font-size: 1.8rem;
+    margin-bottom: 10px;
   }
-  
-  .login-btn {
-    margin-top: 20px;
+
+  p {
+    font-size: 1rem;
+    margin-bottom: 20px;
+  }
+
+  ion-button {
+    border: 1px solid white;
+    font-weight: bold;
+  }
+}
+
+.login-form-panel {
+  flex: 1;
+  background: white;
+  border-top-right-radius: 20px;
+  border-bottom-right-radius: 20px;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+
+  .brand-title {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #2c5364;
+    margin-bottom: 5px;
+  }
+
+  .slogan {
+    color: #666;
+    font-size: 1rem;
+    margin-bottom: 25px;
+  }
+
+  .input-item {
+    width: 100%;
+    max-width: 350px;
+    background: #222;
+    color: white;
     border-radius: 12px;
+    margin-bottom: 15px;
+
+    ion-label {
+      color: #fff;
+    }
+
+    ion-input {
+      padding: 12px 10px;
+      color: #fff;
+    }
   }
-  
+
+  .eye-icon {
+    font-size: 22px;
+    color: #ccc;
+    cursor: pointer;
+  }
+
+  ion-button {
+    width: 100%;
+    max-width: 350px;
+    margin-top: 10px;
+    border-radius: 10px;
+    font-weight: 500;
+  }
+
+  .extra-links {
+    margin-top: 15px;
+    text-align: center;
+
+    a {
+      display: block;
+      font-size: 0.9rem;
+      color: #2cc6a4;
+      margin-top: 5px;
+      text-decoration: none;
+    }
+  }
+
+  ion-text {
+    margin-top: 10px;
+    font-size: 0.9rem;
+  }
+}

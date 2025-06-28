@@ -109,6 +109,8 @@ ion-buttons[slot="end"] {
   justify-content: center;
   gap: 15px;
   padding: 0 10px;
+  flex: 1 1 300px;
+  align-items: stretch;
 }
 
 .product-card {

@@ -105,7 +105,13 @@ export class HomePage implements OnInit {
       }));
 
       productos.sort((a, b) => (b.ventas || 0) - (a.ventas || 0));
+
       this.destacados = productos.slice(0, 3);
+
+      this.destacados = productos.slice(0, 5);
+    } else {
+      console.log('No se encontraron productos para destacados.');
+
     }
   }
 

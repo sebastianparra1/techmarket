@@ -13,7 +13,8 @@ import {
   IonImg,
   IonLabel,
   IonItem,
-  IonText
+  IonText,
+  IonIcon,
 } from '@ionic/angular/standalone';
 import { Router, RouterModule } from '@angular/router';
 
@@ -48,7 +49,8 @@ import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
     IonImg,
     IonLabel,
     IonItem,
-    IonText
+    IonText,
+    IonIcon
   ]
 })
 export class LoginPage implements OnInit {

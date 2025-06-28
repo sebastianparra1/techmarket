@@ -29,6 +29,8 @@ export class PaginaVendedorPage implements OnInit {
   productosVendedor: any[] = [];
   productoEditando: any = null;
   esPremium: boolean = false;
+  diasRestantes: number = 0;
+  totalProductos: number = 0;
 
   nuevoProducto: {
     nombre?: string;
@@ -70,6 +72,21 @@ export class PaginaVendedorPage implements OnInit {
       this.permitidoVender = true;
       this.esPremium = !!data.premium;
 
+      if (this.esPremium && data.premiumDesde) {
+        const fechaInicio = new Date(Number(data.premiumDesde));
+        const fechaActual = new Date();
+        const diferencia = Math.floor(
+          (fechaInicio.getTime() + 30 * 24 * 60 * 60 * 1000 - fechaActual.getTime()) / (1000 * 60 * 60 * 24)
+        );
+        const diasRestantes = Math.max(0, diferencia);
+        this.diasRestantes = diasRestantes;
+
+        if (diasRestantes === 0) {
+          await update(userRef, { premium: false });
+          this.esPremium = false;
+        }
+      }
+
       this.cargarProductosDelVendedor(uid);
     } else {
       alert('No se encontró información del usuario.');
@@ -86,6 +103,7 @@ export class PaginaVendedorPage implements OnInit {
       this.productosVendedor = Object.entries(data)
         .map(([id, producto]: any) => ({ id, ...producto }))
         .filter(prod => prod.creadoPor === uid);
+      this.totalProductos = this.productosVendedor.length;
     });
   }
 

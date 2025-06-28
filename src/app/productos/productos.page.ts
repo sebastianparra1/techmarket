@@ -108,8 +108,8 @@ export class ProductosPage {
         const userData = snapshot.val();
         this.esPremium = userData?.premium === true;
 
-        if (this.esPremium && userData.premiumInicio) {
-          const fechaInicio = new Date(Number(userData.premiumInicio));
+        if (this.esPremium && userData.premiumDesde) {
+          const fechaInicio = new Date(Number(userData.premiumDesde));
           const fechaActual = new Date();
           const diferencia = Math.floor((fechaInicio.getTime() + 30 * 24 * 60 * 60 * 1000 - fechaActual.getTime()) / (1000 * 60 * 60 * 24));
           this.diasRestantes = Math.max(0, diferencia);
@@ -130,7 +130,7 @@ export class ProductosPage {
       price: producto.precio,
       quantity: 1,
       image: producto.imagen,
-      vendedorId: producto.creadoPor || ''  // 👈 esto es lo que faltaba
+      vendedorId: producto.creadoPor || ''
     };
     this.carritoService.addItem(item);
     this.actualizarContador();

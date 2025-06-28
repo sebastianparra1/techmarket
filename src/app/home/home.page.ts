@@ -4,7 +4,7 @@ import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { IonicModule, ModalController, ToastController } from '@ionic/angular';
 import { getDatabase, ref, child, get, onValue, update } from 'firebase/database';
-import { getAuth, onAuthStateChanged} from 'firebase/auth';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
 
 import { ModalPremiumComponent } from '../components/modal-premium/modal-premium.component';
 import { CarritoService, CartItem } from '../services/carrito.service';
@@ -14,12 +14,7 @@ import { FirebaseService } from '../services/firebase.service';
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    RouterModule,
-    IonicModule,
-  ],
+  imports: [CommonModule, FormsModule, RouterModule, IonicModule],
   templateUrl: './home.page.html',
   styleUrls: ['./home.page.scss'],
 })
@@ -30,7 +25,6 @@ export class HomePage implements OnInit {
   direccion: string = 'Cargando dirección...';
   usuarios: any[] = [];
   fotoPerfil: string = '';
-  categorias: string[] = ['Periféricos', 'Electrónica', 'Monitores', 'Audio'];
   destacados: any[] = [];
   currentUserEmail: string = '';
   currentUserId: string = '';
@@ -67,10 +61,12 @@ export class HomePage implements OnInit {
         const userData = snapshot.val();
         this.esPremium = userData?.premium === true;
 
-        if (this.esPremium && userData.premiumInicio) {
-          const fechaInicio = new Date(Number(userData.premiumInicio));
+        if (this.esPremium && userData.premiumDesde) {
+          const fechaInicio = new Date(Number(userData.premiumDesde));
           const fechaActual = new Date();
-          const diferencia = Math.floor((fechaInicio.getTime() + 30 * 24 * 60 * 60 * 1000 - fechaActual.getTime()) / (1000 * 60 * 60 * 24));
+          const diferencia = Math.floor(
+            (fechaInicio.getTime() + 30 * 24 * 60 * 60 * 1000 - fechaActual.getTime()) / (1000 * 60 * 60 * 24)
+          );
           this.diasRestantes = Math.max(0, diferencia);
 
           if (this.diasRestantes === 0) {
@@ -110,8 +106,6 @@ export class HomePage implements OnInit {
 
       productos.sort((a, b) => (b.ventas || 0) - (a.ventas || 0));
       this.destacados = productos.slice(0, 3);
-    } else {
-      console.log('No se encontraron productos para destacados.');
     }
   }
 
@@ -284,7 +278,6 @@ export class HomePage implements OnInit {
   }
 
   irAVenta() {
-    console.log('👉 Redirigiendo a /pagina-vendedor');
     this.router.navigate(['/pagina-vendedor']);
   }
 }

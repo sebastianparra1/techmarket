@@ -16,8 +16,13 @@
       </div>
 
       <h1>👋 Bienvenido, {{ nombreUsuario }}!</h1>
-
       <p>Aquí puede agregar, editar o eliminar tus productos para la venta</p>
+
+      <!-- Número de productos publicados -->
+      <ion-chip color="tertiary" style="margin: 10px 0;">
+        <ion-icon name="cube-outline" slot="start"></ion-icon>
+        Tienes {{ productosVendedor.length }} producto(s) en venta
+      </ion-chip>
 
       <!-- Botón premium si no es premium -->
       <ion-button *ngIf="!esPremium" expand="block" color="warning" (click)="mostrarModalPremium()">
@@ -31,7 +36,7 @@
         <p>Agregar productos</p>
       </div>
 
-      <!-- 📦 Zona para agregar un nuevo producto -->
+      <!-- Zona de carga -->
       <div *ngIf="mostrarZonaCarga">
         <div class="upload-dropzone"
             (drop)="onDrop($event)"
@@ -53,18 +58,14 @@
             <ion-label position="floating">Nombre del producto</ion-label>
             <ion-input [(ngModel)]="nuevoProducto.nombre" required></ion-input>
           </ion-item>
-
           <ion-item>
             <ion-label position="floating">Precio</ion-label>
             <ion-input type="number" [(ngModel)]="nuevoProducto.precio" required></ion-input>
           </ion-item>
-
           <ion-item>
             <ion-label position="floating">Descripción</ion-label>
             <ion-textarea [(ngModel)]="nuevoProducto.descripcion"></ion-textarea>
           </ion-item>
-
-          <!-- Campo nuevo: Unidades disponibles -->
           <ion-item>
             <ion-label position="floating">Unidades disponibles</ion-label>
             <ion-input type="number" [(ngModel)]="nuevoProducto.unidades" required></ion-input>
@@ -76,7 +77,7 @@
         </ion-button>
       </div>
 
-      <!-- 🧾 Lista de productos del vendedor -->
+      <!-- Lista de productos -->
       <ion-list *ngIf="productosVendedor.length > 0">
         <ion-item *ngFor="let producto of productosVendedor">
           <ion-thumbnail slot="start">
@@ -93,7 +94,7 @@
         </ion-item>
       </ion-list>
 
-      <!-- 📝 Formulario para editar producto -->
+      <!-- Formulario de edición -->
       <ion-list *ngIf="productoEditando">
         <ion-item>
           <ion-label position="floating">Nombre</ion-label>
@@ -115,29 +116,28 @@
         <ion-button expand="block" color="success" (click)="guardarEdicion()">Guardar cambios</ion-button>
         <ion-button expand="block" color="medium" (click)="cancelarEdicion()">Cancelar</ion-button>
       </ion-list>
+
+      <ion-button expand="block" color="success" routerLink="/ventas-vendedor">
+        Ver tus ventas y estado
+      </ion-button>
+
+      <footer class="footer">
+        <div class="about">
+          <p><strong>Sobre Nosotros:</strong><br>
+            Somos TechMarket, una empresa dedicada a la venta de productos tecnológicos.
+          </p>
+        </div>
+        <div class="contact">
+          <p><strong>Contacto:</strong><br>
+            Chile&#64;TechMarket.cl
+          </p>
+        </div>
+        <div class="social">
+          <p><strong>Síguenos:</strong></p>
+          <ion-icon name="logo-facebook"></ion-icon>
+          <ion-icon name="logo-instagram"></ion-icon>
+        </div>
+      </footer>
     </div>
-<ion-button expand="block" color="success" routerLink="/ventas-vendedor">
-  Ver tus ventas y estado
-</ion-button>
-
-    <footer class="footer">
-      <div class="about">
-        <p><strong>Sobre Nosotros:</strong><br>
-          Somos TechMarket, una empresa dedicada a la venta de productos tecnológicos.
-        </p>
-      </div>
-
-      <div class="contact">
-        <p><strong>Contacto:</strong><br>
-          Chile&#64;TechMarket.cl
-        </p>
-      </div>
-
-      <div class="social">
-        <p><strong>Síguenos:</strong></p>
-        <ion-icon name="logo-facebook"></ion-icon>
-        <ion-icon name="logo-instagram"></ion-icon>
-      </div>
-    </footer>
   </div>
 </ion-content>

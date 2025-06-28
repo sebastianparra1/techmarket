@@ -3,7 +3,7 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { getDatabase, ref, child, get, onValue } from 'firebase/database';
 import { CarritoService, CartItem } from '../services/carrito.service';
 import { FirebaseService } from '../services/firebase.service';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule, ToastController } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -30,12 +30,14 @@ export class ProductoDetallePage implements OnInit {
   mostrarNotificaciones = false;
   currentUserEmail: string = '';
   currentUserId: string = '';
+  esPremium: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private carritoService: CarritoService,
-    private firebaseService: FirebaseService
+    private firebaseService: FirebaseService,
+    private toastController: ToastController
   ) {}
 
   async ngOnInit() {
@@ -51,14 +53,20 @@ export class ProductoDetallePage implements OnInit {
       this.currentUserId = this.idUsuario;
     }
 
+    const db = getDatabase();
+    const userRef = ref(db, `usuarios/${this.idUsuario}`);
+    const userSnap = await get(userRef);
+    if (userSnap.exists()) {
+      const userData = userSnap.val();
+      this.esPremium = !!userData.premium;
+    }
+
     this.cargarNotificaciones();
 
     const productoId = this.route.snapshot.paramMap.get('id');
     if (productoId) {
-      const db = getDatabase();
       const dbRef = ref(db);
       const snapshot = await get(child(dbRef, `productos/${productoId}`));
-
       if (snapshot.exists()) {
         this.producto = snapshot.val();
         this.producto.id = productoId;
@@ -177,15 +185,15 @@ export class ProductoDetallePage implements OnInit {
   }
 
   agregarAlCarrito() {
-  const item: CartItem = {
-    id: this.producto.id,
-    name: this.producto.nombre,
-    price: this.producto.precio,
-    quantity: 1,
-    image: this.producto.imagen,
-    vendedorId: this.producto.creadoPor || ''
-  };
-  this.carritoService.addItem(item);
+    const item: CartItem = {
+      id: this.producto.id,
+      name: this.producto.nombre,
+      price: this.producto.precio,
+      quantity: 1,
+      image: this.producto.imagen,
+      vendedorId: this.producto.creadoPor || ''
+    };
+    this.carritoService.addItem(item);
     this.actualizarContador();
   }
 
@@ -195,17 +203,17 @@ export class ProductoDetallePage implements OnInit {
   }
 
   irAPago() {
-  this.router.navigate(['/pago'], {
-    queryParams: {
-      id: this.producto.id,
-      nombre: this.producto.nombre,
-      precio: this.producto.precio,
-      imagen: this.producto.imagen,
-      vendedorId: this.producto.creadoPor,
-      fecha: Date.now()
-    }
-  });
-}
+    this.router.navigate(['/pago'], {
+      queryParams: {
+        id: this.producto.id,
+        nombre: this.producto.nombre,
+        precio: this.producto.precio,
+        imagen: this.producto.imagen,
+        vendedorId: this.producto.creadoPor,
+        fecha: Date.now()
+      }
+    });
+  }
 
   abrirZoom() {
     this.mostrarZoom = true;
@@ -213,5 +221,21 @@ export class ProductoDetallePage implements OnInit {
 
   cerrarZoom() {
     this.mostrarZoom = false;
+  }
+
+  irAIntercambio() {
+    if (this.producto?.creadoPor) {
+      this.router.navigate(['/chat', this.producto.creadoPor]);
+    }
+  }
+
+  async mostrarToastPremium() {
+    const toast = await this.toastController.create({
+      message: 'Debes hacerte Premium para proponer intercambios.',
+      duration: 2500,
+      color: 'warning',
+      position: 'bottom'
+    });
+    await toast.present();
   }
 }

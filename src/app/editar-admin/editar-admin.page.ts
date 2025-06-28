@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { IonImg } from '@ionic/angular/standalone';
 import { CommonModule } from '@angular/common';
 import {
   IonHeader,
@@ -14,7 +13,13 @@ import {
   IonToggle,
   IonButton,
   IonList,
-  IonText
+  IonText,
+  IonImg,
+  IonCard,
+  IonCardHeader,
+  IonCardTitle,
+  IonCardContent,
+  IonThumbnail
 } from '@ionic/angular/standalone';
 import { getDatabase, ref, get, update, remove } from 'firebase/database';
 
@@ -25,7 +30,7 @@ import { getDatabase, ref, get, update, remove } from 'firebase/database';
   standalone: true,
   imports: [
     CommonModule,
-    FormsModule, // ✅ AÑADE ESTO
+    FormsModule,
     IonHeader,
     IonToolbar,
     IonTitle,
@@ -37,7 +42,12 @@ import { getDatabase, ref, get, update, remove } from 'firebase/database';
     IonButton,
     IonList,
     IonText,
-    IonImg  // 👈 AÑÁDELO AQUÍ
+    IonImg,
+    IonCard,
+    IonCardHeader,
+    IonCardTitle,
+    IonCardContent,
+    IonThumbnail
   ]
 })
 export class EditarAdminPage implements OnInit {
@@ -49,21 +59,20 @@ export class EditarAdminPage implements OnInit {
 
   async ngOnInit() {
     this.uid = this.route.snapshot.paramMap.get('id') || '';
-
     const db = getDatabase();
 
-    // Cargar datos del usuario
+    // Obtener usuario
     const userSnap = await get(ref(db, `usuarios/${this.uid}`));
     if (userSnap.exists()) {
       this.usuario = userSnap.val();
     }
 
-    // Cargar productos del usuario
+    // Obtener productos creados por el usuario (usando "creadoPor")
     const productosSnap = await get(ref(db, 'productos'));
     if (productosSnap.exists()) {
       const data = productosSnap.val();
       this.productos = Object.entries(data)
-        .filter(([_, prod]: any) => prod.usuarioId === this.uid)
+        .filter(([_, prod]: any) => prod.creadoPor === this.uid)
         .map(([id, prod]: any) => ({ id, ...prod }));
     }
   }
@@ -87,5 +96,15 @@ export class EditarAdminPage implements OnInit {
 
     await remove(ref(getDatabase(), `productos/${id}`));
     this.productos = this.productos.filter(p => p.id !== id);
+  }
+
+  async actualizarProducto(producto: any) {
+    const db = getDatabase();
+    await update(ref(db, `productos/${producto.id}`), {
+      nombre: producto.nombre || '',
+      precio: producto.precio || 0,
+      unidades: producto.unidades || 0
+    });
+    alert('✅ Producto actualizado correctamente.');
   }
 }

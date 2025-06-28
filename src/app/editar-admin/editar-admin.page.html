@@ -27,19 +27,19 @@
     </ion-item>
 
     <!-- Mostrar imagen de perfil -->
-<div style="text-align: center; margin-top: 10px;">
-  <ion-img
-    *ngIf="usuario.fotoPerfil"
-    [src]="usuario.fotoPerfil"
-    style="width: 120px; height: 120px; border-radius: 50%; margin: 10px auto;"
-    alt="Foto de perfil">
-  </ion-img>
-</div>
+    <div style="text-align: center; margin-top: 10px;">
+      <ion-img
+        *ngIf="usuario.fotoPerfil"
+        [src]="usuario.fotoPerfil"
+        style="width: 120px; height: 120px; border-radius: 50%; margin: 10px auto;"
+        alt="Foto de perfil">
+      </ion-img>
+    </div>
 
-<ion-item>
-  <ion-label position="floating">Foto de perfil (URL)</ion-label>
-  <ion-input [(ngModel)]="usuario.fotoPerfil"></ion-input>
-</ion-item>
+    <ion-item>
+      <ion-label position="floating">Foto de perfil (URL)</ion-label>
+      <ion-input [(ngModel)]="usuario.fotoPerfil"></ion-input>
+    </ion-item>
 
     <ion-item>
       <ion-label>Premium</ion-label>
@@ -51,19 +51,34 @@
     </ion-button>
   </ion-list>
 
-  <ion-text color="medium" *ngIf="productos.length > 0">
-    <h3 style="margin-top: 30px;">🛒 Productos del usuario:</h3>
-  </ion-text>
+  <!-- Productos del usuario -->
+  <ion-card *ngIf="productos.length > 0">
+    <ion-card-header>
+      <ion-card-title>🛠 Productos del usuario</ion-card-title>
+    </ion-card-header>
 
-  <ion-list *ngFor="let producto of productos">
-    <ion-item>
-      <ion-label>
-        <h3>{{ producto.nombre }}</h3>
-        <p>{{ producto.descripcion }}</p>
-      </ion-label>
-      <ion-button color="danger" (click)="eliminarProducto(producto.id)">
-        Eliminar
-      </ion-button>
-    </ion-item>
-  </ion-list>
+    <ion-card-content>
+      <ion-list>
+        <ion-item *ngFor="let producto of productos">
+          <ion-thumbnail slot="start">
+            <ion-img [src]="producto.imagen || 'https://via.placeholder.com/80'" alt="producto"></ion-img>
+          </ion-thumbnail>
+
+          <ion-label>
+            <ion-input [(ngModel)]="producto.nombre" placeholder="Nombre del producto"></ion-input>
+            <ion-input type="number" [(ngModel)]="producto.precio" placeholder="Precio"></ion-input>
+            <ion-input type="number" [(ngModel)]="producto.unidades" placeholder="Unidades"></ion-input>
+          </ion-label>
+
+          <ion-button size="small" fill="clear" color="success" (click)="actualizarProducto(producto)">
+            💾
+          </ion-button>
+
+          <ion-button size="small" fill="clear" color="danger" (click)="eliminarProducto(producto.id)">
+            ❌
+          </ion-button>
+        </ion-item>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
 </ion-content>

@@ -5,7 +5,48 @@
 </ion-header>
 
 <ion-content class="ion-padding">
-  <ion-card *ngFor="let usuario of usuarios" class="ion-margin-bottom">
+  <!-- 🔍 BUSCADOR Y FILTRO -->
+  <ion-item>
+    <ion-input
+      label="Buscar usuario o ID"
+      label-placement="floating"
+      [(ngModel)]="busqueda"
+      (ionInput)="generarGrafico()">
+    </ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-select
+      interface="popover"
+      placeholder="Filtrar por tipo"
+      [(ngModel)]="filtro"
+      (ionChange)="generarGrafico()">
+      <ion-select-option value="todos">Todos</ion-select-option>
+      <ion-select-option value="premium">Solo Premium</ion-select-option>
+      <ion-select-option value="noPremium">No Premium</ion-select-option>
+    </ion-select>
+  </ion-item>
+
+  <!-- 📊 GRÁFICO Y EXPORTAR -->
+  <div style="text-align: center; margin-top: 20px;">
+    <h2>Resumen de cuentas</h2>
+
+    <canvas #graficoPremiumCanvas
+      style="max-width: 300px; max-height: 300px; margin: auto;"></canvas>
+
+    <p style="margin-top: 10px;">
+      <strong>Total recaudado por cuentas premium:</strong>
+      <span style="color: #3b82f6; font-weight: bold;">
+        ${{ totalPremiumCLP | number: '1.0-0' }}
+      </span>
+    </p>
+
+    <ion-button color="primary" size="small" (click)="exportarExcel()"> Excel</ion-button>
+    <ion-button color="medium" size="small" (click)="exportarPDF()"> PDF</ion-button>
+  </div>
+
+  <!-- 👤 USUARIOS -->
+  <ion-card *ngFor="let usuario of usuariosFiltrados" class="ion-margin-bottom">
     <ion-card-header>
       <ion-card-title>{{ usuario.nombreUsuario || 'Sin nombre' }}</ion-card-title>
       <ion-card-subtitle>{{ usuario.correo }}</ion-card-subtitle>
@@ -14,7 +55,6 @@
     <ion-card-content>
       <p><strong>ID:</strong> {{ usuario.uid }}</p>
       <p><strong>Premium:</strong> {{ usuario.premium ? '✅ Sí' : '❌ No' }}</p>
-
 
       <ion-button size="small" color="primary" [routerLink]="['/editar-admin', usuario.uid]">
         ✏️ Editar perfil

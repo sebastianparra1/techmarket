@@ -28,7 +28,6 @@ import { getDatabase, ref, get, set } from 'firebase/database';
 import { Capacitor } from '@capacitor/core';
 import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
 
-
 @Component({
   selector: 'app-login',
   templateUrl: './login.page.html',
@@ -76,23 +75,34 @@ export class LoginPage implements OnInit {
 
     try {
       const userCredential = await signInWithEmailAndPassword(auth, this.correo, this.clave);
-      const uid = userCredential.user.uid; // ✅ ESTA es la línea correcta
+      const uid = userCredential.user.uid;
 
       console.log('✅ UID con email/password:', uid);
-
-      console.log('Intentando login con Google...');
-
 
       localStorage.setItem('id', uid);
       localStorage.setItem('uid', uid);
       localStorage.setItem('correo', this.correo);
 
       const db = getDatabase();
-      const snapshot = await get(ref(db, `usuarios/${uid}`));
+      const userRef = ref(db, `usuarios/${uid}`);
+      const snapshot = await get(userRef);
+
       if (snapshot.exists()) {
         const data = snapshot.val();
         localStorage.setItem('nombreUsuario', data.nombreUsuario || '');
         localStorage.setItem('fotoPerfil', data.fotoPerfil || '');
+      } else {
+        await set(userRef, {
+          nombreUsuario: '',
+          correo: this.correo,
+          rut: '',
+          telefono: '',
+          direccion: '',
+          rol: 'comprador',
+          fotoPerfil: '',
+          fechaRegistro: new Date().toISOString(),
+          dispositivo: navigator.userAgent
+        });
       }
 
       this.angularRouter.navigate(['/home']);
@@ -118,80 +128,77 @@ export class LoginPage implements OnInit {
   }
 
   async loginConGoogle() {
-  this.error = '';
-  const auth = getAuth();
-  let uid = '';
-  let nombreUsuario = '';
-  let correo = '';
-  let fotoPerfil = '';
+    this.error = '';
+    const auth = getAuth();
+    let uid = '';
+    let nombreUsuario = '';
+    let correo = '';
+    let fotoPerfil = '';
 
-  try {
-    if (Capacitor.getPlatform() === 'web') {
-      const provider = new GoogleAuthProvider();
-      const result = await signInWithPopup(auth, provider);
-      const user = result.user;
+    try {
+      if (Capacitor.getPlatform() === 'web') {
+        const provider = new GoogleAuthProvider();
+        const result = await signInWithPopup(auth, provider);
+        const user = result.user;
 
-      uid = user.uid; // ✅ UID real
-      correo = user.email || '';
-      nombreUsuario = user.displayName || '';
-      fotoPerfil = user.photoURL || '';
+        uid = user.uid;
+        correo = user.email || '';
+        nombreUsuario = user.displayName || '';
+        fotoPerfil = user.photoURL || '';
+      } else {
+        const googleUser = await GoogleAuth.signIn();
+        const credential = GoogleAuthProvider.credential(googleUser.authentication.idToken);
+        const result = await signInWithCredential(auth, credential);
+        const user = result.user;
 
-      console.log('✅ UID con Google (web):', uid);
-    } else {
-  const googleUser = await GoogleAuth.signIn();
-
-  const credential = GoogleAuthProvider.credential(googleUser.authentication.idToken);
-  const result = await signInWithCredential(auth, credential);
-  const user = result.user;
-
-  uid = user.uid;
-  correo = user.email || '';
-  nombreUsuario = user.displayName || googleUser.name || '';
-  fotoPerfil = user.photoURL || googleUser.imageUrl || '';
-
-  console.log('✅ UID con Google (móvil):', uid);
-}
-
-    const db = getDatabase();
-    const userRef = ref(db, `usuarios/${uid}`);
-    const snapshot = await get(userRef);
-
-    let redirigirAEditarPerfil = false;
-
-    if (!snapshot.exists()) {
-      await set(userRef, {
-        nombreUsuario,
-        correo,
-        rut: '',
-        telefono: '',
-        direccion: '',
-        rol: 'comprador',
-        fotoPerfil
-      });
-      redirigirAEditarPerfil = true;
-    } else {
-      const data = snapshot.val();
-      if (
-        !this.campoCompleto(data.rut) ||
-        !this.campoCompleto(data.telefono) ||
-        !this.campoCompleto(data.direccion)
-      ) {
-        redirigirAEditarPerfil = true;
+        uid = user.uid;
+        correo = user.email || '';
+        nombreUsuario = user.displayName || googleUser.name || '';
+        fotoPerfil = user.photoURL || googleUser.imageUrl || '';
       }
+
+      const db = getDatabase();
+      const userRef = ref(db, `usuarios/${uid}`);
+      const snapshot = await get(userRef);
+
+      let redirigirAEditarPerfil = false;
+
+      if (!snapshot.exists()) {
+        await set(userRef, {
+          nombreUsuario,
+          correo,
+          rut: '',
+          telefono: '',
+          direccion: '',
+          rol: 'comprador',
+          fotoPerfil,
+          fechaRegistro: new Date().toISOString(),
+          dispositivo: navigator.userAgent
+        });
+        redirigirAEditarPerfil = true;
+      } else {
+        const data = snapshot.val();
+        if (
+          !this.campoCompleto(data.rut) ||
+          !this.campoCompleto(data.telefono) ||
+          !this.campoCompleto(data.direccion)
+        ) {
+          redirigirAEditarPerfil = true;
+        }
+      }
+
+      localStorage.setItem('id', uid);
+      localStorage.setItem('nombreUsuario', nombreUsuario);
+      localStorage.setItem('correo', correo);
+      localStorage.setItem('fotoPerfil', fotoPerfil);
+
+      if (redirigirAEditarPerfil) {
+        alert('⚠️ Te recomendamos completar tu perfil más adelante.');
+      }
+
+      this.angularRouter.navigate(['/home']);
+    } catch (err: any) {
+      console.error('❌ Error al iniciar sesión con Google:', err);
     }
-
-    localStorage.setItem('id', uid);
-    localStorage.setItem('nombreUsuario', nombreUsuario);
-    localStorage.setItem('correo', correo);
-    localStorage.setItem('fotoPerfil', fotoPerfil);
-
-    if (redirigirAEditarPerfil) {
-      alert('⚠️ Te recomendamos completar tu perfil más adelante.');
-    }
-
-    this.angularRouter.navigate(['/home']);
-  } catch (err: any) {
-    console.error('❌ Error al iniciar sesión con Google:', err);
   }
-}
 }

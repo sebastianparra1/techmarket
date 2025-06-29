@@ -1,7 +1,8 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { FormsModule } from '@angular/forms'; // ✅ AGREGA ESTA LÍNEA
+import { FormsModule } from '@angular/forms';
+
 import { getDatabase, ref, get, remove } from 'firebase/database';
 import {
   IonHeader,
@@ -24,13 +25,11 @@ import {
 
 import Chart from 'chart.js/auto';
 
-// 📦 Exportación
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
-// Extensión para evitar error con lastAutoTable
 declare module 'jspdf' {
   interface jsPDF {
     lastAutoTable: { finalY: number };
@@ -45,7 +44,7 @@ declare module 'jspdf' {
   imports: [
     CommonModule,
     RouterModule,
-    FormsModule, // ✅ AGREGA ESTA LÍNEA AQUÍ
+    FormsModule,
     IonHeader,
     IonToolbar,
     IonTitle,
@@ -156,14 +155,16 @@ export class AdminPage implements OnInit {
       'Nombre de usuario': u.nombreUsuario || 'Sin nombre',
       'Correo': u.correo,
       'ID': u.uid,
-      'Premium': u.premium ? 'Sí' : 'No'
+      'Premium': u.premium ? 'Sí' : 'No',
+      'Valor': u.premium ? 3000 : 0
     }));
 
     datos.push({
       'Nombre de usuario': '',
       'Correo': '',
       'ID': '',
-      'Premium': `TOTAL PREMIUM: $${this.totalPremiumCLP.toLocaleString('es-CL')}`
+      'Premium': 'TOTAL PREMIUM',
+      'Valor': this.totalPremiumCLP
     });
 
     const hoja = XLSX.utils.json_to_sheet(datos);
@@ -181,11 +182,12 @@ export class AdminPage implements OnInit {
       u.nombreUsuario || 'Sin nombre',
       u.correo,
       u.uid,
-      u.premium ? 'Sí' : 'No'
+      u.premium ? 'Sí' : 'No',
+      u.premium ? 3000 : 0
     ]);
 
     autoTable(doc, {
-      head: [['Nombre de usuario', 'Correo', 'ID', 'Premium']],
+      head: [['Nombre de usuario', 'Correo', 'ID', 'Premium', 'Valor']],
       body: datos
     });
 

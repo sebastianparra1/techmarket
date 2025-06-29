@@ -154,12 +154,13 @@ export class PagoComponent {
     for (const item of this.carrito) {
       const nombreProducto = item.name || item.nombre;
       const vendedorId = item.vendedorId || '';
+const precioTotal = item.price * item.quantity;
 
       const templateParams = {
         to_name: compradorNombreCompleto,
         user_email: this.emailComprador,
         producto_nombre: nombreProducto,
-        producto_precio: `$${item.price}`,
+        producto_precio: `$${precioTotal}`, // ✅ Precio total correcto
         producto_imagen: item.image,
         unidades_compradas: item.quantity,
         mensaje: 'Su paquete va camino al centro de distribución'

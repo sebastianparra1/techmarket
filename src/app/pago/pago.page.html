@@ -1,50 +1,68 @@
-<ion-content class="ion-padding">
-  <form (submit)="pagar()">
-    <div class="card-preview-container">
-      <div class="credit-card" [class.flipped]="mostrarTrasera">
-        <div class="front">
-  <div class="shine"></div>
+<ion-content class="checkout-container">
+  <div class="checkout-wrapper">
 
-  <div class="top-bar">
-    <img *ngIf="logoTarjeta" [src]="logoTarjeta" class="card-logo" alt="Tipo de tarjeta" />
-  </div>
-
-  <div class="card-number">{{ numeroFormateado || '•••• •••• •••• ••••' }}</div>
-  <div class="card-name">{{ nombreTitular || 'NOMBRE DEL TITULAR' }}</div>
-  <div class="card-expiry">{{ vencimiento || 'MM/AA' }}</div>
-</div>
-        <div class="back">
-    <div class="cvv-label">CVV</div>
-    <div class="cvv-value">{{ cvv || '•••' }}</div>
-  </div>
+    <!-- Columna izquierda: Resumen de compra -->
+    <div class="checkout-left">
+      <h2>Resumen de tu compra</h2>
+      <div *ngFor="let item of carrito" class="producto">
+        <img [src]="item.image" />
+        <div class="info">
+          <h4 style="color: #222; font-weight: 600;">{{ item.nombre }}</h4>
+          <p>Cantidad: {{ item.quantity }}</p>
+          <p>Precio: ${{ item.price }}</p>
+        </div>
+      </div>
+      <hr style="margin: 20px 0; border: none; border-top: 1px solid #ccc;">
+      <div class="total" style="color: #222; font-size: 18px;">
+        Total: <strong>${{ calcularTotal().toLocaleString('es-CL') }}</strong>
       </div>
     </div>
 
-    <ion-card>
-      <ion-card-header>
-        <ion-card-title>Datos de la Tarjeta</ion-card-title>
-      </ion-card-header>
+    <!-- Columna derecha: Datos de pago -->
+    <div class="checkout-right">
+      <h2>Información de pago</h2>
 
-      <ion-card-content>
+      <form (submit)="pagar()">
+        <!-- Vista previa de tarjeta -->
+        <div class="card-preview-container">
+          <div class="credit-card" [class.flipped]="mostrarTrasera">
+            <div class="front">
+              <div class="shine" *ngIf="animarShine"></div>
+              <div class="top-bar">
+                <img *ngIf="logoTarjeta" [src]="logoTarjeta" class="card-logo" alt="Tipo de tarjeta" />
+              </div>
+              <div class="card-number">{{ numeroFormateado || '•••• •••• •••• ••••' }}</div>
+              <div class="card-name">{{ nombreTitular || 'NOMBRE DEL TITULAR' }}</div>
+              <div class="card-expiry">{{ vencimiento || 'MM/AA' }}</div>
+            </div>
+            <div class="back" *ngIf="mostrarTrasera">
+              <div class="cvv-label">CVV</div>
+              <div class="cvv-value">{{ cvv || '•••' }}</div>
+            </div>
+          </div>
+        </div>
+
         <ion-item>
-          <ion-label position="stacked">Número de tarjeta</ion-label>
+          <ion-label position="floating">Número de tarjeta</ion-label>
           <ion-input
             type="text"
             [value]="numeroFormateado"
             (ionInput)="actualizarNumero($event)"
             maxlength="19"
             inputmode="numeric"
-            placeholder="Número de tarjeta">
+            
+            required>
           </ion-input>
         </ion-item>
 
         <ion-item>
-          <ion-label position="stacked">Nombre del titular</ion-label>
+          <ion-label position="floating">Nombre del titular</ion-label>
           <ion-input
             type="text"
             [(ngModel)]="nombreTitular"
             name="titular"
-            placeholder="Nombre Apellido">
+            
+            required>
           </ion-input>
         </ion-item>
 
@@ -52,19 +70,20 @@
           <ion-row>
             <ion-col size="8">
               <ion-item>
-                <ion-label position="stacked">Vencimiento (MM/AA)</ion-label>
+                <ion-label position="floating">Vencimiento (MM/AA)</ion-label>
                 <ion-input
                   type="text"
                   [value]="vencimiento"
                   (ionInput)="actualizarVencimiento($event)"
                   maxlength="5"
-                  placeholder="MM/AA">
+                  
+                  required>
                 </ion-input>
               </ion-item>
             </ion-col>
             <ion-col size="4">
               <ion-item>
-                <ion-label position="stacked">CVV</ion-label>
+                <ion-label position="floating">CVV</ion-label>
                 <ion-input
                   type="text"
                   [value]="cvv"
@@ -72,53 +91,50 @@
                   (ionfocus)="mostrarTrasera = true"
                   (ionblur)="mostrarTrasera = false"
                   maxlength="3"
-                  placeholder="123">
+                  
+                  required>
                 </ion-input>
               </ion-item>
             </ion-col>
           </ion-row>
         </ion-grid>
 
-        <!-- Campos adicionales del comprador -->
         <ion-item>
-          <ion-label position="stacked">Nombre</ion-label>
+          <ion-label position="floating">Nombre completo</ion-label>
           <ion-input [(ngModel)]="nombre" name="nombre" required></ion-input>
         </ion-item>
 
         <ion-item>
-          <ion-label position="stacked">Apellido</ion-label>
+          <ion-label position="floating">Apellido</ion-label>
           <ion-input [(ngModel)]="apellido" name="apellido" required></ion-input>
         </ion-item>
 
-        <!-- Nuevo campo Correo Electrónico -->
         <ion-item>
-          <ion-label position="stacked">Correo electrónico</ion-label>
-          <ion-input [(ngModel)]="emailComprador" name="emailComprador" type="email" required></ion-input>
+          <ion-label position="floating">Correo electrónico</ion-label>
+          <ion-input [(ngModel)]="emailComprador" name="email" type="email" required></ion-input>
+        </ion-item>
+
+
+        <!--
+        <ion-item>
+          <ion-label position="floating">Dirección</ion-label>
+          <ion-input name="direccion" required></ion-input>
+        </ion-item>
+        -->
+
+        <ion-item>
+          <ion-label position="floating">Código postal</ion-label>
+          <ion-input [(ngModel)]="codigoPostal" name="postal" required></ion-input>
         </ion-item>
 
         <ion-item>
-          <ion-label position="stacked">Código Postal</ion-label>
-          <ion-input [(ngModel)]="codigoPostal" name="codigoPostal" required></ion-input>
+          <ion-label position="floating">RUT</ion-label>
+          <ion-input [(ngModel)]="rut" name="rut" (ionInput)="filtrarRut($event)" placeholder="Ej: 12345678k" required></ion-input>
         </ion-item>
 
-        <ion-item>
-          <ion-label position="stacked">RUT</ion-label>
-          <ion-input
-            [(ngModel)]="rut"
-            name="rut"
-            (ionInput)="filtrarRut($event)"
-            placeholder="Ej: 12345678k"
-            required>
-          </ion-input>
-        </ion-item>
+        <ion-button expand="block" color="primary" type="submit">Ir al pago</ion-button>
+      </form>
+    </div>
 
-        <!-- Dirección con autocompletado -->
-        
-
-        <ion-button expand="block" type="submit" color="primary" class="ion-margin-top">
-          Pagar
-        </ion-button>
-      </ion-card-content>
-    </ion-card>
-  </form>
+  </div>
 </ion-content>

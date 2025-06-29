@@ -30,35 +30,45 @@ export class PagoComponent {
   codigoPostal: string = '';
   rut: string = '';
   carrito: any[] = [];
+  producto: any = null;
+
 
   logoTarjeta: string = 'assets/default-card.png';
 
   constructor(private route: ActivatedRoute, private router: Router, private toastCtrl: ToastController) {}
 
+calcularTotal(): number {
+  return this.carrito.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+}
+
+
   ngOnInit() {
-    this.route.queryParams.subscribe(params => {
-      if (params['cart']) {
-        const rawCarrito = JSON.parse(params['cart']);
-        this.carrito = rawCarrito.map((item: any) => ({
-          id: item.id || '',
-          nombre: item.name || item.nombre || '',
-          price: Number(item.price || 0),
-          image: item.image || item.imagen || '',
-          vendedorId: item.vendedorId || '',
-          quantity: item.quantity || 1
-        }));
-      } else {
-        this.carrito = [{
-          id: params['id'] || '',
-          nombre: params['nombre'] || '',
-          price: params['precio'] || 0,  //cambiado por price: Number(params['precio'] || 0),
-          image: params['imagen'] || '',
-          vendedorId: params['vendedorId'] || '',
-          quantity: 1
-        }];
-      }
-    });
-  }
+  this.route.queryParams.subscribe(params => {
+    if (params['cart']) {
+      const rawCarrito = JSON.parse(params['cart']);
+      this.carrito = rawCarrito.map((item: any) => ({
+        id: item.id || '',
+        nombre: item.name || item.nombre || '',
+        price: Number(item.price || 0),
+        image: item.image || item.imagen || '',
+        vendedorId: item.vendedorId || '',
+        quantity: item.quantity || 1
+      }));
+      this.producto = this.carrito[0]; // ✅ para caso carrito
+    } else {
+      this.carrito = [{
+        id: params['id'] || '',
+        nombre: params['nombre'] || '',
+        price: Number(params['precio'] || 0),
+        image: params['imagen'] || '',
+        vendedorId: params['vendedorId'] || '',
+        quantity: 1
+      }];
+      this.producto = this.carrito[0]; // ✅ para compra directa
+    }
+  });
+}
+
 
   filtrarRut(event: any) {
     let valor = (event.detail.value || '').toLowerCase();

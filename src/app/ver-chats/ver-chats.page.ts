@@ -47,20 +47,22 @@ export class VerChatsPage implements OnInit {
             const userSnap = await get(userRef);
             const nombre = userSnap.exists() ? userSnap.val().nombreUsuario || 'Usuario' : 'Usuario';
 
-            // Obtener el último mensaje (protegiendo timestamp)
+            // Obtener el último mensaje
             const mensajes = data[chatId];
             const mensajesArray = Object.values(mensajes || {}) as any[];
 
             const ultimo = mensajesArray.sort((a, b) => {
               const t1 = new Date(a.timestamp || 0).getTime();
               const t2 = new Date(b.timestamp || 0).getTime();
-              return t2 - t1; // orden descendente → más reciente primero
+              return t2 - t1; // orden descendente
             })[0];
 
             this.chats.push({
               id: otroUid,
               nombre,
-              ultimoMensaje: ultimo?.text || ''
+              ultimoMensaje: ultimo?.text
+                ? ultimo.text
+                : (ultimo?.image ? '📷 Se envió una imagen' : '')
             });
           }
         }

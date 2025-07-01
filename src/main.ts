@@ -20,3 +20,5 @@ bootstrapApplication(AppComponent, {
 });
 initializeApp(firebaseConfig);
 GoogleAuth.initialize(); 
+
+document.body.classList.remove('dark');

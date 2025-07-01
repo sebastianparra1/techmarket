@@ -4,7 +4,7 @@ import { getDatabase, ref, onValue, push, set, get } from 'firebase/database';
 import { IonicModule } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { UserService } from '../services/user.service'; // ✅ Importado
+import { UserService } from '../services/user.service';
 
 @Component({
   selector: 'app-chat',
@@ -22,23 +22,20 @@ export class ChatPage {
   mensajes: any[] = [];
   chatId: string = '';
   currentUserId: string = '';
+  selectedFile: File | null = null;
+  previewImageUrl: string = '';
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private userService: UserService // ✅ Inyectado
+    private userService: UserService
   ) {}
 
   async ionViewWillEnter() {
     const uid = this.userService.getUid();
-    if (!uid) {
-      console.error('❌ No hay UID disponible');
-      return;
-    }
+    if (!uid) return;
 
     this.currentUserId = uid;
-    console.log('✅ currentUserId cargado desde UserService:', this.currentUserId);
-
     this.vendedorId = this.route.snapshot.paramMap.get('vendedorId') || '';
 
     if (!this.vendedorId) {
@@ -47,7 +44,6 @@ export class ChatPage {
     }
 
     this.chatId = [this.currentUserId, this.vendedorId].sort().join('_');
-    console.log('🧩 chatId armado:', this.chatId);
 
     const db = getDatabase();
     const vendedorRef = ref(db, `usuarios/${this.vendedorId}`);
@@ -81,21 +77,13 @@ export class ChatPage {
     const chatRef = ref(db, `chats/${this.chatId}`);
     onValue(chatRef, (snapshot) => {
       const data = snapshot.val();
-      console.log('Snapshot chat:', data);
-
       if (!data) return;
 
       const mensajesArray = Object.entries(data)
         .map(([id, mensaje]: any) => ({ id, ...mensaje }))
-        .filter(m => m.text)
-        .sort((a, b) => {
-          const t1 = new Date(a.timestamp || 0).getTime();
-          const t2 = new Date(b.timestamp || 0).getTime();
-          return t1 - t2;
-        });
+        .sort((a, b) => new Date(a.timestamp || 0).getTime() - new Date(b.timestamp || 0).getTime());
 
       this.mensajes = mensajesArray;
-      console.log('Mensajes cargados:', this.mensajes);
 
       setTimeout(() => {
         const el = document.querySelector('.messages-container');
@@ -104,29 +92,65 @@ export class ChatPage {
     });
   }
 
-  enviarMensaje() {
-    if (!this.nuevoMensaje.trim()) return;
+  async enviarMensaje() {
+    if (!this.currentUserId) return;
 
-    if (!this.currentUserId) {
-      console.error('❌ UID no disponible para enviar mensaje');
-      return;
+    const text = this.nuevoMensaje.trim();
+    let imageUrl = '';
+
+    if (this.selectedFile) {
+      imageUrl = await this.uploadToCloudinary(this.selectedFile);
+      this.selectedFile = null;
+      this.previewImageUrl = '';
     }
+
+    if (!text && !imageUrl) return;
 
     const db = getDatabase();
     const chatRef = ref(db, `chats/${this.chatId}`);
     const mensaje = {
       sender: this.nombreUsuario,
       senderId: this.currentUserId,
-      text: this.nuevoMensaje,
+      text: text || '',
+      image: imageUrl || '',
       timestamp: new Date().toISOString(),
       leido: false
     };
 
-    console.log('📤 Enviando mensaje:', mensaje);
-
     const mensajeRef = push(chatRef);
-    set(mensajeRef, mensaje).then(() => {
-      this.nuevoMensaje = '';
+    await set(mensajeRef, mensaje);
+    this.nuevoMensaje = '';
+  }
+
+  onFileSelected(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      this.selectedFile = file;
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.previewImageUrl = reader.result as string;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  cancelarImagen() {
+    this.selectedFile = null;
+    this.previewImageUrl = '';
+  }
+
+  async uploadToCloudinary(file: File): Promise<string> {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', 'ecommerce_upload');
+
+    const response = await fetch('https://api.cloudinary.com/v1_1/doa5jzxjx/image/upload', {
+      method: 'POST',
+      body: formData
     });
+
+    const data = await response.json();
+    return data.secure_url;
   }
 }

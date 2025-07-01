@@ -7,24 +7,33 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true" class="chat-content"> <!-- 🚀 añadimos clase para fondo negro -->
+<ion-content [fullscreen]="true" class="chat-content">
   <div class="messages-container">
     <div
       *ngFor="let msg of mensajes"
       class="message"
       [class.own]="msg.senderId === currentUserId">
 
-      <!-- Mostrar el nombre del otro usuario si NO es mi mensaje -->
       <div *ngIf="msg.senderId !== currentUserId" class="sender-name">
         {{ msg.sender }}
       </div>
 
-      <!-- Texto del mensaje -->
-      <div>{{ msg.text }}</div>
+      <div *ngIf="msg.image">
+        <img [src]="msg.image" style="max-width: 200px; border-radius: 8px;" />
+      </div>
 
-      <!-- Timestamp -->
+      <div *ngIf="msg.text">
+        {{ msg.text }}
+      </div>
+
       <div class="timestamp">{{ msg.timestamp | date: 'shortTime' }}</div>
     </div>
+  </div>
+
+  <!-- Vista previa de imagen seleccionada -->
+  <div *ngIf="previewImageUrl" style="text-align: center; margin: 10px 0;">
+    <img [src]="previewImageUrl" style="max-width: 150px; border-radius: 10px;" />
+    <ion-button color="danger" size="small" (click)="cancelarImagen()">Quitar</ion-button>
   </div>
 
   <ion-footer>
@@ -35,6 +44,9 @@
         autocapitalize="sentences"
         spellcheck="true">
       </ion-input>
+
+      <input type="file" hidden #fileInput (change)="onFileSelected($event)">
+      <ion-button fill="clear" slot="end" (click)="fileInput.click()">📎</ion-button>
       <ion-button slot="end" (click)="enviarMensaje()" color="success">Enviar</ion-button>
     </ion-item>
   </ion-footer>
